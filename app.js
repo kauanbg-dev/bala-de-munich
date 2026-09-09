@@ -252,7 +252,7 @@ document.getElementById("feed-grid").innerHTML = club.gallery
   .slice(0, 3)
   .map(
     (item) => `
-    <a class="feed-card" href="${club.instagram}" target="_blank" rel="noreferrer">
+    <a class="feed-card" href="${item.href || club.instagram}" target="_blank" rel="noreferrer">
       <img src="${item.src}" alt="${item.alt}" />
       <span>${item.caption}</span>
     </a>`

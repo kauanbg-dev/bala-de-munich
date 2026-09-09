@@ -70,9 +70,14 @@ window.CLUB = {
   gallery: [
     { src: "assets/feed/semifinal.jpg", alt: "Estamos na semifinal · 3x1 Raposo FC", caption: "Semifinal" },
     { src: "assets/feed/destaque.jpg", alt: "Game Day contra o Raposo FC", caption: "Game Day" },
+    {
+      src: "assets/feed/quartas.jpg?v=2",
+      alt: "Estamos nas quartas · 3x1 RadiANTAS",
+      caption: "Quartas",
+      href: "https://www.instagram.com/p/DchxKcKNoOT/",
+    },
     { src: "assets/feed/elenco.jpg", alt: "Bem-vindo Vini Show, goleiro", caption: "Vini Show" },
     { src: "assets/feed/confronto.jpg", alt: "Confronto definido nas quartas", caption: "Confronto" },
-    { src: "assets/feed/quartas.jpg", alt: "Estamos nas quartas", caption: "Quartas" },
     { src: "assets/feed/jogador.jpg", alt: "Meme Bala de Munich vs Radiantas", caption: "Rivalidade" },
   ],
   squad: [
