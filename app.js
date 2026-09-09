@@ -5,7 +5,6 @@ document.getElementById("kicker").textContent =
 document.getElementById("motto").textContent = club.motto;
 document.getElementById("instagram").href = club.instagram;
 document.getElementById("lives").href = club.links;
-document.getElementById("kick").href = club.kick;
 document.getElementById("discord").href = club.discord;
 
 const s = club.stats;
