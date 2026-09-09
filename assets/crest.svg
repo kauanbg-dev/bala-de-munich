@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" role="img" aria-label="Escudo Bala de Munich">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F3D37A"/>
+      <stop offset="1" stop-color="#B8860B"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF2A3C"/>
+      <stop offset="1" stop-color="#8A0418"/>
+    </linearGradient>
+  </defs>
+  <path d="M100 8 L186 36 V118 C186 176 148 214 100 232 C52 214 14 176 14 118 V36 Z" fill="#0B0C10" stroke="url(#gold)" stroke-width="6"/>
+  <path d="M100 22 L172 46 V116 C172 166 140 200 100 216 C60 200 28 166 28 116 V46 Z" fill="url(#red)"/>
+  <path d="M28 92 H172" stroke="#0B0C10" stroke-width="18"/>
+  <path d="M28 92 H172" stroke="url(#gold)" stroke-width="6"/>
+  <circle cx="100" cy="148" r="34" fill="#0B0C10"/>
+  <circle cx="100" cy="148" r="26" fill="none" stroke="#F3D37A" stroke-width="3"/>
+  <path d="M100 122 C112 132 118 140 118 148 C118 156 112 164 100 174 C88 164 82 156 82 148 C82 140 88 132 100 122 Z" fill="none" stroke="#F3D37A" stroke-width="2"/>
+  <path d="M74 148 H126 M88 132 L112 164 M112 132 L88 164" stroke="#F3D37A" stroke-width="1.4" opacity=".7"/>
+  <text x="100" y="78" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="42" fill="#F8F4EA" letter-spacing="2">BDM</text>
+  <text x="100" y="208" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#F3D37A" letter-spacing="4">26</text>
+</svg>
