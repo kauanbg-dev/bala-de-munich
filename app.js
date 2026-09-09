@@ -7,63 +7,66 @@ document.getElementById("instagram").href = club.instagram;
 document.getElementById("lives").href = club.links;
 document.getElementById("discord").href = club.discord;
 
-const s = club.stats;
-document.getElementById("stat-strip").innerHTML = [
-  ["Grupo C", `${s.groupPos}`],
-  ["Pontos", s.points],
-  ["Séries", `${s.seriesWins}–${s.seriesLosses}`],
-  ["Gols (grupos)", `${s.goalsFor} / ${s.goalsAgainst}`],
-]
-  .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`)
-  .join("");
+const paintCompetition = () => {
+  const s = club.stats;
+  document.getElementById("stat-strip").innerHTML = [
+    ["Grupo C", `${s.groupPos}`],
+    ["Pontos", s.points],
+    ["Séries", `${s.seriesWins}–${s.seriesLosses}`],
+    ["Gols (grupos)", `${s.goalsFor} / ${s.goalsAgainst}`],
+  ]
+    .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`)
+    .join("");
 
-document.getElementById("last-match").innerHTML = `
-  <span>Última série</span>
-  <strong>${club.lastMatch.score}</strong>
-  <p>vs ${club.lastMatch.opponent}${club.lastMatch.note ? ` · ${club.lastMatch.note}` : ""}</p>
-`;
+  document.getElementById("motto").textContent = club.motto;
 
-document.getElementById("next-match").innerHTML = `
-  <span>Próximo jogo · ${club.nextMatch.venue}</span>
-  <strong>vs ${club.nextMatch.opponent}</strong>
-  <p>${club.nextMatch.competition} · ${club.nextMatch.date}</p>
-`;
+  document.getElementById("last-match").innerHTML = `
+    <span>Última série</span>
+    <strong>${club.lastMatch.score}</strong>
+    <p>vs ${club.lastMatch.opponent}${club.lastMatch.note ? ` · ${club.lastMatch.note}` : ""}</p>
+  `;
 
-const clubMeta = (name) => club.clubs[name] || { owner: "–", tbd: true };
+  document.getElementById("next-match").innerHTML = `
+    <span>Próximo jogo · ${club.nextMatch.venue}</span>
+    <strong>vs ${club.nextMatch.opponent}</strong>
+    <p>${club.nextMatch.competition} · ${club.nextMatch.date}</p>
+  `;
 
-const chaveSide = (name, score, win) => {
-  const t = clubMeta(name);
-  const crest = t.crest
-    ? `<img class="chave-crest" src="${t.crest}" alt="" />`
-    : `<span class="chave-crest is-empty" aria-hidden="true"></span>`;
-  const bg = t.crest ? `<img src="${t.crest}" alt="" />` : "";
-  return `
+  const clubMeta = (name) => club.clubs[name] || { owner: "–", tbd: true };
+
+  const chaveSide = (name, score, win) => {
+    const t = clubMeta(name);
+    const crest = t.crest
+      ? `<img class="chave-crest" src="${t.crest}" alt="" />`
+      : `<span class="chave-crest is-empty" aria-hidden="true"></span>`;
+    const bg = t.crest ? `<img src="${t.crest}" alt="" />` : "";
+    return `
     <div class="chave-side${win ? " is-win" : ""}${t.us ? " is-us" : ""}${t.tbd ? " is-tbd" : ""}">
       <span class="chave-bg" aria-hidden="true">${bg}</span>
       <div class="chave-team">${crest}<span class="chave-txt"><b>${name}</b><small>${t.owner}</small></span></div>
       <span class="chave-score">${score}</span>
     </div>`;
-};
+  };
 
-const chaveCard = (t) => {
-  const played = t.hs !== null && t.as !== null;
-  const homeWin = played && t.hs > t.as;
-  const awayWin = played && t.as > t.hs;
-  return `
+  const chaveCard = (t) => {
+    const played = t.hs !== null && t.as !== null;
+    const homeWin = played && t.hs > t.as;
+    const awayWin = played && t.as > t.hs;
+    return `
     <article class="chave-match${t.us ? " is-us" : ""}${t.final ? " is-final" : ""}${played ? " is-done" : ""}" id="${t.id}">
       ${t.final ? `<span class="chave-cup" aria-hidden="true"></span>` : ""}
       ${chaveSide(t.home, played ? t.hs : "–", homeWin)}
       ${chaveSide(t.away, played ? t.as : "–", awayWin)}
       <small>${t.date}</small>
     </article>`;
-};
+  };
 
-const doneCount = club.bracket.flatMap((r) => r.ties).filter((t) => t.hs !== null).length;
-const openCount = club.bracket.flatMap((r) => r.ties).length - doneCount;
-const legend = document.getElementById("chave-legend");
-if (legend) legend.innerHTML = `<span class="is-done">${doneCount} encerradas</span><span>${openCount} a disputar</span>`;
+  const doneCount = club.bracket.flatMap((r) => r.ties).filter((t) => t.hs !== null).length;
+  const openCount = club.bracket.flatMap((r) => r.ties).length - doneCount;
+  const legend = document.getElementById("chave-legend");
+  if (legend) legend.innerHTML = `<span class="is-done">${doneCount} encerradas</span><span>${openCount} a disputar</span>`;
 
-document.getElementById("bracket").innerHTML = `
+  document.getElementById("bracket").innerHTML = `
   <svg class="chave-wires" aria-hidden="true"></svg>
   <div class="chave-cols">
     ${club.bracket
@@ -74,6 +77,47 @@ document.getElementById("bracket").innerHTML = `
       )
       .join("")}
   </div>`;
+
+  drawChaveWires();
+  document.querySelectorAll("#bracket img").forEach((img) => img.addEventListener("load", drawChaveWires, { once: true }));
+
+  document.getElementById("standings").innerHTML = club.groupTable
+    .map(
+      (row) => `
+    <tr class="${row.us ? "us" : ""}">
+      <td>${row.pos}º</td>
+      <td>${row.team}${row.us ? " · classificado" : ""}</td>
+      <td>${row.j}</td>
+      <td>${row.pts}</td>
+      <td>${row.v}</td>
+      <td>${row.d}</td>
+      <td>${row.gp}</td>
+      <td>${row.gc}</td>
+      <td>${row.sg > 0 ? "+" + row.sg : row.sg}</td>
+    </tr>`
+    )
+    .join("");
+
+  document.getElementById("scorers").innerHTML = club.scorers
+    .map((p) => `<li><b>${p.tag}</b> <span>${p.pos}</span> <strong>${p.goals}</strong></li>`)
+    .join("");
+
+  document.getElementById("assists").innerHTML = club.assists
+    .map((p) => `<li><b>${p.tag}</b> <span>${p.pos}</span> <strong>${p.assists}</strong></li>`)
+    .join("");
+
+  document.getElementById("results").innerHTML = club.results
+    .map(
+      (r) => `
+    <li>
+      <span>${r.date}</span>
+      <span>${r.opponent}${r.note ? ` · ${r.note}` : ""}</span>
+      <span class="score">${r.score}</span>
+      <span class="badge ${r.result}">${r.result}</span>
+    </li>`
+    )
+    .join("");
+};
 
 const drawChaveWires = () => {
   const stage = document.getElementById("bracket");
@@ -117,12 +161,92 @@ const drawChaveWires = () => {
   svg.innerHTML = paths.join("") + nodes.join("");
 };
 
-drawChaveWires();
+paintCompetition();
 window.addEventListener("resize", drawChaveWires);
-document.querySelectorAll("#bracket img").forEach((img) => img.addEventListener("load", drawChaveWires, { once: true }));
 if (window.ResizeObserver && document.getElementById("bracket")) {
   new ResizeObserver(drawChaveWires).observe(document.getElementById("bracket"));
 }
+
+const posOf = (tag) => {
+  const hit = club.squad.find((p) => String(p.tag).toLowerCase() === String(tag).toLowerCase());
+  return hit?.pos && hit.pos !== "—" ? hit.pos : "";
+};
+
+const mergeStatRows = (local, live) => {
+  if (!live?.length) return local;
+  const localByTag = new Map(local.map((row) => [String(row.tag || "").toLowerCase(), row]));
+  const seen = new Set();
+  const out = [];
+  live.forEach((row) => {
+    const id = String(row.tag || "").toLowerCase();
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    const prev = localByTag.get(id) || {};
+    out.push({
+      ...prev,
+      ...row,
+      pos: row.pos || prev.pos || posOf(row.tag),
+      games: row.games || prev.games || 0,
+    });
+  });
+  local.forEach((row) => {
+    const id = String(row.tag || "").toLowerCase();
+    if (id && seen.has(id)) return;
+    if (id) seen.add(id);
+    out.push(row);
+  });
+  return out;
+};
+
+const mergeResults = (local, live) => {
+  if (!live?.length) return local;
+  const keyOf = (row) => `${String(row.opponent || "").toLowerCase()}|${row.score || ""}`;
+  const seen = new Set(live.map(keyOf));
+  return [...live, ...local.filter((row) => !seen.has(keyOf(row)))];
+};
+
+const stampCopaLive = (live) => {
+  const stamp = document.getElementById("copa-live-stamp");
+  if (!stamp) return;
+  const at = live.atualizadoEm ? new Date(live.atualizadoEm) : null;
+  stamp.hidden = false;
+  stamp.textContent =
+    at && !Number.isNaN(at.getTime())
+      ? `Ao vivo · Copa Streamers · ${at.toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`
+      : "Ao vivo · Copa Streamers";
+};
+
+const applyCopaPayload = (live) => {
+  if (!live?.ok) return;
+  if (live.stats) club.stats = { ...club.stats, ...live.stats };
+  if (live.motto) club.motto = live.motto;
+  if (live.lastMatch) club.lastMatch = live.lastMatch;
+  if (live.nextMatch) club.nextMatch = live.nextMatch;
+  if (live.groupTable?.length) club.groupTable = live.groupTable;
+  if (live.bracket?.length) club.bracket = live.bracket;
+  if (live.clubs) club.clubs = { ...club.clubs, ...live.clubs };
+  club.results = mergeResults(club.results, live.results);
+  club.scorers = mergeStatRows(club.scorers, live.scorers);
+  club.assists = mergeStatRows(club.assists, live.assists);
+  paintCompetition();
+  stampCopaLive(live);
+};
+
+const pullCopaLive = async () => {
+  try {
+    const res = await fetch("/api/copa", { cache: "no-store" });
+    if (!res.ok) return;
+    applyCopaPayload(await res.json());
+  } catch {
+    /* mantém data.js */
+  }
+};
+
+pullCopaLive();
+window.setInterval(pullCopaLive, 60_000);
 
 document.getElementById("feed-grid").innerHTML = club.gallery
   .slice(0, 3)
@@ -132,37 +256,6 @@ document.getElementById("feed-grid").innerHTML = club.gallery
       <img src="${item.src}" alt="${item.alt}" />
       <span>${item.caption}</span>
     </a>`
-  )
-  .join("");
-
-document.getElementById("standings").innerHTML = club.groupTable
-  .map(
-    (row) => `
-    <tr class="${row.us ? "us" : ""}">
-      <td>${row.pos}º</td>
-      <td>${row.team}${row.us ? " · classificado" : ""}</td>
-      <td>${row.j}</td>
-      <td>${row.pts}</td>
-      <td>${row.v}</td>
-      <td>${row.d}</td>
-      <td>${row.gp}</td>
-      <td>${row.gc}</td>
-      <td>${row.sg > 0 ? "+" + row.sg : row.sg}</td>
-    </tr>`
-  )
-  .join("");
-
-document.getElementById("scorers").innerHTML = club.scorers
-  .map(
-    (p) =>
-      `<li><b>${p.tag}</b> <span>${p.pos}</span> <strong>${p.goals}</strong></li>`
-  )
-  .join("");
-
-document.getElementById("assists").innerHTML = club.assists
-  .map(
-    (p) =>
-      `<li><b>${p.tag}</b> <span>${p.pos}</span> <strong>${p.assists}</strong></li>`
   )
   .join("");
 
@@ -216,18 +309,6 @@ document.getElementById("pitch").innerHTML = club.formation.slots
       <span><small>${slot.pos === "TEC" ? "TEC" : slot.pos}</small><b>${slot.tag}</b></span>
     </div>`;
   })
-  .join("");
-
-document.getElementById("results").innerHTML = club.results
-  .map(
-    (r) => `
-    <li>
-      <span>${r.date}</span>
-      <span>${r.opponent}${r.note ? ` · ${r.note}` : ""}</span>
-      <span class="score">${r.score}</span>
-      <span class="badge ${r.result}">${r.result}</span>
-    </li>`
-  )
   .join("");
 
 const mvpPoll = club.mvp;

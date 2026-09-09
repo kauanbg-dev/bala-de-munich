@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import crypto from "node:crypto";
+import { getCopaLive, startCopaSync } from "./copa.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const votesFile = path.join(root, "data", "votes.json");
@@ -280,6 +281,10 @@ const server = http.createServer(async (req, res) => {
       await handleMvp(req, res);
       return;
     }
+    if (url.pathname === "/api/copa") {
+      sendJson(res, await getCopaLive());
+      return;
+    }
     const file = safeFile(url.pathname);
     if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
       res.writeHead(404);
@@ -331,3 +336,4 @@ if (!bound) {
 }
 console.log(`listening ${bound}`);
 console.log(`Bala de Munich em http://127.0.0.1:${bound}`);
+startCopaSync();

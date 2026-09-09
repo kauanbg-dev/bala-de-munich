@@ -851,6 +851,14 @@ h2 {
   margin: -8px 0 12px;
 }
 
+.copa-live-stamp {
+  margin: 14px 0 0;
+  color: var(--gold);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .chave-scroll {
   overflow-x: auto;
   padding-bottom: 6px;
