@@ -19,7 +19,7 @@ const allow = [
   "Baraka",
   "Vini Show",
   "Jmdeck",
-  "Beliene157",
+  "Beliene",
   "2Tclipes",
 ];
 const pollId = "quartas-raposo";

@@ -58,7 +58,7 @@ window.CLUB = {
     { tag: "Brkk", pos: "MEI", goals: 3, assists: 12, games: 20 },
     { tag: "TTeuw", pos: "MEI", goals: 1, assists: 4, games: 21 },
     { tag: "Nebacetin", pos: "ZAG", goals: 1, assists: 2, games: 21 },
-    { tag: "Beliene157", pos: "MEI", goals: 1, assists: 0, games: 8 },
+    { tag: "Beliene", pos: "MEI", goals: 1, assists: 0, games: 8 },
   ],
   assists: [
     { tag: "Brkk", pos: "MEI", assists: 12, goals: 3, games: 20 },
@@ -87,10 +87,10 @@ window.CLUB = {
     { tag: "luccaf14", name: "Meio", pos: "MEI", role: "Meia", rating: "6,9", games: 16, goals: 0, assists: 0, number: 14, live: "https://kick.com/luccacrf", photo: "assets/players/lucca.jpg" },
     { tag: "Gordin", name: "Meio", pos: "MEI", role: "Meia", rating: "7,0", games: 16, goals: 0, assists: 0, number: 6, live: "https://kick.com/gordinn9j", photo: "assets/players/gordin.jpg" },
     { tag: "Baraka", name: "Goleiro", pos: "GOL", role: "Goleiro titular", rating: "6,4", games: 16, goals: 0, assists: 0, number: 1, live: "https://kick.com/barakaf14", photo: "assets/players/baraka.jpg" },
-    { tag: "Beliene157", name: "Meio", pos: "MEI", role: "", rating: "", games: 8, goals: 1, assists: 0, number: 21, live: "https://kick.com/Beliene_r" },
+    { tag: "Patrick11ns", name: "Coach", pos: "—", role: "Coach", rating: "", games: 0, goals: 0, assists: 0, number: 0, live: "https://kick.com/patrick11ns", photo: "assets/players/patrick.jpg" },
     { tag: "2Tclipes", name: "Ataque", pos: "ATA", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 13, live: "https://kick.com/2t-clipes" },
     { tag: "Vini Show", name: "Goleiro", pos: "GOL", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 12, live: "", photo: "assets/players/vini-show.jpg" },
-    { tag: "Patrick11ns", name: "Coach", pos: "—", role: "Coach", rating: "", games: 0, goals: 0, assists: 0, number: 0, live: "https://kick.com/patrick11ns", photo: "assets/players/patrick.jpg" },
+    { tag: "Beliene", name: "Meio", pos: "MEI", role: "", rating: "", games: 8, goals: 1, assists: 0, number: 21, live: "https://kick.com/Beliene_r" },
   ],
   formation: {
     name: "3-5-2 · três zagueiros, sem laterais",

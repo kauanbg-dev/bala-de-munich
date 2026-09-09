@@ -3,7 +3,7 @@ $votesFile = Join-Path $root "data\votes.json"
 $allow = @(
   "TTeuw", "Brkk", "DG", "Davasco", "Nebacetin", "Bluue",
   "Pedro Sem Freio", "luccaf14", "Gordin", "Baraka", "Vini Show",
-  "Jmdeck", "Beliene157", "2Tclipes"
+  "Jmdeck", "Beliene", "2Tclipes"
 )
 $pollId = "quartas-raposo"
 $durationHours = 2
