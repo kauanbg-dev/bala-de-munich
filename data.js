@@ -78,7 +78,7 @@ window.CLUB = {
   squad: [
     { tag: "TTeuw", name: "Presidente", pos: "MEI", role: "Presidente", rating: "6,9", games: 21, goals: 1, assists: 4, number: 11, live: "https://kick.com/tteuw", photo: "assets/players/tteuw.jpg" },
     { tag: "Brkk", name: "Vice", pos: "MEI", role: "Rei das assistências", rating: "", games: 20, goals: 3, assists: 12, number: 10, live: "https://kick.com/brkk", photo: "assets/players/brkk.jpg" },
-    { tag: "Patrick11ns", name: "Coach", pos: "—", role: "Coach", rating: "", games: 0, goals: 0, assists: 0, number: 0, live: "https://kick.com/patrick11ns", photo: "assets/players/patrick.jpg" },
+    { tag: "Jmdeck", name: "Elenco", pos: "MEI", role: "Elenco", rating: "", games: 0, goals: 0, assists: 0, number: 7, live: "https://www.twitch.tv/jmdeck", photo: "assets/players/jmdeck.jpg" },
     { tag: "DG", name: "Artilheiro", pos: "ATA", role: "Artilheiro da edição", rating: "7,4", games: 20, goals: 19, assists: 3, number: 9, live: "https://kick.com/dgziniwnl", photo: "assets/players/dg.jpg" },
     { tag: "Davasco", name: "Ataque", pos: "ATA", role: "Atacante", rating: "7,1", games: 18, goals: 11, assists: 3, number: 8, live: "https://kick.com/davasco26", photo: "assets/players/davasco.jpg" },
     { tag: "Nebacetin", name: "Zaga", pos: "ZAG", role: "Melhor nota nos grupos", rating: "7,6", games: 21, goals: 1, assists: 2, number: 4, live: "https://kick.com/onebacetin", photo: "assets/players/nebacetin.jpg" },
@@ -87,10 +87,10 @@ window.CLUB = {
     { tag: "luccaf14", name: "Meio", pos: "MEI", role: "Meia", rating: "6,9", games: 16, goals: 0, assists: 0, number: 14, live: "https://kick.com/luccacrf", photo: "assets/players/lucca.jpg" },
     { tag: "Gordin", name: "Meio", pos: "MEI", role: "Meia", rating: "7,0", games: 16, goals: 0, assists: 0, number: 6, live: "https://kick.com/gordinn9j", photo: "assets/players/gordin.jpg" },
     { tag: "Baraka", name: "Goleiro", pos: "GOL", role: "Goleiro titular", rating: "6,4", games: 16, goals: 0, assists: 0, number: 1, live: "https://kick.com/barakaf14", photo: "assets/players/baraka.jpg" },
-    { tag: "Vini Show", name: "Goleiro", pos: "GOL", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 12, live: "", photo: "assets/players/vini-show.jpg" },
-    { tag: "Jmdeck", name: "Elenco", pos: "MEI", role: "Elenco", rating: "", games: 0, goals: 0, assists: 0, number: 7, live: "https://www.twitch.tv/jmdeck", photo: "assets/players/jmdeck.jpg" },
     { tag: "Beliene157", name: "Meio", pos: "MEI", role: "", rating: "", games: 8, goals: 1, assists: 0, number: 21, live: "https://kick.com/Beliene_r" },
     { tag: "2Tclipes", name: "Ataque", pos: "ATA", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 13, live: "https://kick.com/2t-clipes" },
+    { tag: "Vini Show", name: "Goleiro", pos: "GOL", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 12, live: "", photo: "assets/players/vini-show.jpg" },
+    { tag: "Patrick11ns", name: "Coach", pos: "—", role: "Coach", rating: "", games: 0, goals: 0, assists: 0, number: 0, live: "https://kick.com/patrick11ns", photo: "assets/players/patrick.jpg" },
   ],
   formation: {
     name: "3-5-2 · três zagueiros, sem laterais",
