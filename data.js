@@ -88,7 +88,7 @@ window.CLUB = {
     { tag: "Gordin", name: "Meio", pos: "MEI", role: "Meia", rating: "7,0", games: 16, goals: 0, assists: 0, number: 6, live: "https://kick.com/gordinn9j", photo: "assets/players/gordin.jpg" },
     { tag: "Baraka", name: "Goleiro", pos: "GOL", role: "Goleiro titular", rating: "6,4", games: 16, goals: 0, assists: 0, number: 1, live: "https://kick.com/barakaf14", photo: "assets/players/baraka.jpg" },
     { tag: "Patrick11ns", name: "Coach", pos: "—", role: "Coach", rating: "", games: 0, goals: 0, assists: 0, number: 0, live: "https://kick.com/patrick11ns", photo: "assets/players/patrick.jpg" },
-    { tag: "Beliene", name: "Meio", pos: "MEI", role: "", rating: "", games: 8, goals: 1, assists: 0, number: 21, live: "https://kick.com/Beliene_r" },
+    { tag: "Beliene", name: "Meio", pos: "MEI", role: "", rating: "", games: 8, goals: 1, assists: 0, number: 21, live: "https://kick.com/Beliene_r", photo: "assets/players/beliene.jpg" },
     { tag: "Vini Show", name: "Goleiro", pos: "GOL", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 12, live: "", photo: "assets/players/vini-show.jpg" },
     { tag: "2Tclipes", name: "Ataque", pos: "ATA", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 13, live: "https://kick.com/2t-clipes" },
   ],
