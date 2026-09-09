@@ -47,16 +47,16 @@ const GROUP_C_TEAMS = [
 
 const CREST = {
   "Bala de Munich": "assets/crest.png",
-  "Raposo FC": "https://api.copastreamers.com.br/assets/times/raposo-fc.png",
-  "Apeludos FC": "https://api.copastreamers.com.br/assets/times/apeludos-fc.png",
-  "Equipe X": "https://api.copastreamers.com.br/assets/times/bak-thurzin.png",
-  "Cobra Del Toro FC": "https://api.copastreamers.com.br/assets/times/cobra-del-toro-fc.png",
-  "Narizes FC": "https://api.copastreamers.com.br/assets/times/narizes-fc.png",
-  "Osempic do Marcelo": "https://api.copastreamers.com.br/assets/times/osempic-do-marcelo.png",
-  "Botafofo": "https://api.copastreamers.com.br/assets/times/botafofo.png",
-  "Low Profile FC": "https://api.copastreamers.com.br/assets/times/low-profile-fc.png",
-  "RadiANTAS FC": "https://api.copastreamers.com.br/assets/times/radiantas-fc.png",
-  "Kosky Korp": "https://api.copastreamers.com.br/assets/times/kosky-korp.png",
+  "Raposo FC": "assets/clubs/raposo-fc.png",
+  "Apeludos FC": "assets/clubs/apeludos-fc.png",
+  "Equipe X": "assets/clubs/equipe-x.png",
+  "Cobra Del Toro FC": "assets/clubs/cobra-del-toro-fc.png",
+  "Narizes FC": "assets/clubs/narizes-fc.png",
+  "Osempic do Marcelo": "assets/clubs/osempic-do-marcelo.png",
+  "Botafofo": "assets/clubs/botafofo.png",
+  "Low Profile FC": "assets/clubs/low-profile-fc.png",
+  "RadiANTAS FC": "assets/clubs/radiantas-fc.png",
+  "Kosky Korp": "assets/clubs/kosky-korp.png",
   "A definir": null,
 };
 

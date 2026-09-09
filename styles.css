@@ -329,6 +329,41 @@ h1 {
 .match-card.last { border-left: 4px solid var(--gold); }
 .match-card.next { border-left: 4px solid var(--red); }
 
+.match-card strong .team-mark {
+  display: inline-flex;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+}
+
+.match-card .team-crest {
+  width: 28px;
+  height: 28px;
+}
+
+.team-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.team-mark span { min-width: 0; }
+
+.team-crest {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: #0b0b0d;
+  flex: none;
+}
+
+.team-crest.is-empty {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px dashed var(--line);
+}
+
 .table-wrap { overflow-x: auto; border: 1px solid var(--line); }
 
 .standings {
@@ -354,6 +389,11 @@ h1 {
 .standings tr.us {
   background: rgba(211, 18, 42, 0.22);
   font-weight: 700;
+}
+
+.standings .team-crest {
+  width: 26px;
+  height: 26px;
 }
 
 .leaders {
@@ -776,6 +816,11 @@ h2 {
   padding: 14px 0;
   border-bottom: 1px solid var(--line);
   font-size: 0.98rem;
+}
+
+.results .team-crest {
+  width: 28px;
+  height: 28px;
 }
 
 .badge {

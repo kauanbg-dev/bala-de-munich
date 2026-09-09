@@ -20,19 +20,27 @@ const paintCompetition = () => {
 
   document.getElementById("motto").textContent = club.motto;
 
+  const clubMeta = (name) => club.clubs[name] || { owner: "–", tbd: true };
+
+  const teamMark = (name, extra = "") => {
+    const t = clubMeta(name);
+    const crest = t.crest
+      ? `<img class="team-crest" src="${t.crest}" alt="" />`
+      : `<span class="team-crest is-empty" aria-hidden="true"></span>`;
+    return `<span class="team-mark${t.tbd ? " is-tbd" : ""}">${crest}<span>${name}${extra}</span></span>`;
+  };
+
   document.getElementById("last-match").innerHTML = `
     <span>Última série</span>
     <strong>${club.lastMatch.score}</strong>
-    <p>vs ${club.lastMatch.opponent}${club.lastMatch.note ? ` · ${club.lastMatch.note}` : ""}</p>
+    <p>vs ${teamMark(club.lastMatch.opponent)}${club.lastMatch.note ? ` · ${club.lastMatch.note}` : ""}</p>
   `;
 
   document.getElementById("next-match").innerHTML = `
     <span>Próximo jogo · ${club.nextMatch.venue}</span>
-    <strong>vs ${club.nextMatch.opponent}</strong>
+    <strong>vs ${teamMark(club.nextMatch.opponent)}</strong>
     <p>${club.nextMatch.competition} · ${club.nextMatch.date}</p>
   `;
-
-  const clubMeta = (name) => club.clubs[name] || { owner: "–", tbd: true };
 
   const chaveSide = (name, score, win) => {
     const t = clubMeta(name);
@@ -86,7 +94,7 @@ const paintCompetition = () => {
       (row) => `
     <tr class="${row.us ? "us" : ""}">
       <td>${row.pos}º</td>
-      <td>${row.team}${row.us ? " · classificado" : ""}</td>
+      <td>${teamMark(row.team, row.us ? " · classificado" : "")}</td>
       <td>${row.j}</td>
       <td>${row.pts}</td>
       <td>${row.v}</td>
@@ -111,7 +119,7 @@ const paintCompetition = () => {
       (r) => `
     <li>
       <span>${r.date}</span>
-      <span>${r.opponent}${r.note ? ` · ${r.note}` : ""}</span>
+      <span>${teamMark(r.opponent, r.note ? ` · ${r.note}` : "")}</span>
       <span class="score">${r.score}</span>
       <span class="badge ${r.result}">${r.result}</span>
     </li>`
