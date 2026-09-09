@@ -47,6 +47,7 @@ Cache local: `data/copa-cache.json` (gitignored). Sem internet, cai no `data.js`
 - Público: `/#mvp`
 - Admin: `/?admin#mvp`
 - Código: `tteuw` (ou `MVP_ADMIN_PIN` no host)
+- **Iniciar 2h** abre a urna. **Pausar** / **Retomar** congelam o relógio. **Encerrar** fecha na hora e mantém os votos. **Recomeçar do 0** apaga tudo.
 - Votos em `data/votes.json` — **não** vão pro GitHub
 - Um voto por navegador, urna de 2 horas depois de **Iniciar**
 

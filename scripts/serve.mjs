@@ -203,7 +203,7 @@ async function handleMvp(req, res) {
   }
 
   const action = String(body.action || "");
-  const adminActions = ["auth", "start", "pause", "resume"];
+  const adminActions = ["auth", "start", "pause", "resume", "close", "reset"];
   if (adminActions.includes(action)) {
     if (String(body.pin || "") !== startPin) {
       sendJson(res, { error: "pin" }, 403, headers);
@@ -238,6 +238,19 @@ async function handleMvp(req, res) {
       }
       poll.paused = false;
       poll.endsAt = new Date(now.getTime() + poll.remainingMs).toISOString();
+    } else if (action === "close") {
+      if (!win.started || (!win.open && !win.paused)) {
+        sendJson(res, mvpPayload(poll, voter), 409, headers);
+        return;
+      }
+      poll.paused = false;
+      poll.remainingMs = 0;
+      poll.endsAt = now.toISOString();
+    } else if (action === "reset") {
+      store.polls[pollId] = emptyPoll();
+      saveVotes(store);
+      sendJson(res, mvpPayload(store.polls[pollId], voter), 200, headers);
+      return;
     }
     store.polls[pollId] = poll;
     saveVotes(store);

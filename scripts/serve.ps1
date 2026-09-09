@@ -193,7 +193,7 @@ function Handle-Mvp($ctx) {
   }
 
   $action = [string]$body.action
-  $adminActions = @("auth", "start", "pause", "resume")
+  $adminActions = @("auth", "start", "pause", "resume", "close", "reset")
   if ($adminActions -contains $action) {
     if ([string]$body.pin -ne $startPin) {
       Write-Json $ctx @{ error = "pin" } 403
@@ -228,6 +228,19 @@ function Handle-Mvp($ctx) {
       }
       $poll.paused = $false
       $poll.endsAt = $now.AddMilliseconds($poll.remainingMs).ToString("o")
+    } elseif ($action -eq "close") {
+      if (-not $win.started -or (-not $win.open -and -not $win.paused)) {
+        Write-Json $ctx (Mvp-Payload $poll $voter) 409
+        return
+      }
+      $poll.paused = $false
+      $poll.remainingMs = 0
+      $poll.endsAt = $now.ToString("o")
+    } elseif ($action -eq "reset") {
+      $store.polls[$pollId] = @{ ballots = @{}; startedAt = $null; endsAt = $null; paused = $false; remainingMs = 0 }
+      Save-Votes $store
+      Write-Json $ctx (Mvp-Payload $store.polls[$pollId] $voter)
+      return
     }
     $store.polls[$pollId] = $poll
     Save-Votes $store

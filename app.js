@@ -378,6 +378,8 @@ const renderMvp = () => {
   const startBtn = document.getElementById("mvp-start");
   const pauseBtn = document.getElementById("mvp-pause");
   const resumeBtn = document.getElementById("mvp-resume");
+  const closeBtn = document.getElementById("mvp-close");
+  const resetBtn = document.getElementById("mvp-reset");
   if (!grid || !status) return;
   const locked = mvpState.voted || !mvpState.open;
   if (clock) {
@@ -391,6 +393,8 @@ const renderMvp = () => {
     if (startBtn) startBtn.disabled = mvpState.started;
     if (pauseBtn) pauseBtn.disabled = !mvpState.open;
     if (resumeBtn) resumeBtn.disabled = !mvpState.paused || mvpState.remainingMs <= 0;
+    if (closeBtn) closeBtn.disabled = !mvpState.started || (!mvpState.open && !mvpState.paused);
+    if (resetBtn) resetBtn.disabled = false;
   }
   const ranked = [...mvpCandidates].sort(
     (a, b) => (Number(mvpState.totals[b.tag]) || 0) - (Number(mvpState.totals[a.tag]) || 0)
@@ -436,10 +440,11 @@ const applyMvpData = (data) => {
   mvpState.paused = Boolean(data.paused);
   mvpState.remainingMs = Number(data.remainingMs) || 0;
   mvpState.endsAt = data.endsAt || null;
-  if (data.voted && data.mine) {
-    mvpState.voted = true;
-    mvpState.mine = data.mine;
-    localStorage.setItem(mvpKey, data.mine);
+  if ("voted" in data) {
+    mvpState.voted = Boolean(data.voted);
+    mvpState.mine = data.mine || null;
+    if (mvpState.voted && mvpState.mine) localStorage.setItem(mvpKey, mvpState.mine);
+    else localStorage.removeItem(mvpKey);
   }
 };
 
@@ -518,6 +523,14 @@ document.getElementById("mvp-admin-login")?.addEventListener("submit", async (ev
 document.getElementById("mvp-start")?.addEventListener("click", () => postMvpAdmin("start").catch(() => {}));
 document.getElementById("mvp-pause")?.addEventListener("click", () => postMvpAdmin("pause").catch(() => {}));
 document.getElementById("mvp-resume")?.addEventListener("click", () => postMvpAdmin("resume").catch(() => {}));
+document.getElementById("mvp-close")?.addEventListener("click", () => {
+  if (!window.confirm("Encerrar a votação agora? Ninguém mais vota. Os votos ficam.")) return;
+  postMvpAdmin("close").catch(() => {});
+});
+document.getElementById("mvp-reset")?.addEventListener("click", () => {
+  if (!window.confirm("Recomeçar do zero? Apaga todos os votos e volta a urna pro começo.")) return;
+  postMvpAdmin("reset").catch(() => {});
+});
 
 document.getElementById("mvp-grid")?.addEventListener("click", async (event) => {
   const btn = event.target.closest("button[data-mvp]");
