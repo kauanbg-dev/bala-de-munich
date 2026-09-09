@@ -259,6 +259,11 @@ h1 {
   .crest-ring,
   .crest-tracer,
   .crest-sparks { animation: none; }
+  .player,
+  .player-photo {
+    transform: none;
+    transition: none;
+  }
 }
 
 .stat-strip {
@@ -596,10 +601,12 @@ h2 {
 .squad-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 14px;
+  gap: 16px;
+  padding: 6px 2px 20px;
 }
 
 .player {
+  --near: 0;
   background: var(--ink);
   border: 1px solid var(--line);
   padding: 0;
@@ -607,7 +614,18 @@ h2 {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transform:
+    translateY(calc(var(--near) * -12px))
+    scale(calc(1 + var(--near) * 0.045));
+  border-color: color-mix(in srgb, var(--gold) calc(var(--near) * 70%), var(--line));
+  box-shadow:
+    0 calc(var(--near) * 18px) calc(var(--near) * 32px) rgba(0, 0, 0, 0.35),
+    0 0 calc(var(--near) * 28px) rgba(211, 18, 42, calc(var(--near) * 0.28));
+  z-index: calc(1 + var(--near) * 8);
+  will-change: transform;
 }
+
+.player:hover { --near: 1; }
 
 .player-photo {
   width: 100%;
@@ -616,6 +634,8 @@ h2 {
   object-position: center;
   display: block;
   background: #000;
+  transform: scale(calc(1 + var(--near) * 0.08));
+  transition: transform 0.2s ease;
 }
 
 .player-photo.fallback {
@@ -773,18 +793,7 @@ h2 {
 
 .score { font-family: var(--font-display); font-size: 1.6rem; }
 
-.rules {
-  display: grid;
-  gap: 12px;
-  padding-left: 22px;
-  color: var(--mute);
-  max-width: 62ch;
-}
-
-.rules li { padding-left: 6px; }
-
-.cta {
-  margin: 20px 28px 80px;
+.sociais-panel {
   padding: 48px 32px;
   text-align: center;
   background:
@@ -793,9 +802,9 @@ h2 {
   border: 1px solid var(--line);
 }
 
-.cta h2 { font-size: 3.4rem; }
-.cta p { color: var(--mute); margin: 8px 0 22px; }
-.cta .hero-actions { justify-content: center; }
+.sociais-panel .hero-actions { justify-content: center; }
+
+.section-sociais { padding-bottom: 88px; }
 
 .section-chave {
   max-width: 1280px;

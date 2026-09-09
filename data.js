@@ -163,11 +163,4 @@ window.CLUB = {
     match: "Quartas · Bala de Munich 3–1 Raposo FC",
     durationHours: 2,
   },
-  houseRules: [
-    "Entra no Discord 10 minutos antes. Sem ghost, sem drama.",
-    "Capitão escolhe o XI. Recusar posição sem motivo é banco.",
-    "Comunicação curta: marca, cobre, sobe. Microfone aberto, ego fechado.",
-    "Gol é de todo mundo. Replay só se for absurdo.",
-    "Perdeu? Manda o next. Ganhou? Mesma coisa.",
-  ],
 };

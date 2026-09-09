@@ -190,6 +190,24 @@ document.getElementById("squad").innerHTML = club.squad
   )
   .join("");
 
+const squadGrid = document.getElementById("squad");
+const squadCards = [...squadGrid.querySelectorAll(".player")];
+const setSquadNear = (card, value) => card.style.setProperty("--near", value);
+const resetSquadNear = () => squadCards.forEach((card) => setSquadNear(card, "0"));
+if (squadGrid && squadCards.length && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+  squadGrid.addEventListener("pointermove", (event) => {
+    squadCards.forEach((card) => {
+      const box = card.getBoundingClientRect();
+      const dx = event.clientX - (box.left + box.width / 2);
+      const dy = event.clientY - (box.top + box.height / 2);
+      const falloff = Math.max(box.width, box.height) * 0.95;
+      const near = Math.max(0, 1 - Math.hypot(dx, dy) / falloff);
+      setSquadNear(card, near.toFixed(3));
+    });
+  });
+  squadGrid.addEventListener("pointerleave", resetSquadNear);
+}
+
 document.getElementById("pitch").innerHTML = club.formation.slots
   .map((slot) => {
     const kind = slot.pos === "GOL" ? "gk" : slot.pos === "TEC" ? "coach" : "";
@@ -211,10 +229,6 @@ document.getElementById("results").innerHTML = club.results
       <span class="badge ${r.result}">${r.result}</span>
     </li>`
   )
-  .join("");
-
-document.getElementById("rules").innerHTML = club.houseRules
-  .map((rule) => `<li>${rule}</li>`)
   .join("");
 
 const mvpPoll = club.mvp;
