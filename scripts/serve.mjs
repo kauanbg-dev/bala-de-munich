@@ -6,7 +6,8 @@ import crypto from "node:crypto";
 import { getCopaLive, startCopaSync } from "./copa.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const votesFile = path.join(root, "data", "votes.json");
+const dataDir = process.env.DATA_DIR || path.join(root, "data");
+const votesFile = path.join(dataDir, "votes.json");
 const allow = [
   "TTeuw",
   "Brkk",
@@ -277,6 +278,10 @@ function safeFile(urlPath) {
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
+    if (url.pathname === "/healthz") {
+      sendJson(res, { ok: true });
+      return;
+    }
     if (url.pathname === "/api/mvp") {
       await handleMvp(req, res);
       return;
@@ -292,7 +297,11 @@ const server = http.createServer(async (req, res) => {
       return;
     }
     const ext = path.extname(file).toLowerCase();
-    res.writeHead(200, { "Content-Type": mime[ext] || "application/octet-stream" });
+    const headers = { "Content-Type": mime[ext] || "application/octet-stream" };
+    if ([".css", ".js", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".ico"].includes(ext)) {
+      headers["Cache-Control"] = "public, max-age=3600";
+    }
+    res.writeHead(200, headers);
     fs.createReadStream(file).pipe(res);
   } catch (err) {
     console.error(err);

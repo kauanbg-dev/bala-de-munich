@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: bala-de-munich
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: MVP_ADMIN_PIN
+        value: tteuw
