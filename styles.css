@@ -166,8 +166,8 @@ h1 {
 
 .crest-ring {
   position: absolute;
-  width: 300px;
-  height: 300px;
+  width: min(300px, 86vw);
+  height: min(300px, 86vw);
   border: 2px solid rgba(212, 177, 90, 0.55);
   border-radius: 50%;
   pointer-events: none;
@@ -175,10 +175,47 @@ h1 {
 }
 
 .crest-ring-late {
-  width: 260px;
-  height: 260px;
+  width: min(260px, 74vw);
+  height: min(260px, 74vw);
   border-color: rgba(211, 18, 42, 0.5);
   animation-delay: 0.07s;
+}
+
+.crest-tracer {
+  position: absolute;
+  z-index: 3;
+  width: 3px;
+  height: 88px;
+  left: 50%;
+  bottom: 54%;
+  margin-left: -1.5px;
+  border-radius: 999px;
+  pointer-events: none;
+  background: linear-gradient(180deg, #fff 0%, var(--gold) 40%, rgba(211, 18, 42, 0) 100%);
+  filter: drop-shadow(0 0 8px rgba(212, 177, 90, 0.9));
+  transform-origin: bottom center;
+  opacity: 0;
+  animation: crest-tracer 4.2s ease-out infinite;
+}
+
+.crest-sparks {
+  position: absolute;
+  z-index: 3;
+  width: 5px;
+  height: 5px;
+  left: 50%;
+  top: 42%;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: #fff6d8;
+  box-shadow:
+    16px -20px 0 0 var(--gold),
+    -14px -16px 0 0 var(--red),
+    6px -34px 0 1px #fff,
+    -20px -6px 0 0 var(--gold);
+  opacity: 0;
+  animation: crest-sparks 4.2s ease-out infinite;
 }
 
 @keyframes crest-recoil {
@@ -202,10 +239,26 @@ h1 {
   100% { transform: scale(1.12); opacity: 0; }
 }
 
+@keyframes crest-tracer {
+  0%, 11% { opacity: 0; transform: translateY(10px) scaleY(0.15); }
+  13% { opacity: 1; transform: translateY(-24px) scaleY(1.15); }
+  22% { opacity: 0; transform: translateY(-86px) scaleY(0.55); }
+  100% { opacity: 0; transform: translateY(-86px) scaleY(0.55); }
+}
+
+@keyframes crest-sparks {
+  0%, 11% { opacity: 0; transform: scale(0.3); }
+  13% { opacity: 1; transform: scale(1) translate(3px, -6px); }
+  24% { opacity: 0; transform: scale(0.55) translate(16px, -26px); }
+  100% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .crest-wrap img,
   .crest-flash,
-  .crest-ring { animation: none; }
+  .crest-ring,
+  .crest-tracer,
+  .crest-sparks { animation: none; }
 }
 
 .stat-strip {
