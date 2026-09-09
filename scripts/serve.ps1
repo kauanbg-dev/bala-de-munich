@@ -1,4 +1,4 @@
-$root = "C:\Users\Scanner\bala-de-munich"
+$root = Split-Path -Parent $PSScriptRoot
 $votesFile = Join-Path $root "data\votes.json"
 $allow = @(
   "TTeuw", "Brkk", "DG", "Davasco", "Nebacetin", "Bluue",
