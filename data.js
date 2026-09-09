@@ -117,7 +117,7 @@ window.CLUB = {
     { date: "Grupo C", opponent: "Kosky Korp", score: "3–0", result: "W", note: "Série" },
   ],
   clubs: {
-    "Bala de Munich": { owner: "TTeuw & Brkk", crest: "assets/crest.jpg", us: true },
+    "Bala de Munich": { owner: "TTeuw & Brkk", crest: "assets/crest.png", us: true },
     "Raposo FC": { owner: "Fontinnele", crest: "https://api.copastreamers.com.br/assets/times/raposo-fc.png" },
     "Apeludos FC": { owner: "Nobru", crest: "https://api.copastreamers.com.br/assets/times/apeludos-fc.png" },
     "Equipe X": { owner: "Bak & Thurzin", crest: "https://api.copastreamers.com.br/assets/times/bak-thurzin.png" },

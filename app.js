@@ -171,7 +171,7 @@ document.getElementById("squad").innerHTML = club.squad
   .map(
     (p) => `
     <article class="player${p.photo ? " has-photo" : ""}">
-      ${p.photo ? `<img class="player-photo" src="${p.photo}" alt="${p.tag}" />` : `<img class="player-photo fallback" src="assets/crest.jpg" alt="" />`}
+      ${p.photo ? `<img class="player-photo" src="${p.photo}" alt="${p.tag}" />` : `<img class="player-photo fallback" src="assets/crest.png" alt="" />`}
       <div class="player-body">
       <div class="num">${p.number === 0 ? "C" : String(p.number).padStart(2, "0")}</div>
       ${p.rating ? `<div class="ovr">${p.rating}</div>` : ""}
@@ -309,7 +309,7 @@ const renderMvp = () => {
     .map((p) => {
       const n = Number(mvpState.totals[p.tag]) || 0;
       const pct = mvpPct(p.tag);
-      const photo = p.photo || "assets/crest.jpg";
+      const photo = p.photo || "assets/crest.png";
       const mine = mvpState.mine === p.tag;
       return `
         <article class="mvp-card${mine ? " is-mine" : ""}">
