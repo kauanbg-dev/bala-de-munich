@@ -1321,6 +1321,12 @@ footer {
   }
   .topbar nav.is-open { display: flex; }
   .topbar { flex-wrap: wrap; }
+  .mvp-card.is-lead {
+    grid-column: 1 / -1;
+    grid-template-columns: 88px 1fr;
+  }
+  .mvp-card.is-lead img { width: 88px; height: 88px; }
+  .mvp-badge { font-size: 0.95rem; }
   .hero-grid, .match-band, .stat-strip, .results li, .feed, .leaders {
     grid-template-columns: 1fr;
   }

@@ -14,7 +14,7 @@ window.CLUB = {
   designer: "https://www.instagram.com/santoz.design/",
   creator: "https://www.instagram.com/bgkauan_/",
   source: "https://copastreamers.com.br/times/tteuw-brkk",
-  president: "TTeuw",
+  president: "tteuw",
   vice: "Brkk",
   stats: {
     groupPos: "2º",
@@ -56,13 +56,13 @@ window.CLUB = {
     { tag: "DG", pos: "ATA", goals: 19, assists: 3, games: 20 },
     { tag: "Davasco", pos: "ATA", goals: 11, assists: 3, games: 18 },
     { tag: "Brkk", pos: "MEI", goals: 3, assists: 12, games: 20 },
-    { tag: "TTeuw", pos: "MEI", goals: 1, assists: 4, games: 21 },
+    { tag: "tteuw", pos: "MEI", goals: 1, assists: 4, games: 21 },
     { tag: "Nebacetin", pos: "ZAG", goals: 1, assists: 2, games: 21 },
     { tag: "Beliene", pos: "MEI", goals: 1, assists: 0, games: 8 },
   ],
   assists: [
     { tag: "Brkk", pos: "MEI", assists: 12, goals: 3, games: 20 },
-    { tag: "TTeuw", pos: "MEI", assists: 4, goals: 1, games: 21 },
+    { tag: "tteuw", pos: "MEI", assists: 4, goals: 1, games: 21 },
     { tag: "DG", pos: "ATA", assists: 3, goals: 19, games: 20 },
     { tag: "Davasco", pos: "ATA", assists: 3, goals: 11, games: 18 },
     { tag: "Nebacetin", pos: "ZAG", assists: 2, goals: 1, games: 21 },
@@ -81,7 +81,7 @@ window.CLUB = {
     { src: "assets/feed/jogador.jpg", alt: "Meme Bala de Munich vs Radiantas", caption: "Rivalidade" },
   ],
   squad: [
-    { tag: "TTeuw", name: "Presidente", pos: "MEI", role: "Presidente", rating: "6,9", games: 21, goals: 1, assists: 4, number: 11, live: "https://kick.com/tteuw", photo: "assets/players/tteuw.jpg" },
+    { tag: "tteuw", name: "Presidente", pos: "MEI", role: "Presidente", rating: "6,9", games: 21, goals: 1, assists: 4, number: 11, live: "https://kick.com/tteuw", photo: "assets/players/tteuw.jpg" },
     { tag: "Brkk", name: "Vice", pos: "MEI", role: "Rei das assistências", rating: "", games: 20, goals: 3, assists: 12, number: 10, live: "https://kick.com/brkk", photo: "assets/players/brkk.jpg" },
     { tag: "Jmdeck", name: "Elenco", pos: "MEI", role: "Elenco", rating: "", games: 0, goals: 0, assists: 0, number: 7, live: "https://www.twitch.tv/jmdeck", photo: "assets/players/jmdeck.jpg" },
     { tag: "DG", name: "Artilheiro", pos: "ATA", role: "Artilheiro da edição", rating: "7,4", games: 20, goals: 19, assists: 3, number: 9, live: "https://kick.com/dgziniwnl", photo: "assets/players/dg.jpg" },
@@ -102,7 +102,7 @@ window.CLUB = {
     slots: [
       { pos: "ATA", x: 36, y: 12, tag: "DG" },
       { pos: "ATA", x: 64, y: 12, tag: "Davasco" },
-      { pos: "MEI", x: 18, y: 28, tag: "TTeuw" },
+      { pos: "MEI", x: 18, y: 28, tag: "tteuw" },
       { pos: "MEI", x: 50, y: 24, tag: "Brkk" },
       { pos: "MEI", x: 82, y: 28, tag: "Jm" },
       { pos: "VOL", x: 36, y: 42, tag: "Gordin" },
@@ -122,7 +122,7 @@ window.CLUB = {
     { date: "Grupo C", opponent: "Kosky Korp", score: "3–0", result: "W", note: "Série" },
   ],
   clubs: {
-    "Bala de Munich": { owner: "TTeuw & Brkk", crest: "assets/crest.png", us: true },
+    "Bala de Munich": { owner: "tteuw & Brkk", crest: "assets/crest.png", us: true },
     "Raposo FC": { owner: "Fontinnele", crest: "assets/clubs/raposo-fc.png" },
     "Apeludos FC": { owner: "Nobru", crest: "assets/clubs/apeludos-fc.png" },
     "Equipe X": { owner: "Bak & Thurzin", crest: "assets/clubs/equipe-x.png" },

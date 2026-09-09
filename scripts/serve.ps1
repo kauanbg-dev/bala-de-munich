@@ -1,7 +1,7 @@
 $root = Split-Path -Parent $PSScriptRoot
 $votesFile = Join-Path $root "data\votes.json"
 $allow = @(
-  "TTeuw", "Brkk", "DG", "Davasco", "Nebacetin", "Bluue",
+  "tteuw", "Brkk", "DG", "Davasco", "Nebacetin", "Bluue",
   "Pedro Sem Freio", "luccaf14", "Gordin", "Baraka", "Vini Show",
   "Jmdeck", "Beliene", "2Tclipes"
 )

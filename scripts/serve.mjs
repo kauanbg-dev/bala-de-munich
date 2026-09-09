@@ -9,7 +9,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = process.env.DATA_DIR || path.join(root, "data");
 const votesFile = path.join(dataDir, "votes.json");
 const allow = [
-  "TTeuw",
+  "tteuw",
   "Brkk",
   "DG",
   "Davasco",
