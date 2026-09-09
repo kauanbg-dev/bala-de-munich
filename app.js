@@ -236,7 +236,7 @@ const mvpKey = `mvp-vote:${mvpPoll.id}`;
 const mvpCandidates = club.squad.filter((p) => p.pos !== "—");
 const mvpCopy = document.getElementById("mvp-copy");
 if (mvpCopy) {
-  mvpCopy.textContent = `${mvpPoll.match}. Um voto por pessoa. Só o Bala abre, pausa e retoma a urna.`;
+  mvpCopy.textContent = `${mvpPoll.match}. Um voto por pessoa. Duração da votação: ${mvpPoll.durationHours} horas.`;
 }
 
 const asVoteMap = (totals) => {
@@ -309,7 +309,7 @@ const renderMvp = () => {
   );
   const plural = mvpState.total === 1 ? "voto" : "votos";
   if (!mvpState.started) {
-    status.textContent = "Aguardando o Bala abrir a urna. Dois horas no relógio, um voto por pessoa.";
+    status.textContent = `Aguardando o Bala abrir a urna. Duração da votação: ${mvpPoll.durationHours} horas. Um voto por pessoa.`;
   } else if (mvpState.paused) {
     status.textContent = `Votação pausada. ${mvpState.total} ${plural} até agora.`;
   } else if (mvpState.voted) {
