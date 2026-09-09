@@ -137,6 +137,7 @@ h1 {
   position: relative;
   display: grid;
   place-items: center;
+  isolation: isolate;
 }
 
 .crest-wrap img {
@@ -146,18 +147,66 @@ h1 {
   z-index: 1;
   image-rendering: auto;
   filter: drop-shadow(0 24px 40px rgba(211, 18, 42, 0.35));
+  animation: crest-recoil 4.2s ease-in-out infinite;
+}
+
+.crest-flash {
+  position: absolute;
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, #fff6d8 0 8%, rgba(212, 177, 90, 0.7) 22%, rgba(211, 18, 42, 0.35) 42%, transparent 68%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: crest-muzzle 4.2s ease-out infinite;
 }
 
 .crest-ring {
   position: absolute;
-  width: 320px;
-  height: 320px;
-  border: 1px dashed var(--gold-dim);
+  width: 300px;
+  height: 300px;
+  border: 2px solid rgba(212, 177, 90, 0.55);
   border-radius: 50%;
-  animation: spin 28s linear infinite;
+  pointer-events: none;
+  animation: crest-shock 4.2s ease-out infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+.crest-ring-late {
+  width: 260px;
+  height: 260px;
+  border-color: rgba(211, 18, 42, 0.5);
+  animation-delay: 0.07s;
+}
+
+@keyframes crest-recoil {
+  0%, 10%, 100% { transform: translate(0, 0) rotate(0deg); }
+  12% { transform: translate(-7px, 5px) rotate(-1.6deg); }
+  16% { transform: translate(3px, -2px) rotate(0.5deg); }
+  22% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes crest-muzzle {
+  0%, 10% { opacity: 0; transform: scale(0.35); }
+  12% { opacity: 0.95; transform: scale(1.08); }
+  18% { opacity: 0.28; transform: scale(1.35); }
+  28%, 100% { opacity: 0; transform: scale(1.55); }
+}
+
+@keyframes crest-shock {
+  0%, 10% { transform: scale(0.48); opacity: 0; }
+  12% { opacity: 0.8; }
+  36% { transform: scale(1.12); opacity: 0; }
+  100% { transform: scale(1.12); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crest-wrap img,
+  .crest-flash,
+  .crest-ring { animation: none; }
+}
 
 .stat-strip {
   margin-top: 48px;
