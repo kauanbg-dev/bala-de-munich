@@ -86,6 +86,11 @@ code { color: var(--gold); font-size: 0.9em; }
 .btn-red { background: var(--red); color: white; }
 .btn-ghost { border-color: var(--line); color: var(--paper); }
 
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+}
+
 .hero {
   padding: 56px 28px 32px;
   max-width: 1120px;
@@ -492,19 +497,57 @@ h1 {
 }
 
 .mvp-admin {
-  max-width: 640px;
+  max-width: 720px;
   margin: 0 auto 28px;
-  padding: 16px;
+  padding: 18px;
   border: 1px solid var(--line);
   background: var(--card);
 }
 
 .mvp-admin-login,
 .mvp-admin-ops {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  justify-content: center;
+  align-items: stretch;
+}
+
+.mvp-admin-login {
+  grid-template-columns: 1fr auto;
+}
+
+.mvp-admin-ops .btn {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+.mvp-admin-ops .btn-gold {
+  background: var(--gold);
+  color: #1a1308;
+  border-color: var(--gold);
+}
+
+.mvp-admin-ops .btn-pause,
+.mvp-admin-ops .btn-close {
+  background: #241c22;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+
+.mvp-admin-ops .btn-red,
+.mvp-admin-ops .btn-reset {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+}
+
+.mvp-admin-ops .btn:disabled {
+  background: #2b2429;
+  border-color: #5c5458;
+  color: #cbbfb3;
 }
 
 .mvp-admin-login input {
@@ -546,6 +589,92 @@ h1 {
 }
 
 .mvp-card.is-mine { border-color: var(--gold); }
+
+.mvp-card.is-lead {
+  position: relative;
+  grid-column: span 2;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  padding: 16px 18px 18px;
+  border-color: var(--gold);
+  background:
+    linear-gradient(180deg, rgba(212, 177, 90, 0.16), rgba(22, 18, 23, 0.96));
+  box-shadow:
+    0 0 0 1px rgba(212, 177, 90, 0.4),
+    0 16px 36px rgba(211, 18, 42, 0.28);
+  overflow: hidden;
+  animation: mvp-lead-pulse 2.6s ease-in-out infinite;
+  z-index: 1;
+}
+
+.mvp-card.is-winner {
+  animation: mvp-win-glow 2.2s ease-in-out infinite;
+}
+
+.mvp-card.is-lead::before {
+  content: "";
+  position: absolute;
+  inset: -40% -20%;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 244, 210, 0.22) 50%, transparent 65%);
+  animation: mvp-shine 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.mvp-badge {
+  grid-column: 1 / -1;
+  justify-self: start;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1a1308;
+  background: var(--gold);
+  padding: 4px 10px 2px;
+  border-radius: 4px;
+  animation: mvp-badge-pop 1.8s ease-in-out infinite;
+}
+
+.mvp-badge.is-lead {
+  background: var(--red);
+  color: #fff;
+}
+
+.mvp-card.is-lead img {
+  width: 120px;
+  height: 120px;
+}
+
+.mvp-card.is-lead b { font-size: 1.35rem; }
+
+@keyframes mvp-lead-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+}
+
+@keyframes mvp-win-glow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(212, 177, 90, 0.45), 0 16px 36px rgba(211, 18, 42, 0.28); }
+  50% { box-shadow: 0 0 0 2px rgba(212, 177, 90, 0.9), 0 22px 48px rgba(211, 18, 42, 0.5), 0 0 28px rgba(212, 177, 90, 0.35); }
+}
+
+@keyframes mvp-shine {
+  0% { transform: translateX(-30%); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translateX(30%); opacity: 0; }
+}
+
+@keyframes mvp-badge-pop {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mvp-card.is-lead,
+  .mvp-card.is-winner,
+  .mvp-card.is-lead::before,
+  .mvp-badge {
+    animation: none;
+  }
+}
 
 .mvp-card img {
   width: 72px;

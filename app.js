@@ -399,6 +399,13 @@ const renderMvp = () => {
   const ranked = [...mvpCandidates].sort(
     (a, b) => (Number(mvpState.totals[b.tag]) || 0) - (Number(mvpState.totals[a.tag]) || 0)
   );
+  const topVotes = Number(mvpState.totals[ranked[0]?.tag]) || 0;
+  const uniqueLead =
+    topVotes > 0 &&
+    ranked.filter((p) => (Number(mvpState.totals[p.tag]) || 0) === topVotes).length === 1
+      ? ranked[0]
+      : null;
+  const votingOver = mvpState.started && !mvpState.open && !mvpState.paused;
   const plural = mvpState.total === 1 ? "voto" : "votos";
   if (!mvpState.started) {
     status.textContent = `Aguardando o Bala abrir a urna. Duração da votação: ${mvpPoll.durationHours} horas. Um voto por pessoa.`;
@@ -408,6 +415,8 @@ const renderMvp = () => {
     status.textContent = `Voto registrado em ${mvpState.mine}. ${mvpState.total} ${plural} no total.`;
   } else if (mvpState.open) {
     status.textContent = `${mvpState.total} ${plural} até agora. Escolhe um e confirma.`;
+  } else if (uniqueLead) {
+    status.textContent = `Votação encerrada. Vencedor: ${uniqueLead.tag}. ${mvpState.total} ${plural} no total.`;
   } else {
     status.textContent = `Votação encerrada. ${mvpState.total} ${plural} no total.`;
   }
@@ -417,8 +426,16 @@ const renderMvp = () => {
       const pct = mvpPct(p.tag);
       const photo = p.photo || "assets/crest.png";
       const mine = mvpState.mine === p.tag;
+      const lead = uniqueLead && uniqueLead.tag === p.tag;
+      const winner = lead && votingOver;
+      const badge = winner
+        ? `<span class="mvp-badge">Vencedor da votação de MVP</span>`
+        : lead
+          ? `<span class="mvp-badge is-lead">Na frente</span>`
+          : "";
       return `
-        <article class="mvp-card${mine ? " is-mine" : ""}">
+        <article class="mvp-card${mine ? " is-mine" : ""}${lead ? " is-lead" : ""}${winner ? " is-winner" : ""}">
+          ${badge}
           <img src="${photo}" alt="" class="${p.photo ? "" : "fallback"}" />
           <div>
             <b>${p.tag}</b>
