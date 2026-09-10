@@ -65,13 +65,16 @@ Tabela, chave, última/próxima série, artilharia e assistências vêm do [copa
 
 Os amistosos saem da página `/partidas` da Copa, que não tem API: o parser lê o payload do Next embutido no HTML e fica só com os jogos do Bala.
 
-Três cortes acontecem depois disso:
+Dois cortes acontecem depois disso:
 
-- **Jogo anterior a `COPA_AMISTOSOS_DESDE`** é descartado. A contagem recomeçou em 10/09/2026 porque o acervo antigo misturava série oficial com treino. Pra zerar de novo, muda a constante `FRIENDLIES_SINCE` em `api/_lib/copa.mjs` ou define a variável de ambiente.
+- **Jogo anterior a `COPA_AMISTOSOS_DESDE`** é descartado. O corte está em 10/09/2026: o que é mais velho vive no `friendlies` do `data.js`, conferido na mão. Pra mudar, é a constante `FRIENDLIES_SINCE` em `api/_lib/copa.mjs` ou a variável de ambiente.
 - **Jogo quitado no meio** é descartado: fica sempre 0–0 e não diz nada sobre o time.
-- **Noite de confronto oficial** é descartada. O acervo da Copa é o histórico bruto do EA FC e as séries oficiais entram nele misturadas com os amistosos — dá pra provar reconstruindo Botafofo 3x1 Osempic e Narizes 3x2 Cobra a partir do acervo, que batem exatamente com o placar oficial das quartas. Como nada no dado separa um do outro, no dia em que o Bala tinha confronto marcado, jogo contra aquele adversário não entra. A série oficial já aparece na chave e nos resultados.
+
+O `paintFriendlies` mostra o que veio ao vivo e emenda o histórico do `data.js` embaixo. Como o ao vivo só traz jogo depois do corte, a ordem sai certa sem precisar reordenar.
 
 Madrugada conta como a noite anterior (corte às 5h): quem jogou 00:21 de quarta jogou na terça à noite.
+
+Um cuidado pro futuro: o acervo da Copa é o histórico bruto do EA FC, e em alguns times a série oficial aparece lá junto dos amistosos — dá pra ver reconstruindo Botafofo 3x1 Osempic e Narizes 3x2 Cobra, que batem com o placar oficial das quartas. Nas quartas do Bala isso não aconteceu (os jogos daquela noite não fecham o 3x1 oficial), então nada é filtrado. Vale reconferir depois da semifinal.
 
 Se a página mudar de formato, a seção mantém o último acervo em cache e a Copa continua atualizando normalmente.
 

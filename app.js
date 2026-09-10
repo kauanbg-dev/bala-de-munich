@@ -141,6 +141,9 @@ const paintCompetition = () => {
 
 let amiExpanded = false;
 const AMI_PREVIEW = 6;
+// O histórico do data.js é escrito na mão e nunca vem da Copa. Guardamos ele
+// aqui porque o sync ao vivo sobrescreve club.friendlies a cada 60s.
+const AMI_HISTORY = Array.isArray(club.friendlies) ? club.friendlies.slice() : [];
 
 function paintFriendlies(clubMeta) {
   const grid = document.getElementById("ami-grid");
@@ -340,7 +343,9 @@ const applyCopaPayload = (live) => {
     club.bracket = live.bracket;
   }
   if (live.clubs) club.clubs = { ...club.clubs, ...live.clubs };
-  if (Array.isArray(live.friendlies)) club.friendlies = live.friendlies;
+  // Ao vivo só traz jogo depois da data de corte, então ele sempre vem antes do
+  // histórico: dá pra emendar sem reordenar nada.
+  if (Array.isArray(live.friendlies)) club.friendlies = [...live.friendlies, ...AMI_HISTORY];
   club.results = mergeResults(club.results, live.results);
   club.scorers = mergeStatRows(club.scorers, live.scorers);
   club.assists = mergeStatRows(club.assists, live.assists);

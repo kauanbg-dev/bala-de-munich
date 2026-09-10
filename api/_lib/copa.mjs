@@ -743,8 +743,9 @@ function toFriendly(match) {
 
   const us = Number(ours.gols) || 0;
   const them = Number(theirs.gols) || 0;
+  // Jogador anônimo vem com nome "-" na base da EA: sem nome, não vira crédito.
   const scorers = (ours.escalacao || [])
-    .filter((p) => Number(p.gols) > 0)
+    .filter((p) => Number(p.gols) > 0 && norm(p.nome))
     .map((p) => ({ name: canonPlayer(p.nome) || p.nome, goals: Number(p.gols) }))
     .sort((a, b) => b.goals - a.goals);
 
@@ -763,31 +764,6 @@ function toFriendly(match) {
     star: ours.craque ? canonPlayer(ours.craque) || ours.craque : null,
     scorers,
   };
-}
-
-// O acervo da Copa é o histórico bruto do EA FC: as séries oficiais entram nele
-// junto com os amistosos. Dá pra provar reconstruindo Botafofo 3x1 Osempic e
-// Narizes 3x2 Cobra a partir dele — dá exatamente o placar oficial das quartas.
-// Como não existe marca separando um do outro, o corte é por noite: no dia em
-// que o Bala tinha confronto oficial, jogo contra aquele adversário fica fora.
-function officialNights(e2) {
-  const keys = new Set();
-  const add = (iso, slugA, slugB) => {
-    if (!iso) return;
-    if (slugA !== TEAM_SLUG && slugB !== TEAM_SLUG) return;
-    const night = sessionNight(iso);
-    const opponent = nameOf(slugA === TEAM_SLUG ? slugB : slugA);
-    if (night && opponent) keys.add(`${night}|${opponent}`);
-  };
-  for (const p of e2?.partidas || []) add(p.quando, p.time_a, p.time_b);
-  for (const c of e2?.confrontos || []) add(c.quando, c.lado_a, c.lado_b);
-  return keys;
-}
-
-function dropOfficial(list, e2) {
-  const keys = officialNights(e2);
-  if (!keys.size) return list;
-  return list.filter((m) => !keys.has(`${sessionNight(m.iso)}|${m.opponent}`));
 }
 
 async function fetchFriendlies() {
@@ -812,14 +788,13 @@ function usefulLive(payload) {
 
 async function buildLive() {
   // Amistoso quebrado não pode derrubar a Copa: por isso o catch separado.
-  const [e2, acervo] = await Promise.all([
+  const [e2, friendlies] = await Promise.all([
     fetchJson(`${BASE}/api/e2-dados`),
     fetchFriendlies().catch((err) => {
       console.error("amistosos sync", err.message);
       return null;
     }),
   ]);
-  const friendlies = acervo ? dropOfficial(acervo, e2) : null;
   const groupTable = computeGroupC(e2.partidas);
   const parsedBracket = bracketFromConfrontos(e2.confrontos);
   const series = parsedBracket ? balaSeries(parsedBracket.bracket) : {};
