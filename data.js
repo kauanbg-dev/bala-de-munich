@@ -95,7 +95,7 @@ window.CLUB = {
     { tag: "Patrick11ns", name: "Coach", pos: "—", role: "Coach", rating: "", games: 0, goals: 0, assists: 0, number: 0, live: "https://kick.com/patrick11ns", photo: "assets/players/patrick.jpg" },
     { tag: "Beliene", name: "Meio", pos: "MEI", role: "", rating: "", games: 8, goals: 1, assists: 0, number: 21, live: "https://kick.com/Beliene_r", photo: "assets/players/beliene.jpg?v=3" },
     { tag: "Vini Show", name: "Goleiro", pos: "GOL", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 12, live: "", photo: "assets/players/vini-show.jpg" },
-    { tag: "2Tclipes", name: "Ataque", pos: "ATA", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 13, live: "https://kick.com/2t-clipes" },
+    { tag: "2Tclipes", name: "Ataque", pos: "ATA", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 13, live: "https://kick.com/2t-clipes", photo: "assets/players/2tclipes.jpg?v=1" },
   ],
   formation: {
     name: "3-5-2 · três zagueiros, sem laterais",
@@ -168,7 +168,7 @@ window.CLUB = {
   mvp: {
     id: "semifinal-e2",
     title: "MVP da partida",
-    match: "Semifinal · Bala de Munich",
+    match: "MVP do jogo contra o Raposo FC",
     durationHours: 2,
   },
 };

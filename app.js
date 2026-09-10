@@ -41,6 +41,7 @@ const paintCompetition = () => {
     <strong>vs ${teamMark(club.nextMatch.opponent)}</strong>
     <p>${club.nextMatch.competition} · ${club.nextMatch.date}</p>
   `;
+  paintMvpCopy();
 
   const chaveSide = (name, score, win) => {
     const t = clubMeta(name);
@@ -324,9 +325,44 @@ document.getElementById("pitch").innerHTML = club.formation.slots
 const mvpPoll = club.mvp;
 const mvpKey = `mvp-vote:${mvpPoll.id}`;
 const mvpCandidates = club.squad.filter((p) => p.pos !== "—");
-const mvpCopy = document.getElementById("mvp-copy");
-if (mvpCopy) {
-  mvpCopy.textContent = `${mvpPoll.match}. Duração da votação: ${mvpPoll.durationHours} horas.`;
+
+function isNamedTeam(name) {
+  return Boolean(name) && name !== "A definir";
+}
+
+function mvpMatchup() {
+  const next = club.nextMatch || {};
+  const last = club.lastMatch || {};
+  if (isNamedTeam(next.opponent)) {
+    return {
+      opponent: next.opponent,
+      round: String(next.competition || "").split("·")[0].trim(),
+    };
+  }
+  if (isNamedTeam(last.opponent)) {
+    return {
+      opponent: last.opponent,
+      round: String(last.note || "").split("·")[0].trim(),
+    };
+  }
+  return { opponent: null, round: "" };
+}
+
+function mvpMatchLine() {
+  const { opponent, round } = mvpMatchup();
+  const hours = club.mvp?.durationHours || 2;
+  if (!opponent) {
+    return club.mvp?.match
+      ? `${club.mvp.match}. Duração da votação: ${hours} horas.`
+      : `Votação de MVP. Adversário a definir. Duração da votação: ${hours} horas.`;
+  }
+  const roundBit = round ? `${round} · ` : "";
+  return `${roundBit}Votação de MVP do jogo contra o ${opponent}. Duração da votação: ${hours} horas.`;
+}
+
+function paintMvpCopy() {
+  const el = document.getElementById("mvp-copy");
+  if (el) el.textContent = mvpMatchLine();
 }
 
 const asVoteMap = (totals) => {
@@ -406,19 +442,24 @@ const renderMvp = () => {
     if (closeBtn) closeBtn.disabled = !mvpState.started || (!mvpState.open && !mvpState.paused);
     if (resetBtn) resetBtn.disabled = false;
   }
-  const ranked = [...mvpCandidates].sort((a, b) => {
-    const voteDiff = mvpVotesOf(b.tag) - mvpVotesOf(a.tag);
-    if (voteDiff) return voteDiff;
-    const rateDiff = mvpRatingOf(b) - mvpRatingOf(a);
-    if (rateDiff) return rateDiff;
-    return String(a.tag).localeCompare(String(b.tag), "pt-BR");
-  });
+  const ranked = mvpState.started
+    ? [...mvpCandidates].sort((a, b) => {
+        const voteDiff = mvpVotesOf(b.tag) - mvpVotesOf(a.tag);
+        if (voteDiff) return voteDiff;
+        const rateDiff = mvpRatingOf(b) - mvpRatingOf(a);
+        if (rateDiff) return rateDiff;
+        return String(a.tag).localeCompare(String(b.tag), "pt-BR");
+      })
+    : [...mvpCandidates];
   const topVotes = mvpVotesOf(ranked[0]?.tag);
-  const uniqueLead = topVotes > 0 ? ranked[0] : null;
+  const uniqueLead = mvpState.started && topVotes > 0 ? ranked[0] : null;
   const votingOver = mvpState.started && !mvpState.open && !mvpState.paused;
   const plural = mvpState.total === 1 ? "voto" : "votos";
   if (!mvpState.started) {
-    status.textContent = `Aguardando o Bala abrir a urna. Duração da votação: ${mvpPoll.durationHours} horas.`;
+    const { opponent } = mvpMatchup();
+    status.textContent = opponent
+      ? `Aguardando o Bala abrir a urna de MVP do jogo contra o ${opponent}.`
+      : `Aguardando o Bala abrir a urna. Duração da votação: ${mvpPoll.durationHours} horas.`;
   } else if (mvpState.paused) {
     status.textContent = showCounts
       ? `Votação pausada. ${mvpState.total} ${plural} até agora.`
