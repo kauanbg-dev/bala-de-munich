@@ -121,6 +121,14 @@ window.CLUB = {
     { date: "Grupo C", opponent: "Low Profile FC", score: "3–1", result: "W", note: "Série" },
     { date: "Grupo C", opponent: "Kosky Korp", score: "3–0", result: "W", note: "Série" },
   ],
+  // Amistosos são manuais: a Copa não publica esses jogos.
+  // Jogo já disputado: score "4–2" e result "W" | "D" | "L".
+  // Jogo marcado: score null e result null — vira card "A jogar".
+  friendlies: [
+    { date: "06/09 · 22:00", opponent: "Bagre FC", score: "4–2", result: "W", note: "Amistoso · treino de saída de bola" },
+    { date: "02/09 · 21:30", opponent: "Rocha United", score: "2–2", result: "D", note: "Amistoso" },
+    { date: "14/09 · 21:00", opponent: "Pé de Ferro FC", score: null, result: null, note: "Amistoso marcado" },
+  ],
   clubs: {
     "Bala de Munich": { owner: "tteuw & Brkk", crest: "assets/crest.png", us: true },
     "Raposo FC": { owner: "Fontinnele", crest: "assets/clubs/raposo-fc.png" },

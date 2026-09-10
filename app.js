@@ -135,7 +135,80 @@ const paintCompetition = () => {
     </li>`
     )
     .join("");
+
+  paintFriendlies(clubMeta);
 };
+
+function paintFriendlies(clubMeta) {
+  const grid = document.getElementById("ami-grid");
+  const strip = document.getElementById("ami-strip");
+  if (!grid || !strip) return;
+
+  const list = Array.isArray(club.friendlies) ? club.friendlies : [];
+  if (!list.length) {
+    strip.innerHTML = "";
+    grid.innerHTML = `<p class="ami-empty">Nenhum amistoso marcado por enquanto. Quando o Bala fechar um jogo fora da Copa, ele aparece aqui.</p>`;
+    return;
+  }
+
+  const played = list.filter((m) => m.result);
+  const count = (letter) => played.filter((m) => m.result === letter).length;
+  const goals = played.reduce(
+    (acc, m) => {
+      const [gf, ga] = String(m.score || "").split(/[–-]/).map((n) => Number(n.trim()));
+      if (Number.isFinite(gf) && Number.isFinite(ga)) {
+        acc.for += gf;
+        acc.against += ga;
+      }
+      return acc;
+    },
+    { for: 0, against: 0 }
+  );
+
+  strip.innerHTML = [
+    ["Jogos", played.length],
+    ["Vitórias", count("W")],
+    ["Empates", count("D")],
+    ["Derrotas", count("L")],
+    ["Gols", `${goals.for} / ${goals.against}`],
+  ]
+    .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`)
+    .join("");
+
+  const label = { W: "Vitória", D: "Empate", L: "Derrota" };
+  const side = (name, meta, score, winner) => {
+    const crest = meta.crest
+      ? `<img class="ami-crest" src="${meta.crest}" alt="" loading="lazy" />`
+      : `<span class="ami-crest is-empty" aria-hidden="true"></span>`;
+    return `
+      <div class="ami-side${winner ? " is-win" : ""}">
+        ${crest}
+        <b>${name}</b>
+        <span class="ami-score">${score}</span>
+      </div>`;
+  };
+
+  grid.innerHTML = list
+    .map((m) => {
+      const us = clubMeta("Bala de Munich");
+      const them = clubMeta(m.opponent);
+      const done = Boolean(m.result);
+      const [ours, theirs] = done
+        ? String(m.score || "").split(/[–-]/).map((n) => n.trim())
+        : ["–", "–"];
+      return `
+      <article class="ami-card${done ? ` is-${m.result}` : " is-next"}">
+        <header class="ami-top">
+          <span class="ami-date">${m.date}</span>
+          <span class="ami-tag">${done ? label[m.result] : "A jogar"}</span>
+        </header>
+        ${side("Bala de Munich", us, ours, m.result === "W")}
+        ${side(m.opponent, them, theirs, m.result === "L")}
+        ${m.note ? `<footer class="ami-foot">${m.note}</footer>` : ""}
+      </article>`;
+    })
+    .join("");
+}
 
 const drawChaveWires = () => {
   const stage = document.getElementById("bracket");
