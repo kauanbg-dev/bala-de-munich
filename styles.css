@@ -1173,6 +1173,7 @@ h2 {
 .chave-stage {
   position: relative;
   min-width: 1080px;
+  padding: 4px 0 8px;
 }
 
 .chave-wires {
@@ -1187,37 +1188,73 @@ h2 {
 
 .chave-wire {
   fill: none;
-  stroke: var(--gold);
-  stroke-width: 2.5;
+  stroke: rgba(212, 177, 90, 0.55);
+  stroke-width: 2;
   stroke-linejoin: miter;
-  filter: drop-shadow(0 0 4px rgba(212, 177, 90, 0.45));
+  stroke-dasharray: 7 5;
+  filter: drop-shadow(0 0 5px rgba(211, 18, 42, 0.35));
+  animation: chave-tracer 4s linear infinite;
 }
 
-.chave-wire-node { fill: var(--gold); }
+@keyframes chave-tracer {
+  to { stroke-dashoffset: -48; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chave-wire { animation: none; }
+}
+
+.chave-wire-node {
+  fill: var(--red);
+  stroke: var(--gold);
+  stroke-width: 1.5;
+}
 
 .chave-cols {
   position: relative;
   z-index: 1;
   display: grid;
   grid-template-columns: 1.15fr 1fr 0.9fr;
-  grid-template-rows: auto repeat(8, minmax(58px, 1fr));
-  column-gap: 36px;
-  min-height: 820px;
+  grid-template-rows: auto repeat(8, minmax(62px, 1fr));
+  column-gap: 40px;
+  min-height: 900px;
 }
 
 .chave-lab {
-  letter-spacing: 0.14em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--mute);
+  color: var(--paper);
   text-align: center;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: linear-gradient(90deg, rgba(211, 18, 42, 0.28), rgba(22, 18, 23, 0.9) 60%);
+}
+
+.chave-lab i {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-size: 1.05rem;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--gold);
 }
 
 .chave-lab-qf { grid-column: 1; grid-row: 1; }
 .chave-lab-sf { grid-column: 2; grid-row: 1; }
-.chave-lab-ff { grid-column: 3; grid-row: 1; color: var(--gold); }
+.chave-lab-ff {
+  grid-column: 3;
+  grid-row: 1;
+  border-color: rgba(212, 177, 90, 0.6);
+  background: linear-gradient(90deg, rgba(212, 177, 90, 0.28), rgba(22, 18, 23, 0.9) 60%);
+}
 
 #qf-0 { grid-column: 1; grid-row: 2 / 4; }
 #qf-1 { grid-column: 1; grid-row: 4 / 6; }
@@ -1230,46 +1267,114 @@ h2 {
 .chave-match {
   align-self: center;
   position: relative;
-  background: var(--card);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(26, 21, 27, 0.96), rgba(16, 13, 17, 0.96));
   border: 1px solid var(--line);
   overflow: hidden;
+  box-shadow: 0 18px 38px -22px rgba(0, 0, 0, 0.9);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.chave-match::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0 22px,
+    rgba(244, 234, 214, 0.022) 22px 24px
+  );
+}
+
+.chave-match:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 177, 90, 0.45);
+  box-shadow: 0 22px 44px -20px rgba(0, 0, 0, 0.95);
 }
 
 .chave-match.is-us {
-  border-color: var(--gold);
-  box-shadow: inset 3px 0 0 var(--red);
+  border-color: rgba(212, 177, 90, 0.7);
+  background:
+    linear-gradient(180deg, rgba(211, 18, 42, 0.16), transparent 42%),
+    linear-gradient(180deg, rgba(26, 21, 27, 0.96), rgba(16, 13, 17, 0.96));
+  box-shadow:
+    inset 4px 0 0 var(--red),
+    0 20px 44px -22px rgba(211, 18, 42, 0.75);
 }
 
 .chave-match.is-final {
-  border-color: rgba(212, 177, 90, 0.55);
-  background: linear-gradient(135deg, rgba(212, 177, 90, 0.12), var(--card) 55%);
-  box-shadow: 0 0 26px -10px rgba(212, 177, 90, 0.5);
+  border-color: rgba(212, 177, 90, 0.6);
+  background:
+    linear-gradient(160deg, rgba(212, 177, 90, 0.16), transparent 55%),
+    linear-gradient(180deg, rgba(26, 21, 27, 0.96), rgba(16, 13, 17, 0.96));
+  box-shadow: 0 0 30px -10px rgba(212, 177, 90, 0.55);
 }
 
 .chave-cup {
   position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 18px;
-  height: 18px;
-  z-index: 2;
+  top: 8px;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  z-index: 3;
   background: var(--gold);
   clip-path: polygon(20% 10%, 80% 10%, 88% 38%, 70% 38%, 70% 58%, 62% 70%, 38% 70%, 30% 58%, 30% 38%, 12% 38%);
 }
+
+.chave-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px 8px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.chave-round {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.chave-state {
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.chave-match.is-done .chave-state { color: var(--paper); }
 
 .chave-side {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  min-height: 76px;
-  padding: 12px 0 12px 12px;
+  min-height: 74px;
+  padding: 12px 0 12px 14px;
   position: relative;
   overflow: hidden;
 }
 
 .chave-side + .chave-side { border-top: 1px solid var(--line); }
+
+.chave-rail {
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: transparent;
+}
 
 .chave-bg {
   pointer-events: none;
@@ -1304,7 +1409,7 @@ h2 {
   height: 42px;
   object-fit: cover;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--ink);
   flex: 0 0 auto;
 }
@@ -1336,37 +1441,65 @@ h2 {
 .chave-score {
   position: relative;
   z-index: 1;
-  min-width: 3.1rem;
+  min-width: 3.3rem;
   align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
   border-left: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, 0.3);
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   color: var(--mute);
 }
 
 .chave-side.is-win {
-  background: linear-gradient(90deg, rgba(212, 177, 90, 0.16), transparent 70%);
+  background: linear-gradient(90deg, rgba(212, 177, 90, 0.14), transparent 72%);
+}
+
+.chave-side.is-win .chave-rail {
+  background: linear-gradient(180deg, var(--gold), var(--gold-dim));
 }
 
 .chave-side.is-win .chave-txt b,
 .chave-side.is-win .chave-score { color: var(--gold); }
 
-.chave-side.is-win .chave-score { background: rgba(212, 177, 90, 0.12); }
+.chave-side.is-win .chave-score { background: rgba(212, 177, 90, 0.14); }
+
+.chave-side.is-us.is-win .chave-rail {
+  background: linear-gradient(180deg, var(--red), var(--gold));
+}
+
+.chave-side.is-out { opacity: 0.62; }
+
+.chave-side.is-out .chave-crest { filter: grayscale(0.7); }
 
 .chave-side.is-tbd .chave-txt b { color: var(--mute); font-weight: 600; }
 
-.chave-match > small {
-  display: block;
-  padding: 8px 12px 10px;
+.chave-foot {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px 10px;
+  border-top: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.24);
   color: var(--mute);
-  font-size: 0.63rem;
+  font-size: 0.62rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   font-weight: 700;
+}
+
+.chave-flag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  letter-spacing: 0.14em;
+  font-size: 0.55rem;
 }
 
 .feed-credit {
@@ -1482,23 +1615,36 @@ footer p {
     align-items: flex-start;
   }
   .chave-hint { display: block; }
-  .chave-stage { min-width: 680px; }
+  .chave-stage { min-width: 720px; }
   .chave-cols {
-    column-gap: 14px;
-    min-height: 520px;
-    grid-template-rows: auto repeat(8, minmax(36px, 1fr));
+    column-gap: 16px;
+    min-height: 600px;
+    grid-template-rows: auto repeat(8, minmax(40px, 1fr));
   }
-  .chave-lab { font-size: 0.62rem; margin-bottom: 8px; }
-  .chave-side {
-    min-height: 48px;
-    padding: 6px 0 6px 8px;
+  .chave-lab {
+    font-size: 0.56rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 10px;
+    padding: 5px 8px;
     gap: 6px;
   }
-  .chave-crest { width: 26px; height: 26px; border-radius: 5px; }
+  .chave-lab i { font-size: 0.9rem; }
+  .chave-match { border-radius: 10px; }
+  .chave-top { padding: 6px 9px 5px; }
+  .chave-round { font-size: 0.52rem; letter-spacing: 0.1em; }
+  .chave-state { display: none; }
+  .chave-side {
+    min-height: 50px;
+    padding: 6px 0 6px 9px;
+    gap: 6px;
+  }
+  .chave-crest { width: 26px; height: 26px; border-radius: 6px; }
   .chave-txt b { font-size: 0.78rem; }
   .chave-txt small { display: none; }
-  .chave-score { min-width: 2.2rem; font-size: 1.1rem; }
+  .chave-score { min-width: 2.3rem; font-size: 1.15rem; }
   .chave-bg img { right: 28px; }
+  .chave-foot { padding: 6px 9px 7px; font-size: 0.54rem; }
+  .chave-flag { font-size: 0.5rem; padding: 2px 6px; }
   .squad-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;

@@ -41,30 +41,39 @@ const paintCompetition = () => {
   `;
   paintMvpCopy();
 
-  const chaveSide = (name, score, win) => {
+  const chaveSide = (name, score, win, played) => {
     const t = clubMeta(name);
     const crest = t.crest
       ? `<img class="chave-crest" src="${t.crest}" alt="" />`
       : `<span class="chave-crest is-empty" aria-hidden="true"></span>`;
     const bg = t.crest ? `<img src="${t.crest}" alt="" />` : "";
+    const loser = played && !win;
     return `
-    <div class="chave-side${win ? " is-win" : ""}${t.us ? " is-us" : ""}${t.tbd ? " is-tbd" : ""}">
+    <div class="chave-side${win ? " is-win" : ""}${loser ? " is-out" : ""}${t.us ? " is-us" : ""}${t.tbd ? " is-tbd" : ""}">
       <span class="chave-bg" aria-hidden="true">${bg}</span>
+      <span class="chave-rail" aria-hidden="true"></span>
       <div class="chave-team">${crest}<span class="chave-txt"><b>${name}</b><small>${t.owner}</small></span></div>
       <span class="chave-score">${score}</span>
     </div>`;
   };
 
-  const chaveCard = (t) => {
+  const chaveCard = (round) => (t) => {
     const played = t.hs !== null && t.as !== null;
     const homeWin = played && t.hs > t.as;
     const awayWin = played && t.as > t.hs;
     return `
     <article class="chave-match${t.us ? " is-us" : ""}${t.final ? " is-final" : ""}${played ? " is-done" : ""}" id="${t.id}">
       ${t.final ? `<span class="chave-cup" aria-hidden="true"></span>` : ""}
-      ${chaveSide(t.home, played ? t.hs : "–", homeWin)}
-      ${chaveSide(t.away, played ? t.as : "–", awayWin)}
-      <small>${t.date}</small>
+      <header class="chave-top">
+        <span class="chave-round">${round.round}</span>
+        <span class="chave-state">${played ? "Encerrada" : "A disputar"}</span>
+      </header>
+      ${chaveSide(t.home, played ? t.hs : "–", homeWin, played)}
+      ${chaveSide(t.away, played ? t.as : "–", awayWin, played)}
+      <footer class="chave-foot">
+        <span>${t.date}</span>
+        ${t.us ? `<span class="chave-flag">Bala</span>` : ""}
+      </footer>
     </article>`;
   };
 
@@ -79,8 +88,8 @@ const paintCompetition = () => {
     ${club.bracket
       .map(
         (round) => `
-      <span class="chave-lab chave-lab-${round.key}">${round.n} · ${round.round}</span>
-      ${round.ties.map(chaveCard).join("")}`
+      <span class="chave-lab chave-lab-${round.key}"><i>${round.n}</i>${round.round}</span>
+      ${round.ties.map(chaveCard(round)).join("")}`
       )
       .join("")}
   </div>`;
