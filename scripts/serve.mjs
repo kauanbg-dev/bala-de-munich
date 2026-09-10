@@ -64,7 +64,12 @@ const server = http.createServer(async (req, res) => {
     }
     const ext = path.extname(file).toLowerCase();
     const headers = { "Content-Type": mime[ext] || "application/octet-stream" };
-    if ([".css", ".js", ".png", ".jpg", ".jpeg", ".webp", ".svg", ".ico"].includes(ext)) {
+    if (ext === ".html" || file.endsWith(`${path.sep}index.html`)) {
+      headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+      headers.Pragma = "no-cache";
+    } else if ([".css", ".js"].includes(ext)) {
+      headers["Cache-Control"] = "public, max-age=60, must-revalidate";
+    } else if ([".png", ".jpg", ".jpeg", ".webp", ".svg", ".ico"].includes(ext)) {
       headers["Cache-Control"] = "public, max-age=3600";
     }
     res.writeHead(200, headers);
