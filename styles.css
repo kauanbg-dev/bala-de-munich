@@ -2240,6 +2240,9 @@ footer p {
 .ami-card.is-D::before { background: var(--gold); }
 .ami-card.is-L::before { background: var(--red); }
 .ami-card.is-next::before { background: repeating-linear-gradient(180deg, var(--gold) 0 6px, transparent 6px 12px); }
+.ami-card.is-quit { opacity: 0.62; }
+.ami-card.is-quit::before { background: repeating-linear-gradient(180deg, var(--mute) 0 4px, transparent 4px 10px); }
+.ami-card.is-quit:hover { opacity: 1; }
 
 .ami-top {
   display: flex;
@@ -2317,11 +2320,64 @@ footer p {
 .ami-side.is-win .ami-score { color: var(--gold); }
 
 .ami-foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
   padding: 8px 14px 10px;
   border-top: 1px solid var(--line);
   font-size: 0.66rem;
   letter-spacing: 0.06em;
   color: var(--mute);
+}
+
+.ami-star {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.ami-goals {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(244, 234, 214, 0.62);
+}
+
+.ami-goals i {
+  font-style: normal;
+  color: var(--gold);
+}
+
+.ami-format {
+  margin-left: auto;
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(183, 169, 154, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+.ami-more {
+  display: block;
+  margin: 18px auto 0;
+  padding: 10px 26px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+.ami-more:hover {
+  border-color: rgba(212, 177, 90, 0.55);
+  color: var(--gold);
 }
 
 .ami-empty {

@@ -139,34 +139,34 @@ const paintCompetition = () => {
   paintFriendlies(clubMeta);
 };
 
+let amiExpanded = false;
+const AMI_PREVIEW = 6;
+
 function paintFriendlies(clubMeta) {
   const grid = document.getElementById("ami-grid");
   const strip = document.getElementById("ami-strip");
+  const more = document.getElementById("ami-more");
   if (!grid || !strip) return;
 
   const list = Array.isArray(club.friendlies) ? club.friendlies : [];
   if (!list.length) {
     strip.innerHTML = "";
-    grid.innerHTML = `<p class="ami-empty">Nenhum amistoso marcado por enquanto. Quando o Bala fechar um jogo fora da Copa, ele aparece aqui.</p>`;
+    if (more) more.hidden = true;
+    grid.innerHTML = `<p class="ami-empty">Ainda não temos amistoso registrado na Copa. Assim que o Bala jogar fora do torneio, os jogos aparecem aqui sozinhos.</p>`;
     return;
   }
 
-  const played = list.filter((m) => m.result);
-  const count = (letter) => played.filter((m) => m.result === letter).length;
-  const goals = played.reduce(
-    (acc, m) => {
-      const [gf, ga] = String(m.score || "").split(/[–-]/).map((n) => Number(n.trim()));
-      if (Number.isFinite(gf) && Number.isFinite(ga)) {
-        acc.for += gf;
-        acc.against += ga;
-      }
-      return acc;
-    },
+  // Jogo que os times quitaram no meio não entra na campanha: fica listado, mas
+  // sem contar vitória, empate, derrota ou gol.
+  const valid = list.filter((m) => !m.quit && m.result);
+  const count = (letter) => valid.filter((m) => m.result === letter).length;
+  const goals = valid.reduce(
+    (acc, m) => ({ for: acc.for + (Number(m.us) || 0), against: acc.against + (Number(m.them) || 0) }),
     { for: 0, against: 0 }
   );
 
   strip.innerHTML = [
-    ["Jogos", played.length],
+    ["Jogos", valid.length],
     ["Vitórias", count("W")],
     ["Empates", count("D")],
     ["Derrotas", count("L")],
@@ -176,39 +176,61 @@ function paintFriendlies(clubMeta) {
     .join("");
 
   const label = { W: "Vitória", D: "Empate", L: "Derrota" };
-  const side = (name, meta, score, winner) => {
-    const crest = meta.crest
-      ? `<img class="ami-crest" src="${meta.crest}" alt="" loading="lazy" />`
-      : `<span class="ami-crest is-empty" aria-hidden="true"></span>`;
-    return `
+  const side = (name, crest, score, winner) => `
       <div class="ami-side${winner ? " is-win" : ""}">
-        ${crest}
+        ${
+          crest
+            ? `<img class="ami-crest" src="${crest}" alt="" loading="lazy" />`
+            : `<span class="ami-crest is-empty" aria-hidden="true"></span>`
+        }
         <b>${name}</b>
         <span class="ami-score">${score}</span>
       </div>`;
-  };
 
-  grid.innerHTML = list
+  const ourCrest = clubMeta("Bala de Munich").crest || "assets/crest.png";
+  const shown = amiExpanded ? list : list.slice(0, AMI_PREVIEW);
+
+  grid.innerHTML = shown
     .map((m) => {
-      const us = clubMeta("Bala de Munich");
-      const them = clubMeta(m.opponent);
       const done = Boolean(m.result);
-      const [ours, theirs] = done
-        ? String(m.score || "").split(/[–-]/).map((n) => n.trim())
-        : ["–", "–"];
+      const tag = !done ? "A jogar" : m.quit ? "Quitaram" : label[m.result];
+      const foot = [
+        m.star ? `<span class="ami-star">Craque · ${m.star}</span>` : "",
+        m.scorers?.length
+          ? `<span class="ami-goals">${m.scorers
+              .map((g) => `${g.name}${g.goals > 1 ? ` <i>x${g.goals}</i>` : ""}`)
+              .join(", ")}</span>`
+          : "",
+      ].filter(Boolean);
       return `
-      <article class="ami-card${done ? ` is-${m.result}` : " is-next"}">
+      <article class="ami-card${m.quit ? " is-quit" : done ? ` is-${m.result}` : " is-next"}">
         <header class="ami-top">
           <span class="ami-date">${m.date}</span>
-          <span class="ami-tag">${done ? label[m.result] : "A jogar"}</span>
+          <span class="ami-tag">${tag}</span>
         </header>
-        ${side("Bala de Munich", us, ours, m.result === "W")}
-        ${side(m.opponent, them, theirs, m.result === "L")}
-        ${m.note ? `<footer class="ami-foot">${m.note}</footer>` : ""}
+        ${side("Bala de Munich", ourCrest, done ? m.us : "–", !m.quit && m.result === "W")}
+        ${side(m.opponent, m.crest, done ? m.them : "–", !m.quit && m.result === "L")}
+        <footer class="ami-foot">
+          ${foot.join("")}
+          <span class="ami-format">${m.format || "11v11"}</span>
+        </footer>
       </article>`;
     })
     .join("");
+
+  if (more) {
+    more.hidden = list.length <= AMI_PREVIEW;
+    more.textContent = amiExpanded
+      ? "Mostrar menos"
+      : `Ver todos os ${list.length} amistosos`;
+  }
 }
+
+document.getElementById("ami-more")?.addEventListener("click", () => {
+  amiExpanded = !amiExpanded;
+  paintCompetition();
+  if (!amiExpanded) document.getElementById("amistosos")?.scrollIntoView({ block: "start" });
+});
 
 const drawChaveWires = () => {
   const stage = document.getElementById("bracket");
@@ -321,6 +343,7 @@ const applyCopaPayload = (live) => {
     club.bracket = live.bracket;
   }
   if (live.clubs) club.clubs = { ...club.clubs, ...live.clubs };
+  if (live.friendlies?.length) club.friendlies = live.friendlies;
   club.results = mergeResults(club.results, live.results);
   club.scorers = mergeStatRows(club.scorers, live.scorers);
   club.assists = mergeStatRows(club.assists, live.assists);

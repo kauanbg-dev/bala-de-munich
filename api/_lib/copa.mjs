@@ -76,6 +76,13 @@ const SLUG_NAME = {
   "renato-vicente": "Low Profile FC",
 };
 
+// Os amistosos usam nomes de clube diferentes dos da Copa (é o nome do clube no
+// jogo, não o do time no torneio). Só mapeamos os que são o mesmo clube.
+const FRIENDLY_NAME = {
+  fcapeludos: "Apeludos FC",
+  rapososnp: "Raposo FC",
+};
+
 const SLUG_OWNER = {
   "tteuw-brkk": "tteuw & Brkk",
   fontinnele: "Fontinnele",
@@ -631,6 +638,127 @@ function bracketFromConfrontos(confrontos) {
   };
 }
 
+function canonClub(name) {
+  const key = norm(name);
+  if (!key) return null;
+  if (FRIENDLY_NAME[key]) return FRIENDLY_NAME[key];
+  return Object.keys(CREST).find((known) => norm(known) === key) || String(name);
+}
+
+// A Copa não publica API de amistosos: a página /partidas manda os jogos dentro
+// do payload do Next, e é de lá que tiramos os dados.
+function flightPayload(html) {
+  let out = "";
+  for (const chunk of html.matchAll(/self\.__next_f\.push\(\[1,("(?:[^"\\]|\\.)*")\]\)/g)) {
+    try {
+      out += JSON.parse(chunk[1]);
+    } catch {
+      /* pedaço quebrado: ignora */
+    }
+  }
+  return out;
+}
+
+function sliceJson(src, at) {
+  let depth = 0;
+  let inStr = false;
+  let esc = false;
+  for (let i = at; i < src.length; i += 1) {
+    const c = src[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (c === "\\") esc = true;
+      else if (c === '"') inStr = false;
+      continue;
+    }
+    if (c === '"') inStr = true;
+    else if (c === "[" || c === "{") depth += 1;
+    else if (c === "]" || c === "}") {
+      depth -= 1;
+      if (depth === 0) return src.slice(at, i + 1);
+    }
+  }
+  return null;
+}
+
+function friendlyList(flight) {
+  for (const hit of flight.matchAll(/"partidas":\[/g)) {
+    const raw = sliceJson(flight, flight.indexOf("[", hit.index));
+    if (!raw) continue;
+    try {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr) && arr.some((m) => m?.tipo === "amistoso")) return arr;
+    } catch {
+      /* não era esse array */
+    }
+  }
+  return null;
+}
+
+function friendlyDate(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "–";
+  const parts = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).formatToParts(d);
+  const get = (type) => parts.find((p) => p.type === type)?.value.replace(".", "") || "";
+  return `${get("weekday")} ${get("day")}/${get("month")} · ${get("hour")}:${get("minute")}`;
+}
+
+function friendlyCrest(name, avatar) {
+  if (CREST[name]) return CREST[name];
+  return avatar ? `${BASE}${avatar}` : null;
+}
+
+function toFriendly(match) {
+  if (!Array.isArray(match?.lados) || match.lados.length !== 2) return null;
+  const sides = match.lados.map((side) => ({ ...side, club: canonClub(side.time || side.clube) }));
+  const ours = sides.find((side) => isUs(side.club));
+  const theirs = sides.find((side) => side !== ours);
+  if (!ours || !theirs) return null;
+
+  const us = Number(ours.gols) || 0;
+  const them = Number(theirs.gols) || 0;
+  const scorers = (ours.escalacao || [])
+    .filter((p) => Number(p.gols) > 0)
+    .map((p) => ({ name: canonPlayer(p.nome) || p.nome, goals: Number(p.gols) }))
+    .sort((a, b) => b.goals - a.goals);
+
+  return {
+    id: String(match.id),
+    iso: match.data,
+    date: friendlyDate(match.data),
+    opponent: theirs.club,
+    opponentOwner: theirs.presidente || "–",
+    crest: friendlyCrest(theirs.club, theirs.avatar),
+    us,
+    them,
+    score: `${us}–${them}`,
+    result: us > them ? "W" : us < them ? "L" : "D",
+    format: `${Number(ours.jogadores) || 11}v${Number(theirs.jogadores) || 11}`,
+    quit: Boolean(match.abandonada),
+    star: ours.craque ? canonPlayer(ours.craque) || ours.craque : null,
+    scorers,
+  };
+}
+
+async function fetchFriendlies() {
+  const html = await fetchText(`${BASE}/partidas`);
+  const list = friendlyList(flightPayload(html));
+  if (!list) throw new Error("amistosos sem payload");
+  const ours = list
+    .map(toFriendly)
+    .filter(Boolean)
+    .sort((a, b) => String(b.iso).localeCompare(String(a.iso)));
+  if (!ours.length) throw new Error("amistosos sem jogo do Bala");
+  return ours;
+}
+
 function usefulLive(payload) {
   const played = payload?.groupTable?.some((row) => Number(row.j) > 0);
   const scored = payload?.bracket?.some((round) => round.ties?.some((t) => t.hs != null));
@@ -638,7 +766,14 @@ function usefulLive(payload) {
 }
 
 async function buildLive() {
-  const e2 = await fetchJson(`${BASE}/api/e2-dados`);
+  // Amistoso quebrado não pode derrubar a Copa: por isso o catch separado.
+  const [e2, friendlies] = await Promise.all([
+    fetchJson(`${BASE}/api/e2-dados`),
+    fetchFriendlies().catch((err) => {
+      console.error("amistosos sync", err.message);
+      return null;
+    }),
+  ]);
   const groupTable = computeGroupC(e2.partidas);
   const parsedBracket = bracketFromConfrontos(e2.confrontos);
   const series = parsedBracket ? balaSeries(parsedBracket.bracket) : {};
@@ -664,6 +799,7 @@ async function buildLive() {
     results: series.results || null,
     bracket: parsedBracket?.bracket || null,
     clubs: parsedBracket?.clubs || null,
+    friendlies,
   };
   if (!usefulLive(payload)) throw new Error("copa json vazio");
   return payload;
@@ -695,6 +831,10 @@ export async function getCopaLive(force = false) {
       const payload = await buildLive();
       if (!usefulLive(payload) && usefulLive(cache?.payload || readDisk())) {
         throw new Error("copa json vazio");
+      }
+      if (!payload.friendlies?.length) {
+        const kept = (cache?.payload || readDisk())?.friendlies;
+        if (kept?.length) payload.friendlies = kept;
       }
       cache = { payload, at: Date.now() };
       writeDisk(payload);
