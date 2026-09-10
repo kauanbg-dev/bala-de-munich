@@ -544,7 +544,7 @@ const renderMvp = () => {
   const chip = document.getElementById("mvp-admin-chip");
   if (chip) {
     const state = !mvpState.started
-      ? { text: "Aguardando", cls: "" }
+      ? { text: "Não iniciada", cls: "" }
       : mvpState.paused
         ? { text: "Pausada", cls: "is-paused" }
         : mvpState.open
