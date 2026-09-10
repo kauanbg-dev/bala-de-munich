@@ -518,6 +518,18 @@ const renderMvp = () => {
     if (closeBtn) closeBtn.disabled = !mvpState.started || (!mvpState.open && !mvpState.paused);
     if (resetBtn) resetBtn.disabled = false;
   }
+  const chip = document.getElementById("mvp-admin-chip");
+  if (chip) {
+    const state = !mvpState.started
+      ? { text: "Aguardando", cls: "" }
+      : mvpState.paused
+        ? { text: "Pausada", cls: "is-paused" }
+        : mvpState.open
+          ? { text: "No ar", cls: "is-open" }
+          : { text: "Encerrada", cls: "is-closed" };
+    chip.textContent = state.text;
+    chip.className = `mvp-admin-chip${state.cls ? ` ${state.cls}` : ""}`;
+  }
   const ranked = mvpState.started
     ? [...mvpCandidates].sort((a, b) => {
         const voteDiff = mvpVotesOf(b.tag) - mvpVotesOf(a.tag);
@@ -556,6 +568,17 @@ const renderMvp = () => {
     status.textContent = showCounts
       ? `Votação encerrada. ${mvpState.total} ${plural} no total.`
       : "Votação encerrada.";
+  }
+  const adminHint = document.getElementById("mvp-admin-hint");
+  if (adminHint) {
+    if (!mvpAdminPin) {
+      adminHint.textContent = "";
+    } else if (!mvpState.started) {
+      adminHint.textContent = `Urna fechada. "Iniciar 2h" abre a votação pra galera.`;
+    } else {
+      const lead = uniqueLead ? ` · líder ${uniqueLead.tag}` : "";
+      adminHint.textContent = `${mvpState.total} ${plural} contabilizados${lead}. O público só vê a porcentagem.`;
+    }
   }
   grid.innerHTML = ranked
     .map((p) => {

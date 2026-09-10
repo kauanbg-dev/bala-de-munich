@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=56" />
+  <link rel="stylesheet" href="styles.css?v=57" />
 </head>
 <body>
   <header class="topbar">
@@ -84,17 +84,30 @@
       <p class="mvp-clock" id="mvp-clock" aria-live="polite"></p>
       <p class="mvp-status" id="mvp-status" role="status"></p>
       <aside class="mvp-admin" id="mvp-admin" hidden>
+        <header class="mvp-admin-head">
+          <span class="mvp-admin-title">Painel do chefe</span>
+          <span class="mvp-admin-chip" id="mvp-admin-chip">Aguardando</span>
+        </header>
         <form class="mvp-admin-login" id="mvp-admin-login">
-          <input id="mvp-pin" type="password" name="pin" placeholder="Código admin" autocomplete="off" />
-          <button class="btn btn-gold" type="submit">Entrar</button>
+          <label for="mvp-pin">Código admin</label>
+          <div>
+            <input id="mvp-pin" type="password" name="pin" placeholder="••••••" autocomplete="off" />
+            <button class="btn btn-gold" type="submit">Entrar</button>
+          </div>
         </form>
         <div class="mvp-admin-ops" id="mvp-admin-ops" hidden>
-          <button type="button" class="btn btn-gold" id="mvp-start">Iniciar 2h</button>
-          <button type="button" class="btn btn-pause" id="mvp-pause">Pausar</button>
-          <button type="button" class="btn btn-red" id="mvp-resume">Retomar</button>
-          <button type="button" class="btn btn-close" id="mvp-close">Encerrar</button>
-          <button type="button" class="btn btn-reset" id="mvp-reset">Recomeçar do 0</button>
+          <div class="mvp-admin-row">
+            <button type="button" class="btn btn-gold" id="mvp-start">Iniciar 2h</button>
+            <button type="button" class="btn btn-pause" id="mvp-pause">Pausar</button>
+            <button type="button" class="btn btn-red" id="mvp-resume">Retomar</button>
+            <button type="button" class="btn btn-close" id="mvp-close">Encerrar</button>
+          </div>
+          <div class="mvp-admin-danger">
+            <button type="button" class="btn btn-reset" id="mvp-reset">Recomeçar do 0</button>
+            <small>Apaga todos os votos.</small>
+          </div>
         </div>
+        <p class="mvp-admin-hint" id="mvp-admin-hint"></p>
       </aside>
       <div class="mvp-grid" id="mvp-grid"></div>
     </section>
@@ -203,7 +216,7 @@
     </span>
   </a>
 
-  <script src="data.js?v=56"></script>
-  <script src="app.js?v=56"></script>
+  <script src="data.js?v=57"></script>
+  <script src="app.js?v=57"></script>
 </body>
 </html>
