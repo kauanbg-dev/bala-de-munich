@@ -1915,12 +1915,12 @@ h2 {
 }
 
 .social-card.is-kick .social-logo {
-  background: #53fc18;
-  color: #0b0b0b;
+  background: transparent;
+  color: #53fc18;
 }
 
 .social-card.is-kick .social-logo svg {
-  width: 18px;
+  width: 24px;
   height: 24px;
 }
 
