@@ -324,6 +324,143 @@ h1 {
 
 .match-card p { color: var(--mute); margin-top: 6px; }
 
+.live-band {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 28px 24px;
+}
+
+.live-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.live-head h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.live-head a {
+  margin-left: auto;
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.live-head a:hover { color: var(--gold); }
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 0 rgba(211, 18, 42, 0.6);
+  animation: livePulse 2s ease-out infinite;
+}
+
+@keyframes livePulse {
+  70% { box-shadow: 0 0 0 8px rgba(211, 18, 42, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(211, 18, 42, 0); }
+}
+
+.live-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.live-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(30, 24, 31, 0.96), rgba(16, 13, 17, 0.96));
+}
+
+.live-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--mute);
+}
+
+.live-card.is-W::before { background: #2e8b52; }
+.live-card.is-D::before { background: var(--gold); }
+.live-card.is-L::before { background: var(--red); }
+
+.live-when {
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.live-teams {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-teams img,
+.live-crest {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.live-crest.is-empty {
+  border: 1px dashed var(--line);
+  border-radius: 50%;
+}
+
+.live-teams b {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.live-teams i {
+  font-style: normal;
+  color: var(--mute);
+}
+
+.live-vs {
+  font-size: 0.82rem;
+  color: rgba(244, 234, 214, 0.72);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-tag {
+  align-self: flex-start;
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--mute);
+}
+
+.live-card.is-W .live-tag { color: #8fd6a8; border-color: rgba(46, 139, 82, 0.6); }
+.live-card.is-D .live-tag { color: var(--gold); border-color: rgba(212, 177, 90, 0.55); }
+.live-card.is-L .live-tag { color: #ff8f9d; border-color: rgba(211, 18, 42, 0.55); }
+
 .match-card.last { border-left: 4px solid var(--gold); }
 .match-card.next { border-left: 4px solid var(--red); }
 

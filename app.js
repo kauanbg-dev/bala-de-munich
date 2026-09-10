@@ -152,6 +152,8 @@ function paintFriendlies(clubMeta) {
   if (!grid || !strip) return;
 
   const list = Array.isArray(club.friendlies) ? club.friendlies : [];
+  paintLiveBand(list, clubMeta("Bala de Munich").crest || "assets/crest.png");
+
   if (!list.length) {
     strip.innerHTML = "";
     if (more) more.hidden = true;
@@ -224,6 +226,44 @@ function paintFriendlies(clubMeta) {
       ? "Mostrar menos"
       : `Ver todos os ${list.length} amistosos`;
   }
+}
+
+// A faixa do topo só existe pra jogo que a Copa mandou agora. O histórico
+// escrito na mão fica fora: ele não é notícia, é arquivo.
+const LIVE_BAND_MAX = 4;
+
+function paintLiveBand(list, ourCrest) {
+  const band = document.getElementById("live-band");
+  const row = document.getElementById("live-row");
+  if (!band || !row) return;
+
+  const live = list.filter((m) => m.live && m.result).slice(0, LIVE_BAND_MAX);
+  band.hidden = live.length === 0;
+  if (!live.length) {
+    row.innerHTML = "";
+    return;
+  }
+
+  const label = { W: "Vitória", D: "Empate", L: "Derrota" };
+  row.innerHTML = live
+    .map(
+      (m) => `
+      <article class="live-card is-${m.result}">
+        <span class="live-when">${m.date || "Amistoso"}</span>
+        <div class="live-teams">
+          <img src="${ourCrest}" alt="" loading="lazy" />
+          <b>${m.us}</b><i>–</i><b>${m.them}</b>
+          ${
+            m.crest
+              ? `<img src="${m.crest}" alt="" loading="lazy" />`
+              : `<span class="live-crest is-empty" aria-hidden="true"></span>`
+          }
+        </div>
+        <span class="live-vs">vs ${m.opponent}</span>
+        <span class="live-tag">${label[m.result]}</span>
+      </article>`
+    )
+    .join("");
 }
 
 document.getElementById("ami-more")?.addEventListener("click", () => {

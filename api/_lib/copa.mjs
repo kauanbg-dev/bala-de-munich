@@ -745,6 +745,9 @@ function toFriendly(match) {
 
   return {
     id: String(match.id),
+    // Marca o que veio da Copa agora: o histórico do data.js não tem essa flag,
+    // e é ela que decide o que entra na faixa do topo.
+    live: true,
     iso: match.data,
     date: friendlyDate(match.data),
     opponent: theirs.club,
