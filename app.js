@@ -356,7 +356,7 @@ const pitchSlots = club.formation.slots
         ${faceOf(player)}
         ${badge ? `<i>${badge}</i>` : ""}
       </div>
-      <span><small>${slot.pos === "TEC" ? "TEC" : slot.pos}</small><b>${slot.tag}</b></span>
+      <span><small>${slot.pos === "TEC" ? "TEC" : slot.pos}</small><b>${player?.tag || slot.tag}</b></span>
     </div>`;
   })
   .join("");

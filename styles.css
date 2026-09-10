@@ -965,6 +965,7 @@ h2 {
 .slot b {
   font-size: 0.68rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .slot.gk {
@@ -981,7 +982,7 @@ h2 {
 }
 
 .slot.coach {
-  width: 64px;
+  width: 88px;
 }
 
 .slot.coach b,
