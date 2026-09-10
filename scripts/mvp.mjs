@@ -20,6 +20,7 @@ export const allow = [
   "luccaf14",
   "Gordin",
   "Baraka",
+  "wVini7",
   "Vini Show",
   "Jmdeck",
   "Beliene",

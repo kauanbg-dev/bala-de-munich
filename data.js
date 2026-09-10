@@ -76,7 +76,7 @@ window.CLUB = {
       caption: "Quartas",
       href: "https://www.instagram.com/p/DchxKcKNoOT/",
     },
-    { src: "assets/feed/elenco.jpg", alt: "Bem-vindo Vini Show, goleiro", caption: "Vini Show" },
+    { src: "assets/feed/elenco.jpg", alt: "Bem-vindo wVini7, goleiro", caption: "wVini7" },
     { src: "assets/feed/confronto.jpg", alt: "Confronto definido nas quartas", caption: "Confronto" },
     { src: "assets/feed/jogador.jpg", alt: "Meme Bala de Munich vs Radiantas", caption: "Rivalidade" },
   ],
@@ -95,7 +95,7 @@ window.CLUB = {
     { tag: "Patrick11ns", name: "Coach", pos: "—", role: "Coach", rating: "", games: 0, goals: 0, assists: 0, number: 0, live: "https://kick.com/patrick11ns", photo: "assets/players/patrick.jpg" },
     { tag: "Beliene", name: "Meio", pos: "MEI", role: "", rating: "", games: 8, goals: 1, assists: 0, number: 21, live: "https://kick.com/Beliene_r", photo: "assets/players/beliene.jpg?v=4" },
     { tag: "2Tclipes", name: "Ataque", pos: "ATA", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 13, live: "https://kick.com/2t-clipes", photo: "assets/players/2tclipes.jpg?v=1" },
-    { tag: "Vini Show", name: "Goleiro", pos: "GOL", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 12, live: "", photo: "assets/players/vini-show.jpg" },
+    { tag: "wVini7", name: "Goleiro", pos: "GOL", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 12, live: "", photo: "assets/players/vini-show.jpg" },
   ],
   formation: {
     name: "3-5-2 · três zagueiros, sem laterais",
