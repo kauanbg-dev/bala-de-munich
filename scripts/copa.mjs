@@ -3,7 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const dataDir = process.env.DATA_DIR || path.join(root, "data");
+const dataDir =
+  process.env.DATA_DIR || (process.env.VERCEL ? "/tmp" : path.join(root, "data"));
 const cacheFile = path.join(dataDir, "copa-cache.json");
 const TEAM_SLUG = "tteuw-brkk";
 const TEAM_NAME = "Bala de Munich";

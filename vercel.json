@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/healthz", "destination": "/api/healthz" }
+  ],
+  "functions": {
+    "api/copa.js": { "maxDuration": 15 },
+    "api/mvp.js": { "maxDuration": 10 }
+  }
+}
