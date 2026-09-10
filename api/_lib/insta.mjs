@@ -1,18 +1,13 @@
-// Feed do Instagram do Bala, via Business Login for Instagram (graph.instagram.com).
-// A conta é profissional, então o app serve só ela: não tem fluxo de login aqui,
-// o token longo é gerado no painel da Meta e entra por variável de ambiente.
+// Feed do Instagram do Bala. A fonte principal é o Feedframer (plano grátis,
+// sem marca d'água): eles ligam a conta profissional, renovam o token da Meta
+// e hospedam as fotos num CDN que não expira. A chave entra em FEEDFRAMER_KEY.
 //
-// Duas armadilhas que moldam este arquivo:
-//   1. As URLs de imagem do CDN da Meta são assinadas e expiram em poucas horas.
-//      Por isso o cache é curto e em memória: guardar em disco devolveria link
-//      morto, que na tela vira imagem quebrada. Se a busca falha, o site cai no
-//      data.js, que tem imagem local de verdade.
-//   2. O token longo vale 60 dias. A gente renova sozinho quando passa da
-//      metade da validade e guarda o novo no Redis que já existe pro MVP.
-//      Sem Redis o site funciona igual, mas alguém precisa trocar o token na
-//      Vercel antes dos 60 dias.
+// IG_TOKEN (Business Login da Meta) continua de reserva. As URLs da Meta são
+// assinadas e morrem em horas, então o cache fica só em memória. Se as duas
+// fontes falharem, o site cai no data.js — imagem local de verdade.
 
 const BASE = "https://graph.instagram.com";
+const FRAMER = "https://feedframer.com/api/v1/me";
 const FIELDS = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp";
 const CACHE_MS = Number(process.env.IG_CACHE_MS) || 10 * 60 * 1000;
 const FETCH_MS = 8_000;
@@ -69,7 +64,7 @@ async function callGraph(path, params, timeoutMs = FETCH_MS) {
   try {
     const res = await fetch(url, { signal: ctrl.signal });
     const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error(data?.error?.message || `graph ${res.status}`);
+    if (!res.ok) throw new Error(graphError(data) || `graph ${res.status}`);
     return data;
   } finally {
     clearTimeout(t);
@@ -101,6 +96,10 @@ async function currentToken() {
   return token;
 }
 
+function graphError(data) {
+  return data?.error?.message || data?.message || data?.error || data?.errors?.[0]?.detail || null;
+}
+
 function firstLine(caption) {
   const text = String(caption || "")
     .split("\n")
@@ -112,7 +111,7 @@ function firstLine(caption) {
 
 function toPost(node) {
   // Vídeo e reel não trazem imagem em media_url: a capa vem no thumbnail_url.
-  const src = node.media_type === "VIDEO" ? node.thumbnail_url : node.media_url || node.thumbnail_url;
+  const src = isVideo(node.media_type) ? node.thumbnail_url : node.media_url || node.thumbnail_url;
   if (!src) return null;
   const caption = firstLine(node.caption);
   return {
@@ -120,11 +119,49 @@ function toPost(node) {
     alt: caption,
     caption,
     href: node.permalink,
-    video: node.media_type === "VIDEO",
+    video: isVideo(node.media_type),
   };
 }
 
-async function build() {
+function isVideo(type) {
+  const kind = String(type || "").toUpperCase();
+  return kind === "VIDEO" || kind === "REELS";
+}
+
+function toFramerPost(node) {
+  const video = isVideo(node?.mediaType || node?.type);
+  const src = video ? node.thumbnailUrl || node.mediaUrl : node.mediaUrl || node.thumbnailUrl;
+  if (!src) return null;
+  const caption = firstLine(node.caption);
+  return {
+    src,
+    alt: caption,
+    caption,
+    href: node.permalink,
+    video,
+  };
+}
+
+async function buildFeedframer(key) {
+  const url = new URL(FRAMER);
+  url.searchParams.set("api_key", key);
+  url.searchParams.set("page[size]", String(Math.max(LIMIT, 6)));
+  url.searchParams.set("sort", "-published_at");
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), FETCH_MS);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(graphError(data) || `framer ${res.status}`);
+    const posts = (data?.posts || []).map(toFramerPost).filter(Boolean).slice(0, LIMIT);
+    if (!posts.length) throw new Error("feed vazio");
+    return { ok: true, fonte: "feedframer", atualizadoEm: new Date().toISOString(), posts };
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function buildMeta() {
   const token = await currentToken();
   if (!token) throw new Error("sem IG_TOKEN");
   const data = await callGraph("me/media", {
@@ -134,7 +171,26 @@ async function build() {
   });
   const posts = (data?.data || []).map(toPost).filter(Boolean).slice(0, LIMIT);
   if (!posts.length) throw new Error("feed vazio");
-  return { ok: true, atualizadoEm: new Date().toISOString(), posts };
+  return { ok: true, fonte: "meta", atualizadoEm: new Date().toISOString(), posts };
+}
+
+async function build() {
+  const errors = [];
+  const framerKey = process.env.FEEDFRAMER_KEY;
+  if (framerKey) {
+    try {
+      return await buildFeedframer(framerKey);
+    } catch (err) {
+      errors.push(err.message);
+      console.error("insta feedframer", err.message);
+    }
+  }
+  try {
+    return await buildMeta();
+  } catch (err) {
+    errors.push(err.message);
+  }
+  throw new Error(errors.filter(Boolean).join("; ") || "sem fonte de feed");
 }
 
 export async function getInstaFeed() {

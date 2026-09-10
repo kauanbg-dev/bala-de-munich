@@ -91,19 +91,29 @@ Cache local: `data/copa-cache.json` (gitignored). Na Vercel o cache vai em `/tmp
 
 ## Feed do Instagram
 
-O bloco "Feed" tenta puxar os últimos posts de `@balademunich` pela API da Meta (`graph.instagram.com`, Business Login for Instagram). Sem token configurado, ou se a Meta falhar, a seção fica com as fotos locais do `gallery` no `data.js` — nunca fica vazia.
+O bloco "Feed" puxa os posts do `@balademunich` sozinho. A fonte principal é o [Feedframer](https://feedframer.com/pricing) (plano **Free**, sem marca d'água, sem limite de requisição). Eles ligam a conta profissional, renovam o token da Meta e servem as fotos num CDN que não expira. Sem chave, ou se a API falhar, a seção fica com as fotos locais do `gallery` no `data.js` — nunca fica vazia.
+
+Por que não Elfsight/SnapWidget/LightWidget: o plano grátis deles ou coloca marca d'água, ou **não funciona em site HTTPS** (caso do LightWidget). O Feedframer devolve JSON e o site desenha os cards com o visual do Bala, então não tem logo de terceiro.
+
+Como ligar (uma vez):
+
+1. Cria conta em [feedframer.com/register](https://feedframer.com/register) e confirma o e-mail.
+2. **Connect Instagram Account** e entra com a `@balademunich` (conta profissional).
+3. **Settings → API Keys** → copia a chave da conta (64 caracteres).
+4. Na Vercel: **Settings → Environment Variables** → `FEEDFRAMER_KEY` = essa chave → **Production** → **Redeploy**.
+
+Não cola a chave no chat nem no GitHub. No plano grátis o Feedframer atualiza o acervo **1× por dia** (Premium, US$ 6/mês, atualiza de hora em hora). O site consulta `/api/feed` a cada 10 min, então um post novo pode levar até o ciclo diário deles pra aparecer.
 
 Variáveis:
 
-- `IG_TOKEN` — token longo do Instagram (60 dias). Obrigatório pro feed ao vivo.
-- `IG_LIMIT` — quantos posts mostrar (padrão 3).
+- `FEEDFRAMER_KEY` — chave do Feedframer. Caminho principal.
+- `IG_TOKEN` — token longo da Meta (reserva). Só entra se o Feedframer falhar.
+- `IG_LIMIT` — quantos posts mostrar (padrão 3; o grátis do Feedframer entrega até 6).
 - `IG_CACHE_MS` — validade do cache em memória (padrão 10 min).
 
-Como gerar o token: no painel de apps da Meta, criar um app com o produto Instagram, configurar o Business Login e gerar um token longo pra conta. Como o app serve só a conta do próprio time, não precisa de fluxo de login nem de página do Facebook.
+Se usar só `IG_TOKEN`: o token se renova sozinho depois de 30 dias e o novo vai pro Redis (as mesmas `KV_REST_API_URL` / `KV_REST_API_TOKEN` do MVP). As URLs de imagem da Meta são assinadas e expiram em horas, por isso esse cache é curto e só em memória.
 
-O token se renova sozinho: passados 30 dias, a próxima requisição troca ele por um novo de 60 dias e guarda no Redis (as mesmas `KV_REST_API_URL` / `KV_REST_API_TOKEN` do MVP). Sem Redis o site funciona igual, mas aí alguém tem que trocar o `IG_TOKEN` na Vercel antes dos 60 dias.
-
-Cuidado ao mexer: as URLs de imagem da Meta são assinadas e expiram em horas. Por isso o cache é curto e só em memória — gravar em disco devolveria link morto, que vira imagem quebrada na tela.
+## Votação de MVP
 
 ## Votação de MVP
 
