@@ -120,9 +120,9 @@ function htmlLines(html) {
     .filter(Boolean);
 }
 
-async function fetchText(url) {
+async function fetchText(url, timeoutMs = FETCH_MS) {
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), FETCH_MS);
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const res = await fetch(url, {
       signal: ctrl.signal,
@@ -748,7 +748,9 @@ function toFriendly(match) {
 }
 
 async function fetchFriendlies() {
-  const html = await fetchText(`${BASE}/partidas`);
+  // Página inteira do Next (~500 KB) e a função tem 10s de teto na Vercel: se
+  // demorar, é melhor devolver a Copa sem amistoso do que estourar o limite.
+  const html = await fetchText(`${BASE}/partidas`, 6_000);
   const list = friendlyList(flightPayload(html));
   if (!list) throw new Error("amistosos sem payload");
   const ours = list
