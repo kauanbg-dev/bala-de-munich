@@ -80,6 +80,22 @@ Se a página mudar de formato, a seção mantém o último acervo em cache e a C
 
 Cache local: `data/copa-cache.json` (gitignored). Na Vercel o cache vai em `/tmp`. Sem internet, cai no `data.js`.
 
+## Feed do Instagram
+
+O bloco "Feed" tenta puxar os últimos posts de `@balademunich` pela API da Meta (`graph.instagram.com`, Business Login for Instagram). Sem token configurado, ou se a Meta falhar, a seção fica com as fotos locais do `gallery` no `data.js` — nunca fica vazia.
+
+Variáveis:
+
+- `IG_TOKEN` — token longo do Instagram (60 dias). Obrigatório pro feed ao vivo.
+- `IG_LIMIT` — quantos posts mostrar (padrão 3).
+- `IG_CACHE_MS` — validade do cache em memória (padrão 10 min).
+
+Como gerar o token: no painel de apps da Meta, criar um app com o produto Instagram, configurar o Business Login e gerar um token longo pra conta. Como o app serve só a conta do próprio time, não precisa de fluxo de login nem de página do Facebook.
+
+O token se renova sozinho: passados 30 dias, a próxima requisição troca ele por um novo de 60 dias e guarda no Redis (as mesmas `KV_REST_API_URL` / `KV_REST_API_TOKEN` do MVP). Sem Redis o site funciona igual, mas aí alguém tem que trocar o `IG_TOKEN` na Vercel antes dos 60 dias.
+
+Cuidado ao mexer: as URLs de imagem da Meta são assinadas e expiram em horas. Por isso o cache é curto e só em memória — gravar em disco devolveria link morto, que vira imagem quebrada na tela.
+
 ## Votação de MVP
 
 - Público: `/#mvp`

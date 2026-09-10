@@ -594,11 +594,39 @@ h1 {
 .feed-card span {
   position: absolute;
   left: 12px;
+  right: 12px;
   bottom: 10px;
   font-family: var(--font-display);
   letter-spacing: 0.08em;
   font-size: 1.15rem;
   text-shadow: 0 2px 12px #000;
+  /* Legenda do Instagram é texto livre: corta em duas linhas em vez de vazar. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.feed-play {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(7, 7, 10, 0.7);
+  border: 1px solid rgba(244, 234, 214, 0.35);
+}
+
+.feed-play::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 54%;
+  transform: translate(-50%, -50%);
+  border-left: 8px solid var(--paper);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
 }
 
 .nav-toggle {

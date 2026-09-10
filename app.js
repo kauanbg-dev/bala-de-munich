@@ -406,16 +406,38 @@ const pullCopaLive = async () => {
 pullCopaLive();
 window.setInterval(pullCopaLive, 60_000);
 
-document.getElementById("feed-grid").innerHTML = club.gallery
-  .slice(0, 3)
-  .map(
-    (item) => `
+const paintFeed = (posts) => {
+  const grid = document.getElementById("feed-grid");
+  if (!grid) return;
+  grid.innerHTML = posts
+    .slice(0, 3)
+    .map(
+      (item) => `
     <a class="feed-card" href="${item.href || club.instagram}" target="_blank" rel="noreferrer">
-      <img src="${item.src}" alt="${item.alt}" />
+      <img src="${item.src}" alt="${item.alt}" loading="lazy" />
+      ${item.video ? `<i class="feed-play" aria-hidden="true"></i>` : ""}
       <span>${item.caption}</span>
     </a>`
-  )
-  .join("");
+    )
+    .join("");
+};
+
+paintFeed(club.gallery);
+
+// As fotos do data.js são o piso: só saem da tela se o Instagram responder.
+const pullInstaFeed = async () => {
+  try {
+    const res = await fetch("/api/feed", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data?.ok && Array.isArray(data.posts) && data.posts.length) paintFeed(data.posts);
+  } catch {
+    /* mantém data.js */
+  }
+};
+
+pullInstaFeed();
+window.setInterval(pullInstaFeed, 10 * 60_000);
 
 document.getElementById("squad").innerHTML = club.squad
   .map(
