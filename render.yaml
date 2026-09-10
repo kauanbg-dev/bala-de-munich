@@ -11,4 +11,4 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: MVP_ADMIN_PIN
-        value: tteuw
+        sync: false

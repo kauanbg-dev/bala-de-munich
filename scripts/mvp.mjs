@@ -28,7 +28,7 @@ export const allow = [
 ];
 export const pollId = process.env.MVP_POLL_ID || "semifinal-e2";
 export const durationHours = 2;
-const startPin = process.env.MVP_ADMIN_PIN || "tteuw";
+const startPin = process.env.MVP_ADMIN_PIN || "866283";
 
 function emptyStore() {
   return { polls: {} };
@@ -227,7 +227,6 @@ export async function handleMvp(req) {
     return result({ ...mvpPayload(poll, voter), degraded }, 200, headers);
   }
   if (req.method !== "POST") return result({ error: "method" }, 405, headers);
-  if (degraded) return result({ error: "storage" }, 503, headers);
 
   let body;
   try {
@@ -240,7 +239,9 @@ export async function handleMvp(req) {
   const adminActions = ["auth", "start", "pause", "resume", "close", "reset"];
   if (adminActions.includes(action)) {
     if (String(body.pin || "") !== startPin) return result({ error: "pin" }, 403, headers);
+    // "auth" só confere o código, não toca no banco: dá pra entrar mesmo com ele fora do ar.
     if (action === "auth") return result({ ok: true }, 200, headers);
+    if (degraded) return result({ error: "storage" }, 503, headers);
     const win = getWindow(poll);
     const now = new Date();
     if (action === "start") {
@@ -278,6 +279,7 @@ export async function handleMvp(req) {
 
   const reqPoll = String(body.poll || "");
   if (reqPoll !== pollId) return result({ error: "invalid" }, 400, headers);
+  if (degraded) return result({ error: "storage" }, 503, headers);
 
   const win = getWindow(poll);
   if (!win.started || !win.open) return result(mvpPayload(poll, voter), 403, headers);

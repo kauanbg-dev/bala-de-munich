@@ -18,7 +18,7 @@ git push origin main
 3. Framework Preset: **Other**. **Build Command** vazio. **Output Directory** vazio. Root `.`
 4. **Environment Variables**: `MVP_ADMIN_PIN` = um código novo, só seu.
 
-   Troca mesmo. O padrão do código é `tteuw`, que está estampado no site inteiro — quem descobrir o `?admin` acerta de primeira e abre, pausa ou zera a votação.
+   O padrão do código é `866283`, que está escrito em `scripts/mvp.mjs`. Se o repo for público, qualquer um consegue ler ele ali. Definindo `MVP_ADMIN_PIN` na Vercel com outro número, esse valor manda e o do código deixa de valer.
 5. **Storage** (ou **Storage** no projeto depois do primeiro deploy) → Create → **Upstash Redis** (às vezes aparece como KV / Redis) → **Connect** neste projeto.
 
    Isso cria `KV_REST_API_URL` + `KV_REST_API_TOKEN` (ou `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`). Sem Redis/KV, os votos da urna somem quando a função esfria.
@@ -29,7 +29,7 @@ Depois de no ar:
 
 - Site: a URL da Vercel
 - Votar: `https://SUA-URL/#mvp`
-- Admin (iniciar/pausar): `https://SUA-URL/?admin#mvp` · código `tteuw`
+- Admin (iniciar/pausar): `https://SUA-URL/?admin#mvp` · código `866283` (ou o `MVP_ADMIN_PIN` que você definir)
 
 Cada push no GitHub (`master`) publica de novo. Copa e MVP já funcionam nessa URL; não precisa do Render.
 
@@ -40,7 +40,7 @@ Alternativa se quiser um processo Node 24h (`npm start`):
 1. Conta em [render.com](https://render.com) com o GitHub `kauanbg-dev`.
 2. **New → Web Service** → o repo do site.
 3. Runtime **Node**, build `npm install`, start `npm start`.
-4. Variável `MVP_ADMIN_PIN` = `tteuw` (opcional; esse já é o padrão).
+4. Variável `MVP_ADMIN_PIN` = o código que você quiser (o padrão do código é `866283`).
 5. Create Web Service.
 
 No plano gratuito o Render **dorme** ~15 min sem visita. Na Vercel isso não acontece.
@@ -69,7 +69,7 @@ Cache local: `data/copa-cache.json` (gitignored). Na Vercel o cache vai em `/tmp
 
 - Público: `/#mvp`
 - Admin: `/?admin#mvp`
-- Código: `tteuw` (ou `MVP_ADMIN_PIN` no host)
+- Código: `866283` (ou o `MVP_ADMIN_PIN` definido no host, que tem prioridade)
 - **Iniciar 2h** abre a urna. **Pausar** / **Retomar** congelam o relógio. **Encerrar** fecha na hora e mantém os votos. **Recomeçar do 0** apaga tudo.
 - Em casa os votos ficam em `data/votes.json` — **não** vão pro GitHub
 - Na Vercel os votos ficam no Redis/KV. Sem banco, só no `/tmp` e somem no cold start
