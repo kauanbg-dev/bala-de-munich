@@ -85,6 +85,7 @@ code { color: var(--gold); font-size: 0.9em; }
 .btn-gold { background: var(--gold); color: #1a1308; }
 .btn-red { background: var(--red); color: white; }
 .btn-ghost { border-color: var(--line); color: var(--paper); }
+.btn-ghost:hover { border-color: rgba(212, 177, 90, 0.55); color: var(--gold); }
 
 .btn:disabled {
   cursor: not-allowed;
@@ -2079,6 +2080,9 @@ footer p {
   }
   .topbar nav.is-open { display: flex; }
   .topbar { flex-wrap: wrap; }
+  /* No celular a barra já tem marca, MVP e menu: um quarto item quebra a linha.
+     O link de amistosos continua ali dentro do menu. */
+  .btn-topo { display: none; }
   .mvp-stage { padding: 18px 14px 20px; }
   .mvp-seg { min-width: 64px; padding: 7px 8px 5px; }
   .mvp-seg b { font-size: 2.05rem; }
