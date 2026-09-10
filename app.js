@@ -1,7 +1,5 @@
 const club = window.CLUB;
 
-document.getElementById("kicker").textContent =
-  `${club.platform}  ·  ${club.league}  ·  ${club.region}`;
 document.getElementById("motto").textContent = club.motto;
 document.getElementById("instagram").href = club.instagram;
 document.getElementById("lives").href = club.links;
