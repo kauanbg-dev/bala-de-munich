@@ -898,25 +898,50 @@ h2 {
 }
 
 .dot {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
+  position: relative;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  margin: 0 auto 5px;
-  background: linear-gradient(160deg, #e2213c, #9d0d22);
-  border: 1px solid rgba(244, 234, 214, 0.75);
+  margin: 0 auto 7px;
+  background: #0b0d0b;
+  border: 2px solid rgba(226, 33, 60, 0.9);
   box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    0 6px 16px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.dot .face {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 22%;
+  display: block;
+}
+
+.dot .face.fallback {
+  object-fit: contain;
+  padding: 7px;
+  background: #050506;
 }
 
 .dot i {
+  position: absolute;
+  right: -6px;
+  bottom: -5px;
+  min-width: 22px;
+  padding: 1px 4px;
+  border-radius: 999px;
   font-style: normal;
   font-family: var(--font-display);
-  font-size: 0.9rem;
+  font-size: 0.72rem;
+  line-height: 1.25;
   letter-spacing: 0.02em;
-  color: var(--paper);
+  text-align: center;
+  color: #16130f;
+  background: var(--gold);
+  border: 1px solid rgba(9, 12, 10, 0.55);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
 }
 
 .slot span {
@@ -947,7 +972,7 @@ h2 {
 }
 
 .slot.gk .dot {
-  background: linear-gradient(160deg, #2f7d4f, #17492c);
+  border-color: rgba(47, 125, 79, 0.95);
 }
 
 .slot.gk b {
@@ -965,15 +990,15 @@ h2 {
 }
 
 .slot.coach .dot {
-  width: 26px;
-  height: 26px;
-  background: linear-gradient(160deg, #f4ead6, #c8b78d);
+  width: 36px;
+  height: 36px;
   border-color: rgba(212, 177, 90, 0.9);
 }
 
 .slot.coach .dot i {
-  color: #16130f;
-  font-size: 0.7rem;
+  font-size: 0.6rem;
+  min-width: 0;
+  background: var(--paper);
 }
 
 .pitch-bench {
@@ -1012,12 +1037,14 @@ h2 {
 }
 
 .pitch-bench img {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: center 22%;
   background: #050506;
   border: 1px solid rgba(244, 234, 214, 0.3);
+  flex-shrink: 0;
 }
 
 .pitch-bench img.fallback {
@@ -1507,10 +1534,11 @@ footer p {
     width: 104px;
     padding: 6px 7px 7px;
   }
-  .pitch-bench img { width: 20px; height: 20px; }
+  .pitch-bench img { width: 22px; height: 22px; }
   .pitch-bench b { font-size: 0.58rem; }
-  .dot { width: 26px; height: 26px; }
-  .dot i { font-size: 0.78rem; }
+  .dot { width: 34px; height: 34px; }
+  .dot i { font-size: 0.62rem; min-width: 19px; right: -5px; }
+  .slot.coach .dot { width: 30px; height: 30px; }
   footer {
     padding: 20px 168px 20px 16px;
   }

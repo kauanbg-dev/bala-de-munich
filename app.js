@@ -338,15 +338,24 @@ const pitchMarkings = `
     <path d="M292 380 A 12 12 0 0 0 280 392" />
   </svg>`;
 
+const faceOf = (player, extraClass = "") => {
+  const cls = ["face", extraClass, player?.photo ? "" : "fallback"].filter(Boolean).join(" ");
+  const src = player?.photo || "assets/crest.png";
+  return `<img class="${cls}" src="${src}" alt="" loading="lazy" />`;
+};
+
 const pitchSlots = club.formation.slots
   .map((slot) => {
     const kind = slot.pos === "GOL" ? "gk" : slot.pos === "TEC" ? "coach" : "";
     const player = squadMatch(slot.tag);
     const num = player && player.number > 0 ? String(player.number).padStart(2, "0") : "";
-    const token = slot.pos === "TEC" ? "TEC" : num || slot.pos;
+    const badge = player?.rating || (slot.pos === "TEC" ? "TEC" : num);
     return `
     <div class="slot ${kind}" style="left:${slot.x}%;top:${slot.y}%">
-      <div class="dot"><i>${token}</i></div>
+      <div class="dot">
+        ${faceOf(player)}
+        ${badge ? `<i>${badge}</i>` : ""}
+      </div>
       <span><small>${slot.pos === "TEC" ? "TEC" : slot.pos}</small><b>${slot.tag}</b></span>
     </div>`;
   })
@@ -366,12 +375,11 @@ const pitchBench = benchPlayers.length
         .map(
           (p) => `
         <li>
-          ${
-            p.photo
-              ? `<img src="${p.photo}" alt="" />`
-              : `<img class="fallback" src="assets/crest.png" alt="" />`
-          }
-          <span><b>${p.tag}</b><small>${p.pos !== "—" ? p.pos : "TEC"}</small></span>
+          ${faceOf(p, "bench-face")}
+          <span>
+            <b>${p.tag}</b>
+            <small>${[p.pos !== "—" ? p.pos : "TEC", p.rating].filter(Boolean).join(" · ")}</small>
+          </span>
         </li>`
         )
         .join("")}
