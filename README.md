@@ -22,7 +22,9 @@ git push origin main:master
 
 2. Em [vercel.com](https://vercel.com) (mesma conta do Pilates): **Add New… → Project → Import** o repo **Balademunich**.
 3. Framework Preset: **Other**. **Build Command** vazio. **Output Directory** vazio. Root `.`
-4. **Environment Variables**: `MVP_ADMIN_PIN` = `tteuw`
+4. **Environment Variables**: `MVP_ADMIN_PIN` = um código novo, só seu.
+
+   Troca mesmo. O padrão do código é `tteuw`, que está estampado no site inteiro — quem descobrir o `?admin` acerta de primeira e abre, pausa ou zera a votação.
 5. **Storage** (ou **Storage** no projeto depois do primeiro deploy) → Create → **Upstash Redis** (às vezes aparece como KV / Redis) → **Connect** neste projeto.
 
    Isso cria `KV_REST_API_URL` + `KV_REST_API_TOKEN` (ou `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`). Sem Redis/KV, os votos da urna somem quando a função esfria.
@@ -78,6 +80,9 @@ Cache local: `data/copa-cache.json` (gitignored). Na Vercel o cache vai em `/tmp
 - Em casa os votos ficam em `data/votes.json` — **não** vão pro GitHub
 - Na Vercel os votos ficam no Redis/KV. Sem banco, só no `/tmp` e somem no cold start
 - Um voto por navegador, urna de 2 horas depois de **Iniciar**
+- Com a urna aberta dá pra trocar de jogador (clicando em outro) ou tirar o voto. Trocar não infla o total. Depois de **Encerrar** o voto trava, senão daria pra sacar voto do vencedor depois do resultado.
+- Se o Redis não responder, a API devolve `503` e **recusa gravar**. Escrever um estado vazio por cima apagaria a urna inteira, então nesse caso ninguém vota até o banco voltar — e nenhum voto se perde.
+- O público só vê a porcentagem. A contagem de votos aparece só pra quem está logado no admin.
 
 ## Como editar
 

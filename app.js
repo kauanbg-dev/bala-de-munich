@@ -460,6 +460,7 @@ let mvpState = {
   started: false,
   open: false,
   paused: false,
+  degraded: false,
   remainingMs: 0,
   endsAt: null,
 };
@@ -529,7 +530,7 @@ const renderMvp = () => {
   const closeBtn = document.getElementById("mvp-close");
   const resetBtn = document.getElementById("mvp-reset");
   if (!grid || !status) return;
-  const locked = !mvpState.open;
+  const locked = !mvpState.open || mvpState.degraded;
   const showCounts = Boolean(mvpAdminPin);
   paintMvpClock();
   if (mvpAdminOps && mvpAdminPin) {
@@ -592,6 +593,9 @@ const renderMvp = () => {
     status.textContent = showCounts
       ? `Votação encerrada. ${mvpState.total} ${plural} no total.`
       : "Votação encerrada.";
+  }
+  if (mvpState.degraded) {
+    status.textContent = "O banco de votos não respondeu agora. Ninguém perdeu voto — recarrega a página em instantes.";
   }
   const adminHint = document.getElementById("mvp-admin-hint");
   if (adminHint) {
@@ -659,6 +663,7 @@ const applyMvpData = (data) => {
   mvpState.started = Boolean(data.started);
   mvpState.open = Boolean(data.open);
   mvpState.paused = Boolean(data.paused);
+  mvpState.degraded = Boolean(data.degraded);
   mvpState.remainingMs = Number(data.remainingMs) || 0;
   mvpState.endsAt = data.endsAt || null;
   if ("voted" in data) {
@@ -734,7 +739,11 @@ const postMvpAdmin = async (action) => {
     setMvpAdminError("Código admin errado.");
     throw new Error("pin");
   }
-  if (action !== "auth") applyMvpData(data);
+  if (res.status === 503) {
+    setMvpAdminError("O banco de votos não respondeu. Nada foi alterado, tenta de novo.");
+    throw new Error("storage");
+  }
+  if (action !== "auth" && (res.ok || res.status === 409)) applyMvpData(data);
   renderMvp();
   return res;
 };

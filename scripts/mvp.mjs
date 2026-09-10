@@ -49,42 +49,54 @@ function kvEnabled() {
   return Boolean(kvConfig());
 }
 
-async function kvCommand(parts) {
+async function kvCommand(parts, attempts = 2) {
   const kv = kvConfig();
-  const res = await fetch(kv.url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${kv.token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(parts),
-  });
-  if (!res.ok) throw new Error(`kv ${res.status}`);
-  return res.json();
+  let lastErr;
+  for (let i = 0; i < attempts; i += 1) {
+    try {
+      const res = await fetch(kv.url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${kv.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(parts),
+      });
+      if (!res.ok) throw new Error(`kv ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr;
 }
 
+// Uma leitura que falha nunca pode virar escrita: gravar um store vazio por cima
+// apagaria a urna inteira. Por isso a falha volta marcada e o handler recusa escrever.
 async function readVotes() {
   if (kvEnabled()) {
     try {
       const data = await kvCommand(["GET", kvKey]);
       const raw = data?.result;
-      if (!raw) return emptyStore();
+      if (!raw) return { store: emptyStore(), degraded: false };
       const obj = typeof raw === "string" ? JSON.parse(raw) : raw;
-      if (!obj.polls || typeof obj.polls !== "object") return emptyStore();
-      return obj;
+      if (!obj.polls || typeof obj.polls !== "object") return { store: emptyStore(), degraded: false };
+      return { store: obj, degraded: false };
     } catch (err) {
       console.error("mvp kv get", err.message);
-      return emptyStore();
+      return { store: emptyStore(), degraded: true };
     }
   }
   try {
     const raw = fs.readFileSync(votesFile, "utf8");
-    if (!raw.trim()) return emptyStore();
+    if (!raw.trim()) return { store: emptyStore(), degraded: false };
     const obj = JSON.parse(raw);
-    if (!obj.polls || typeof obj.polls !== "object") return emptyStore();
-    return obj;
-  } catch {
-    return emptyStore();
+    if (!obj.polls || typeof obj.polls !== "object") return { store: emptyStore(), degraded: false };
+    return { store: obj, degraded: false };
+  } catch (err) {
+    if (err.code === "ENOENT") return { store: emptyStore(), degraded: false };
+    console.error("mvp file get", err.message);
+    return { store: emptyStore(), degraded: err instanceof SyntaxError ? false : true };
   }
 }
 
@@ -208,11 +220,14 @@ export async function handleMvp(req) {
     headers["Set-Cookie"] = voterCookie(voter);
   }
 
-  const store = await readVotes();
+  const { store, degraded } = await readVotes();
   const poll = ensurePoll(store);
 
-  if (req.method === "GET") return result(mvpPayload(poll, voter), 200, headers);
+  if (req.method === "GET") {
+    return result({ ...mvpPayload(poll, voter), degraded }, 200, headers);
+  }
   if (req.method !== "POST") return result({ error: "method" }, 405, headers);
+  if (degraded) return result({ error: "storage" }, 503, headers);
 
   let body;
   try {
