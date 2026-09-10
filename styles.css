@@ -2240,10 +2240,6 @@ footer p {
 .ami-card.is-D::before { background: var(--gold); }
 .ami-card.is-L::before { background: var(--red); }
 .ami-card.is-next::before { background: repeating-linear-gradient(180deg, var(--gold) 0 6px, transparent 6px 12px); }
-.ami-card.is-quit { opacity: 0.62; }
-.ami-card.is-quit::before { background: repeating-linear-gradient(180deg, var(--mute) 0 4px, transparent 4px 10px); }
-.ami-card.is-quit:hover { opacity: 1; }
-
 .ami-top {
   display: flex;
   align-items: center;

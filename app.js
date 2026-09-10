@@ -156,9 +156,7 @@ function paintFriendlies(clubMeta) {
     return;
   }
 
-  // Jogo que os times quitaram no meio não entra na campanha: fica listado, mas
-  // sem contar vitória, empate, derrota ou gol.
-  const valid = list.filter((m) => !m.quit && m.result);
+  const valid = list.filter((m) => m.result);
   const count = (letter) => valid.filter((m) => m.result === letter).length;
   const goals = valid.reduce(
     (acc, m) => ({ for: acc.for + (Number(m.us) || 0), against: acc.against + (Number(m.them) || 0) }),
@@ -193,7 +191,6 @@ function paintFriendlies(clubMeta) {
   grid.innerHTML = shown
     .map((m) => {
       const done = Boolean(m.result);
-      const tag = !done ? "A jogar" : m.quit ? "Quitaram" : label[m.result];
       const foot = [
         m.star ? `<span class="ami-star">Craque · ${m.star}</span>` : "",
         m.scorers?.length
@@ -203,13 +200,13 @@ function paintFriendlies(clubMeta) {
           : "",
       ].filter(Boolean);
       return `
-      <article class="ami-card${m.quit ? " is-quit" : done ? ` is-${m.result}` : " is-next"}">
+      <article class="ami-card${done ? ` is-${m.result}` : " is-next"}">
         <header class="ami-top">
           <span class="ami-date">${m.date}</span>
-          <span class="ami-tag">${tag}</span>
+          <span class="ami-tag">${done ? label[m.result] : "A jogar"}</span>
         </header>
-        ${side("Bala de Munich", ourCrest, done ? m.us : "–", !m.quit && m.result === "W")}
-        ${side(m.opponent, m.crest, done ? m.them : "–", !m.quit && m.result === "L")}
+        ${side("Bala de Munich", ourCrest, done ? m.us : "–", m.result === "W")}
+        ${side(m.opponent, m.crest, done ? m.them : "–", m.result === "L")}
         <footer class="ami-foot">
           ${foot.join("")}
           <span class="ami-format">${m.format || "11v11"}</span>

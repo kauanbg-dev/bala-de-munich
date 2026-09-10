@@ -695,19 +695,19 @@ function friendlyList(flight) {
   return null;
 }
 
+const brParts = (date, opts) =>
+  new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", ...opts }).formatToParts(date);
+
 function friendlyDate(iso) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "–";
-  const parts = new Intl.DateTimeFormat("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    weekday: "short",
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).formatToParts(d);
-  const get = (type) => parts.find((p) => p.type === type)?.value.replace(".", "") || "";
-  return `${get("weekday")} ${get("day")}/${get("month")} · ${get("hour")}:${get("minute")}`;
+  // Quem jogou 00:21 de quarta jogou na terça à noite. Sem recuar a madrugada
+  // para a noite anterior, a lista marca jogo em dia que ninguém entrou em campo.
+  const night = new Date(d.getTime() - 5 * 3600 * 1000);
+  const day = brParts(night, { weekday: "short", day: "2-digit", month: "2-digit" });
+  const time = brParts(d, { hour: "2-digit", minute: "2-digit" });
+  const get = (parts, type) => parts.find((p) => p.type === type)?.value.replace(".", "") || "";
+  return `${get(day, "weekday")} ${get(day, "day")}/${get(day, "month")} · ${get(time, "hour")}:${get(time, "minute")}`;
 }
 
 function friendlyCrest(name, avatar) {
@@ -716,6 +716,9 @@ function friendlyCrest(name, avatar) {
 }
 
 function toFriendly(match) {
+  // Jogo que os times quitaram no meio fica sempre 0–0 e não diz nada sobre o
+  // time, então nem entra na lista.
+  if (match?.abandonada) return null;
   if (!Array.isArray(match?.lados) || match.lados.length !== 2) return null;
   const sides = match.lados.map((side) => ({ ...side, club: canonClub(side.time || side.clube) }));
   const ours = sides.find((side) => isUs(side.club));
@@ -741,7 +744,6 @@ function toFriendly(match) {
     score: `${us}–${them}`,
     result: us > them ? "W" : us < them ? "L" : "D",
     format: `${Number(ours.jogadores) || 11}v${Number(theirs.jogadores) || 11}`,
-    quit: Boolean(match.abandonada),
     star: ours.craque ? canonPlayer(ours.craque) || ours.craque : null,
     scorers,
   };

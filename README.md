@@ -63,7 +63,7 @@ Pra tabela ao vivo + votação juntas: `npm start` (precisa do Node).
 
 Tabela, chave, última/próxima série, artilharia e assistências vêm do [copastreamers.com.br](https://copastreamers.com.br). O site consulta `/api/copa` a cada 60s. Elenco, fotos, Instagram, MVP e Sociais continuam em `data.js`.
 
-Os amistosos saem da página `/partidas` da Copa, que não tem API: o parser lê o payload do Next embutido no HTML e fica só com os jogos do Bala. Jogo que os times quitaram no meio aparece marcado como "Quitaram" e não entra na campanha (vitórias, empates, derrotas e gols). Se a página mudar de formato, a seção mantém o último acervo em cache e a Copa continua atualizando normalmente.
+Os amistosos saem da página `/partidas` da Copa, que não tem API: o parser lê o payload do Next embutido no HTML e fica só com os jogos do Bala. Jogo que os times quitaram no meio é descartado — fica sempre 0–0 e não diz nada sobre o time. Se a página mudar de formato, a seção mantém o último acervo em cache e a Copa continua atualizando normalmente.
 
 Cache local: `data/copa-cache.json` (gitignored). Na Vercel o cache vai em `/tmp`. Sem internet, cai no `data.js`.
 
