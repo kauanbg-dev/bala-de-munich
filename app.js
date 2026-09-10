@@ -593,6 +593,7 @@ const renderMvp = () => {
   }
   const adminHint = document.getElementById("mvp-admin-hint");
   if (adminHint) {
+    adminHint.classList.remove("is-error");
     if (!mvpAdminPin) {
       adminHint.textContent = "";
     } else if (!mvpState.started) {
@@ -703,17 +704,30 @@ const showMvpAdminOps = () => {
 
 if (mvpAdminPin) showMvpAdminOps();
 
+const setMvpAdminError = (message) => {
+  const hint = document.getElementById("mvp-admin-hint");
+  if (!hint) return;
+  hint.textContent = message;
+  hint.classList.toggle("is-error", Boolean(message));
+};
+
 const postMvpAdmin = async (action) => {
-  const res = await fetch("/api/mvp", {
-    method: "POST",
-    credentials: "same-origin",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ poll: mvpPoll.id, action, pin: mvpAdminPin }),
-  });
-  const data = await res.json().catch(() => ({}));
+  let res;
+  let data;
+  try {
+    res = await fetch("/api/mvp", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ poll: mvpPoll.id, action, pin: mvpAdminPin }),
+    });
+    data = await res.json().catch(() => ({}));
+  } catch {
+    setMvpAdminError("Sem conexão com o servidor da urna. Tenta de novo.");
+    throw new Error("network");
+  }
   if (res.status === 403) {
-    const status = document.getElementById("mvp-status");
-    if (status) status.textContent = "Código admin errado.";
+    setMvpAdminError("Código admin errado.");
     throw new Error("pin");
   }
   if (action !== "auth") applyMvpData(data);

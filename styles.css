@@ -819,6 +819,11 @@ h1 {
   letter-spacing: 0.04em;
 }
 
+.mvp-admin-hint.is-error {
+  color: #ff8f9d;
+  font-weight: 700;
+}
+
 .mvp-admin-hint:empty { display: none; }
 
 .mvp-start-wrap {
