@@ -326,7 +326,7 @@ const mvpKey = `mvp-vote:${mvpPoll.id}`;
 const mvpCandidates = club.squad.filter((p) => p.pos !== "—");
 const mvpCopy = document.getElementById("mvp-copy");
 if (mvpCopy) {
-  mvpCopy.textContent = `${mvpPoll.match}. Um voto por pessoa. Duração da votação: ${mvpPoll.durationHours} horas.`;
+  mvpCopy.textContent = `${mvpPoll.match}. Duração da votação: ${mvpPoll.durationHours} horas.`;
 }
 
 const asVoteMap = (totals) => {
@@ -373,6 +373,13 @@ const mvpPct = (tag) => {
   return Math.round((100 * (Number(mvpState.totals[tag]) || 0)) / mvpState.total);
 };
 
+const mvpVotesOf = (tag) => Number(mvpState.totals[tag]) || 0;
+
+const mvpRatingOf = (player) => {
+  const n = Number(String(player?.rating || "").trim().replace(",", "."));
+  return Number.isFinite(n) ? n : 0;
+};
+
 const renderMvp = () => {
   const grid = document.getElementById("mvp-grid");
   const status = document.getElementById("mvp-status");
@@ -384,6 +391,7 @@ const renderMvp = () => {
   const resetBtn = document.getElementById("mvp-reset");
   if (!grid || !status) return;
   const locked = mvpState.voted || !mvpState.open;
+  const showCounts = Boolean(mvpAdminPin);
   if (clock) {
     if (!mvpState.started) clock.textContent = "Aguardando início";
     else if (mvpState.paused) clock.textContent = `Pausada · ${formatRemain(mvpState.remainingMs)}`;
@@ -398,33 +406,43 @@ const renderMvp = () => {
     if (closeBtn) closeBtn.disabled = !mvpState.started || (!mvpState.open && !mvpState.paused);
     if (resetBtn) resetBtn.disabled = false;
   }
-  const ranked = [...mvpCandidates].sort(
-    (a, b) => (Number(mvpState.totals[b.tag]) || 0) - (Number(mvpState.totals[a.tag]) || 0)
-  );
-  const topVotes = Number(mvpState.totals[ranked[0]?.tag]) || 0;
-  const uniqueLead =
-    topVotes > 0 &&
-    ranked.filter((p) => (Number(mvpState.totals[p.tag]) || 0) === topVotes).length === 1
-      ? ranked[0]
-      : null;
+  const ranked = [...mvpCandidates].sort((a, b) => {
+    const voteDiff = mvpVotesOf(b.tag) - mvpVotesOf(a.tag);
+    if (voteDiff) return voteDiff;
+    const rateDiff = mvpRatingOf(b) - mvpRatingOf(a);
+    if (rateDiff) return rateDiff;
+    return String(a.tag).localeCompare(String(b.tag), "pt-BR");
+  });
+  const topVotes = mvpVotesOf(ranked[0]?.tag);
+  const uniqueLead = topVotes > 0 ? ranked[0] : null;
   const votingOver = mvpState.started && !mvpState.open && !mvpState.paused;
   const plural = mvpState.total === 1 ? "voto" : "votos";
   if (!mvpState.started) {
-    status.textContent = `Aguardando o Bala abrir a urna. Duração da votação: ${mvpPoll.durationHours} horas. Um voto por pessoa.`;
+    status.textContent = `Aguardando o Bala abrir a urna. Duração da votação: ${mvpPoll.durationHours} horas.`;
   } else if (mvpState.paused) {
-    status.textContent = `Votação pausada. ${mvpState.total} ${plural} até agora.`;
+    status.textContent = showCounts
+      ? `Votação pausada. ${mvpState.total} ${plural} até agora.`
+      : "Votação pausada.";
   } else if (mvpState.voted) {
-    status.textContent = `Voto registrado em ${mvpState.mine}. ${mvpState.total} ${plural} no total.`;
+    status.textContent = showCounts
+      ? `Voto registrado em ${mvpState.mine}. ${mvpState.total} ${plural} no total.`
+      : `Voto registrado em ${mvpState.mine}.`;
   } else if (mvpState.open) {
-    status.textContent = `${mvpState.total} ${plural} até agora. Escolhe um e confirma.`;
+    status.textContent = showCounts
+      ? `${mvpState.total} ${plural} até agora. Escolhe um e confirma.`
+      : "Escolhe um e confirma.";
   } else if (uniqueLead) {
-    status.textContent = `Votação encerrada. Vencedor: ${uniqueLead.tag}. ${mvpState.total} ${plural} no total.`;
+    status.textContent = showCounts
+      ? `Votação encerrada. Vencedor: ${uniqueLead.tag}. ${mvpState.total} ${plural} no total.`
+      : `Votação encerrada. Vencedor: ${uniqueLead.tag}.`;
   } else {
-    status.textContent = `Votação encerrada. ${mvpState.total} ${plural} no total.`;
+    status.textContent = showCounts
+      ? `Votação encerrada. ${mvpState.total} ${plural} no total.`
+      : "Votação encerrada.";
   }
   grid.innerHTML = ranked
     .map((p) => {
-      const n = Number(mvpState.totals[p.tag]) || 0;
+      const n = mvpVotesOf(p.tag);
       const pct = mvpPct(p.tag);
       const photo = p.photo || "assets/crest.png";
       const mine = mvpState.mine === p.tag;
@@ -443,7 +461,7 @@ const renderMvp = () => {
             <b>${p.tag}</b>
             <small>${p.pos}</small>
             <span class="mvp-bar" aria-hidden="true"><i style="width:${pct}%"></i></span>
-            <em>${n} · ${pct}%</em>
+            <em>${showCounts ? `${n} · ${pct}%` : `${pct}%`}</em>
             <button type="button" data-mvp="${p.tag}" ${locked ? "disabled" : ""}>${mine ? "Seu voto" : "Votar"}</button>
           </div>
         </article>`;

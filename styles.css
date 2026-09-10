@@ -1304,13 +1304,18 @@ h2 {
 
 footer {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 10px;
   padding: 28px 210px 28px 28px;
   color: var(--mute);
   border-top: 1px solid var(--line);
   font-size: 0.85rem;
+}
+
+footer .brand-crest {
+  margin-top: 1px;
+  flex-shrink: 0;
 }
 
 footer p {
@@ -1385,6 +1390,6 @@ footer p {
   h1 { font-size: 4.6rem; }
   .site-creator { right: 12px; bottom: 12px; }
   footer {
-    padding: 22px 18px 96px;
+    padding: 20px 168px 20px 16px;
   }
 }
