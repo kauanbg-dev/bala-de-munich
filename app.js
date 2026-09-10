@@ -233,8 +233,10 @@ const applyCopaPayload = (live) => {
   if (live.motto) club.motto = live.motto;
   if (live.lastMatch) club.lastMatch = live.lastMatch;
   if (live.nextMatch) club.nextMatch = live.nextMatch;
-  if (live.groupTable?.length) club.groupTable = live.groupTable;
-  if (live.bracket?.length) club.bracket = live.bracket;
+  if (live.groupTable?.some((row) => Number(row.j) > 0)) club.groupTable = live.groupTable;
+  if (live.bracket?.some((round) => round.ties?.some((t) => t.home && t.home !== "A definir"))) {
+    club.bracket = live.bracket;
+  }
   if (live.clubs) club.clubs = { ...club.clubs, ...live.clubs };
   club.results = mergeResults(club.results, live.results);
   club.scorers = mergeStatRows(club.scorers, live.scorers);

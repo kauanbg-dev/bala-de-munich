@@ -143,7 +143,7 @@ window.CLUB = {
       ties: [
         { id: "qf-0", home: "Bala de Munich", away: "Raposo FC", hs: 3, as: 1, date: "ter., 08/09 · 21:00", us: true },
         { id: "qf-1", home: "Apeludos FC", away: "Equipe X", hs: null, as: null, date: "A agendar" },
-        { id: "qf-2", home: "Cobra Del Toro FC", away: "Narizes FC", hs: null, as: null, date: "A agendar" },
+        { id: "qf-2", home: "Cobra Del Toro FC", away: "Narizes FC", hs: 2, as: 3, date: "qua., 09/09 · 20:30" },
         { id: "qf-3", home: "Osempic do Marcelo", away: "Botafofo", hs: 1, as: 3, date: "seg., 07/09 · 22:00" },
       ],
     },
@@ -153,7 +153,7 @@ window.CLUB = {
       key: "sf",
       ties: [
         { id: "sf-0", home: "Bala de Munich", away: "A definir", hs: null, as: null, date: "A agendar", us: true },
-        { id: "sf-1", home: "A definir", away: "Botafofo", hs: null, as: null, date: "A agendar" },
+        { id: "sf-1", home: "Narizes FC", away: "Botafofo", hs: null, as: null, date: "A agendar" },
       ],
     },
     {
@@ -166,9 +166,9 @@ window.CLUB = {
     },
   ],
   mvp: {
-    id: "quartas-raposo",
+    id: "semifinal-e2",
     title: "MVP da partida",
-    match: "Quartas · Bala de Munich 3–1 Raposo FC",
+    match: "Semifinal · Bala de Munich",
     durationHours: 2,
   },
 };

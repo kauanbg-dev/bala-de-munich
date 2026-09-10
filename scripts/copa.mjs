@@ -61,6 +61,34 @@ const CREST = {
   "A definir": null,
 };
 
+const SLUG_NAME = {
+  "tteuw-brkk": "Bala de Munich",
+  fontinnele: "Raposo FC",
+  nobru: "Apeludos FC",
+  "bak-thurzin": "Equipe X",
+  luqueta: "Cobra Del Toro FC",
+  coringa: "Narizes FC",
+  caiox: "Osempic do Marcelo",
+  piuzinho: "Botafofo",
+  kosky: "Kosky Korp",
+  tck: "RadiANTAS FC",
+  "renato-vicente": "Low Profile FC",
+};
+
+const SLUG_OWNER = {
+  "tteuw-brkk": "tteuw & Brkk",
+  fontinnele: "Fontinnele",
+  nobru: "Nobru",
+  "bak-thurzin": "Bak & Thurzin",
+  luqueta: "Luqueta",
+  coringa: "Coringa",
+  caiox: "Caiox",
+  piuzinho: "Piuzinho",
+  kosky: "–",
+  tck: "–",
+  "renato-vicente": "–",
+};
+
 let cache = null;
 let inflight = null;
 
@@ -484,37 +512,160 @@ function withGroupPos(stats, table) {
   };
 }
 
-async function buildLive() {
-  const [mataHtml, gruposHtml, teamHtml, artJson] = await Promise.all([
-    fetchText(`${BASE}/mata-mata`),
-    fetchText(`${BASE}/fase-de-grupos`),
-    fetchText(`${BASE}/times/${TEAM_SLUG}`),
-    fetchJson(`${BASE}/api/artilheiros`).catch(() => ({})),
-  ]);
-  const mata = htmlLines(mataHtml);
-  const grupos = htmlLines(gruposHtml);
-  const team = htmlLines(teamHtml);
-  const parsedBracket = parseBracket(mata);
-  const groupTable = parseGroupC(grupos);
-  const teamStats = parseTeamStats(team);
-  const leaders = parseLeaders(artJson, grupos);
-  const series = parsedBracket ? balaSeries(parsedBracket.bracket) : {};
-  const stats = withGroupPos(teamStats, groupTable);
+function nameOf(slug) {
+  if (!slug) return "A definir";
+  return SLUG_NAME[slug] || slug;
+}
+
+function formatQuando(iso) {
+  if (!iso) return "A agendar";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "A agendar";
+  const txt = d.toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return txt.replace(/\./g, "").replace(/,/g, " ·").replace(/\s+/g, " ").trim();
+}
+
+function computeGroupC(partidas) {
+  const rows = {};
+  for (const team of GROUP_C_TEAMS) {
+    rows[team] = { team, j: 0, pts: 0, v: 0, d: 0, gp: 0, gc: 0, sg: 0, us: isUs(team) };
+  }
+  for (const match of partidas || []) {
+    if (match.grupo !== "C" || match.status !== "final") continue;
+    const home = nameOf(match.time_a);
+    const away = nameOf(match.time_b);
+    if (!rows[home] || !rows[away]) continue;
+    const hs = Number(match.gols_a);
+    const as = Number(match.gols_b);
+    const hgf = Number(match.gols_reais_a) || 0;
+    const agf = Number(match.gols_reais_b) || 0;
+    rows[home].j += 1;
+    rows[away].j += 1;
+    rows[home].gp += hgf;
+    rows[home].gc += agf;
+    rows[away].gp += agf;
+    rows[away].gc += hgf;
+    if (hs > as) {
+      rows[home].v += 1;
+      rows[home].pts += 3;
+      rows[away].d += 1;
+    } else if (as > hs) {
+      rows[away].v += 1;
+      rows[away].pts += 3;
+      rows[home].d += 1;
+    }
+  }
+  const table = Object.values(rows).map((row) => ({ ...row, sg: row.gp - row.gc }));
+  table.sort((a, b) => b.pts - a.pts || b.sg - a.sg || b.gp - a.gp);
+  table.forEach((row, i) => {
+    row.pos = i + 1;
+  });
+  if (!table.some((row) => row.j > 0)) return null;
+  return table;
+}
+
+function bracketFromConfrontos(confrontos) {
+  const list = [...(confrontos || [])].sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+  const qf = list.filter((c) => c.fase === "quartas");
+  const sf = list.filter((c) => c.fase === "semifinal");
+  const ff = list.filter((c) => c.fase === "final");
+  if (qf.length < 2) return null;
+
+  const toCard = (tie, id, extra = {}) => {
+    const home = nameOf(tie.lado_a);
+    const away = nameOf(tie.lado_b);
+    const played = tie.status === "final" && tie.placar_a != null && tie.placar_b != null;
+    return {
+      id,
+      home,
+      away,
+      hs: played ? Number(tie.placar_a) : null,
+      as: played ? Number(tie.placar_b) : null,
+      date: formatQuando(tie.quando),
+      us: isUs(home) || isUs(away),
+      ...extra,
+    };
+  };
+
+  const clubs = {};
+  for (const tie of list) {
+    const home = nameOf(tie.lado_a);
+    const away = nameOf(tie.lado_b);
+    clubs[home] = clubMeta(home, SLUG_OWNER[tie.lado_a] || "–");
+    clubs[away] = clubMeta(away, SLUG_OWNER[tie.lado_b] || "–");
+  }
+
+  const placeholder = { lado_a: null, lado_b: null, placar_a: null, placar_b: null, status: "pendente", quando: null };
   return {
+    clubs,
+    bracket: [
+      {
+        round: "Quartas de final",
+        n: "01",
+        key: "qf",
+        ties: qf.map((t, i) => toCard(t, `qf-${i}`)),
+      },
+      {
+        round: "Semifinal",
+        n: "02",
+        key: "sf",
+        ties: (sf.length ? sf : [placeholder, placeholder]).map((t, i) => toCard(t, `sf-${i}`)),
+      },
+      {
+        round: "Grande final",
+        n: "03",
+        key: "ff",
+        ties: (ff.length ? ff : [{ ...placeholder, quando: "2026-09-16T03:00:00+00:00" }]).map((t, i) =>
+          toCard(t, `ff-${i}`, { final: true })
+        ),
+      },
+    ],
+  };
+}
+
+function usefulLive(payload) {
+  const played = payload?.groupTable?.some((row) => Number(row.j) > 0);
+  const scored = payload?.bracket?.some((round) => round.ties?.some((t) => t.hs != null));
+  return Boolean(played || scored);
+}
+
+async function buildLive() {
+  const e2 = await fetchJson(`${BASE}/api/e2-dados`);
+  const groupTable = computeGroupC(e2.partidas);
+  const parsedBracket = bracketFromConfrontos(e2.confrontos);
+  const series = parsedBracket ? balaSeries(parsedBracket.bracket) : {};
+  const us = groupTable?.find((row) => row.us);
+  const stats = withGroupPos(
+    {
+      goalsFor: us?.gp,
+      goalsAgainst: us?.gc,
+    },
+    groupTable
+  );
+  const payload = {
     ok: true,
     atualizadoEm: new Date().toISOString(),
     source: BASE,
-    motto: series.motto,
+    motto: series.motto || null,
     stats,
-    lastMatch: series.lastMatch,
-    nextMatch: series.nextMatch,
+    lastMatch: series.lastMatch || null,
+    nextMatch: series.nextMatch || null,
     groupTable,
-    scorers: leaders.scorers,
-    assists: leaders.assists,
-    results: series.results,
+    scorers: null,
+    assists: null,
+    results: series.results || null,
     bracket: parsedBracket?.bracket || null,
     clubs: parsedBracket?.clubs || null,
   };
+  if (!usefulLive(payload)) throw new Error("copa json vazio");
+  return payload;
 }
 
 function readDisk() {
@@ -541,6 +692,9 @@ export async function getCopaLive(force = false) {
   inflight = (async () => {
     try {
       const payload = await buildLive();
+      if (!usefulLive(payload) && usefulLive(cache?.payload || readDisk())) {
+        throw new Error("copa json vazio");
+      }
       cache = { payload, at: Date.now() };
       writeDisk(payload);
       return payload;

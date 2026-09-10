@@ -24,7 +24,7 @@ const allow = [
   "Beliene",
   "2Tclipes",
 ];
-const pollId = "quartas-raposo";
+const pollId = "semifinal-e2";
 const durationHours = 2;
 const startPin = process.env.MVP_ADMIN_PIN || "tteuw";
 const preferredPort = Number(process.env.PORT) || 8765;
