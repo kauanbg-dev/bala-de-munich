@@ -324,10 +324,9 @@ h1 {
 
 .match-card p { color: var(--mute); margin-top: 6px; }
 
+/* Mora dentro do hero, logo abaixo do escudo: o hero já dá margem e padding. */
 .live-band {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 0 28px 24px;
+  margin-top: 40px;
 }
 
 .live-head {
@@ -2217,6 +2216,18 @@ footer p {
   }
   .topbar nav.is-open { display: flex; }
   .topbar { flex-wrap: wrap; }
+  /* Empilhar quatro cards empurraria o hero inteiro pra baixo: no celular a
+     faixa vira carrossel. */
+  .live-band { margin-top: 28px; }
+  .live-row {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 74%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 4px;
+  }
+  .live-card { scroll-snap-align: start; }
   /* No celular a barra já tem marca, MVP e menu: um quarto item quebra a linha.
      O link de amistosos continua ali dentro do menu. */
   .btn-topo { display: none; }
