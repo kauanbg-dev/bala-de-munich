@@ -1052,6 +1052,103 @@ h1 {
 
 .mvp-admin-hint:empty { display: none; }
 
+.adm-split {
+  margin: 0;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.adm-feed {
+  margin-top: 4px;
+  padding: 14px 14px 12px;
+  border: 1px dashed rgba(212, 177, 90, 0.5);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(212, 177, 90, 0.1), transparent 42%),
+    rgba(12, 9, 13, 0.55);
+}
+
+.adm-feed-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.adm-feed-head span:first-child {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.adm-feed-copy {
+  margin: 0 0 12px;
+  color: var(--mute);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.adm-feed-form {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.adm-feed-form label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.adm-feed-form div {
+  display: flex;
+  gap: 10px;
+}
+
+.adm-feed-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--paper);
+  font: inherit;
+  letter-spacing: 0.08em;
+}
+
+.adm-feed-form input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212, 177, 90, 0.16);
+}
+
+.adm-feed-form .btn {
+  flex: 0 0 auto;
+  border-radius: 10px;
+  padding: 12px 18px;
+}
+
+.adm-feed .btn-close {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 10px;
+  background: rgba(212, 177, 90, 0.08);
+  border: 1px solid rgba(212, 177, 90, 0.45);
+  color: var(--gold);
+}
+
+.adm-feed .mvp-admin-hint { margin-top: 10px; }
+
 .mvp-start-wrap {
   display: flex;
   justify-content: center;
@@ -2220,6 +2317,15 @@ h2 {
 
 .feed-credit a:hover { text-decoration: underline; }
 
+.feed-fonte {
+  margin: 8px 0 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
 .site-creator {
   position: fixed;
   right: 18px;
@@ -2358,6 +2464,8 @@ footer p {
     gap: 8px;
   }
   .mvp-admin-danger .btn { width: 100%; }
+  .adm-feed-form div { flex-direction: column; }
+  .adm-feed-form .btn { width: 100%; }
   .hero-grid, .match-band, .stat-strip, .results li, .feed, .leaders {
     grid-template-columns: 1fr;
   }

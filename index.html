@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=79" />
+  <link rel="stylesheet" href="styles.css?v=80" />
 </head>
 <body>
   <header class="topbar">
@@ -112,6 +112,7 @@
           </div>
         </form>
         <div class="mvp-admin-ops" id="mvp-admin-ops" hidden>
+          <p class="adm-split">Urna de MVP</p>
           <div class="mvp-admin-row">
             <button type="button" class="btn btn-gold" id="mvp-start">Iniciar 2h</button>
             <button type="button" class="btn btn-pause" id="mvp-pause">Pausar</button>
@@ -122,6 +123,22 @@
             <button type="button" class="btn btn-reset" id="mvp-reset">Recomeçar do 0</button>
             <small>Apaga todos os votos.</small>
           </div>
+          <section class="adm-feed" id="adm-feed">
+            <header class="adm-feed-head">
+              <span>Instagram · Feed</span>
+              <span class="mvp-admin-chip" id="adm-feed-chip">Fotos de piso</span>
+            </header>
+            <p class="adm-feed-copy">Isso aqui é o Feed, não a urna. Cola a chave do Feedframer pra os posts reais subirem no site, sem marca d'água. Sem chave, o público continua vendo as três artes locais.</p>
+            <form class="adm-feed-form" id="adm-feed-form">
+              <label for="adm-feed-key">Chave do Feedframer</label>
+              <div>
+                <input id="adm-feed-key" type="password" name="key" placeholder="64 caracteres" autocomplete="off" />
+                <button class="btn btn-gold" type="submit">Ligar</button>
+              </div>
+            </form>
+            <button class="btn btn-close" type="button" id="adm-feed-clear">Voltar pras fotos locais</button>
+            <p class="mvp-admin-hint" id="adm-feed-hint"></p>
+          </section>
         </div>
         <p class="mvp-admin-hint" id="mvp-admin-hint"></p>
       </aside>
@@ -207,6 +224,7 @@
       <header class="section-head">
         <h2>Do Instagram</h2>
         <p>Os posts novos do <a href="https://www.instagram.com/balademunich/" target="_blank" rel="noreferrer">@balademunich</a> entram sozinhos. Sem marca d'água.</p>
+        <p class="feed-fonte" id="feed-fonte" hidden></p>
       </header>
       <div class="feed" id="feed-grid"></div>
       <p class="feed-credit">Artes do Bala: <a href="https://www.instagram.com/santoz.design/" target="_blank" rel="noreferrer">@santoz.design</a></p>
@@ -242,7 +260,7 @@
     </span>
   </a>
 
-  <script src="data.js?v=79"></script>
-  <script src="app.js?v=79"></script>
+  <script src="data.js?v=80"></script>
+  <script src="app.js?v=80"></script>
 </body>
 </html>

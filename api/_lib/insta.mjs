@@ -1,11 +1,21 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { checkAdminPin } from "./mvp.mjs";
+
 // Feed do Instagram do Bala. A fonte principal é o Feedframer (plano grátis,
 // sem marca d'água): eles ligam a conta profissional, renovam o token da Meta
-// e hospedam as fotos num CDN que não expira. A chave entra em FEEDFRAMER_KEY.
+// e hospedam as fotos num CDN que não expira. A chave entra no painel admin
+// (?admin) ou em FEEDFRAMER_KEY na Vercel. A do painel manda.
 //
 // IG_TOKEN (Business Login da Meta) continua de reserva. As URLs da Meta são
 // assinadas e morrem em horas, então o cache fica só em memória. Se as duas
 // fontes falharem, o site cai no data.js — imagem local de verdade.
 
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+const dataDir =
+  process.env.DATA_DIR || (process.env.VERCEL ? "/tmp" : path.join(root, "data"));
+const keyFile = path.join(dataDir, "insta-key.json");
 const BASE = "https://graph.instagram.com";
 const FRAMER = "https://feedframer.com/api/v1/me";
 const FIELDS = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp";
@@ -14,6 +24,7 @@ const FETCH_MS = 8_000;
 const LIMIT = Number(process.env.IG_LIMIT) || 3;
 const REFRESH_AFTER_MS = 30 * 24 * 3600 * 1000;
 const TOKEN_KEY = "insta:token";
+const FRAMER_KEY = "insta:framer-key";
 
 let cache = null;
 let inflight = null;
@@ -54,6 +65,70 @@ async function writeStoredToken(token) {
   } catch (err) {
     console.error("insta token write", err.message);
   }
+}
+
+function readKeyFile() {
+  try {
+    const saved = JSON.parse(fs.readFileSync(keyFile, "utf8"));
+    return saved?.key ? String(saved.key) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeKeyFile(key) {
+  fs.mkdirSync(path.dirname(keyFile), { recursive: true });
+  if (!key) {
+    try {
+      fs.unlinkSync(keyFile);
+    } catch {
+      /* já não existia */
+    }
+    return;
+  }
+  fs.writeFileSync(keyFile, JSON.stringify({ key, at: Date.now() }));
+}
+
+async function readStoredFramerKey() {
+  try {
+    const out = await kvCommand(["GET", FRAMER_KEY]);
+    if (out?.result) {
+      const saved = JSON.parse(out.result);
+      if (saved?.key) return String(saved.key);
+    }
+  } catch (err) {
+    console.error("insta framer read", err.message);
+  }
+  return readKeyFile();
+}
+
+async function writeStoredFramerKey(key) {
+  const value = key ? JSON.stringify({ key, at: Date.now() }) : null;
+  try {
+    if (kvConfig()) await kvCommand(value ? ["SET", FRAMER_KEY, value] : ["DEL", FRAMER_KEY]);
+  } catch (err) {
+    console.error("insta framer write", err.message);
+  }
+  writeKeyFile(key);
+}
+
+async function currentFramerKey() {
+  return (await readStoredFramerKey()) || process.env.FEEDFRAMER_KEY || "";
+}
+
+function maskKey(key) {
+  const text = String(key || "");
+  if (text.length < 10) return "salva";
+  return `${text.slice(0, 4)}…${text.slice(-4)}`;
+}
+
+async function readBody(req) {
+  if (req.body && typeof req.body === "object" && !Buffer.isBuffer(req.body)) return req.body;
+  if (typeof req.body === "string") return JSON.parse(req.body || "{}");
+  const chunks = [];
+  for await (const chunk of req) chunks.push(chunk);
+  const raw = Buffer.concat(chunks).toString("utf8");
+  return JSON.parse(raw || "{}");
 }
 
 async function callGraph(path, params, timeoutMs = FETCH_MS) {
@@ -176,7 +251,7 @@ async function buildMeta() {
 
 async function build() {
   const errors = [];
-  const framerKey = process.env.FEEDFRAMER_KEY;
+  const framerKey = await currentFramerKey();
   if (framerKey) {
     try {
       return await buildFeedframer(framerKey);
@@ -211,4 +286,68 @@ export async function getInstaFeed() {
     }
   })();
   return inflight;
+}
+
+function bustFeedCache() {
+  cache = null;
+  inflight = null;
+}
+
+export async function feedAdminStatus() {
+  const stored = await readStoredFramerKey();
+  const env = Boolean(process.env.FEEDFRAMER_KEY);
+  const live = await getInstaFeed();
+  const fonte = live?.ok ? live.fonte : "piso";
+  return {
+    ok: true,
+    stored: Boolean(stored),
+    env,
+    origem: stored ? "painel" : env ? "vercel" : null,
+    live: Boolean(live?.ok),
+    fonte,
+    mascara: stored ? maskKey(stored) : env ? "variável da Vercel" : null,
+  };
+}
+
+export async function handleFeed(req) {
+  if (req.method === "GET") {
+    return {
+      json: await getInstaFeed(),
+      status: 200,
+      headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=300" },
+    };
+  }
+  if (req.method !== "POST") return { json: { error: "method" }, status: 405 };
+
+  let body;
+  try {
+    body = await readBody(req);
+  } catch {
+    return { json: { error: "json" }, status: 400 };
+  }
+  if (!checkAdminPin(body.pin)) return { json: { error: "pin" }, status: 403 };
+
+  const action = String(body.action || "");
+  if (action === "status") return { json: await feedAdminStatus(), status: 200 };
+
+  if (action === "save") {
+    const key = String(body.key || "").trim();
+    if (key.length < 16) return { json: { error: "key", erro: "chave curta" }, status: 400 };
+    try {
+      await buildFeedframer(key);
+    } catch (err) {
+      return { json: { error: "framer", erro: err.message }, status: 400 };
+    }
+    await writeStoredFramerKey(key);
+    bustFeedCache();
+    return { json: await feedAdminStatus(), status: 200 };
+  }
+
+  if (action === "clear") {
+    await writeStoredFramerKey("");
+    bustFeedCache();
+    return { json: await feedAdminStatus(), status: 200 };
+  }
+
+  return { json: { error: "action" }, status: 400 };
 }

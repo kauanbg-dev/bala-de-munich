@@ -30,6 +30,10 @@ export const pollId = process.env.MVP_POLL_ID || "semifinal-e2";
 export const durationHours = 2;
 const startPin = process.env.MVP_ADMIN_PIN || "866283";
 
+export function checkAdminPin(pin) {
+  return String(pin || "") === startPin;
+}
+
 function emptyStore() {
   return { polls: {} };
 }

@@ -501,7 +501,24 @@ const pullCopaLive = async () => {
 pullCopaLive();
 window.setInterval(pullCopaLive, 60_000);
 
-const paintFeed = (posts) => {
+const paintFeedFonte = (fonte) => {
+  const el = document.getElementById("feed-fonte");
+  if (!el) return;
+  const admin = new URLSearchParams(window.location.search).has("admin");
+  if (!admin) {
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  el.textContent =
+    fonte === "feedframer"
+      ? "Admin · ao vivo pelo Feedframer"
+      : fonte === "meta"
+        ? "Admin · ao vivo pela Meta"
+        : "Admin · fotos de piso (data.js)";
+};
+
+const paintFeed = (posts, fonte) => {
   const grid = document.getElementById("feed-grid");
   if (!grid) return;
   grid.innerHTML = posts
@@ -515,9 +532,10 @@ const paintFeed = (posts) => {
     </a>`
     )
     .join("");
+  paintFeedFonte(fonte);
 };
 
-paintFeed(club.gallery);
+paintFeed(club.gallery, "piso");
 
 // As fotos do data.js são o piso: só saem da tela se o Instagram responder.
 const pullInstaFeed = async () => {
@@ -525,7 +543,7 @@ const pullInstaFeed = async () => {
     const res = await fetch("/api/feed", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
-    if (data?.ok && Array.isArray(data.posts) && data.posts.length) paintFeed(data.posts);
+    if (data?.ok && Array.isArray(data.posts) && data.posts.length) paintFeed(data.posts, data.fonte || "feedframer");
   } catch {
     /* mantém data.js */
   }
@@ -533,6 +551,54 @@ const pullInstaFeed = async () => {
 
 pullInstaFeed();
 window.setInterval(pullInstaFeed, 10 * 60_000);
+
+const paintAdmFeed = (status) => {
+  const chip = document.getElementById("adm-feed-chip");
+  const hint = document.getElementById("adm-feed-hint");
+  const field = document.getElementById("adm-feed-key");
+  if (!chip) return;
+  const live = Boolean(status?.live);
+  chip.textContent = live ? "Ao vivo" : "Fotos de piso";
+  chip.className = `mvp-admin-chip${live ? " is-open" : ""}`;
+  if (hint) {
+    hint.classList.remove("is-error");
+    if (status?.erro) {
+      hint.textContent = status.erro;
+      hint.classList.add("is-error");
+    } else if (live && status.origem === "painel") {
+      hint.textContent = `Ligado pelo painel (${status.mascara}). O público vê os posts reais.`;
+    } else if (live && status.origem === "vercel") {
+      hint.textContent = "Ligado pela variável da Vercel. O painel só troca se você colar outra chave.";
+    } else if (status?.stored) {
+      hint.textContent = "Chave salva, mas o Feedframer não respondeu. As fotos de piso continuam no ar.";
+    } else {
+      hint.textContent = "Sem chave: o Feed mostra as três artes locais. Cria a conta no Feedframer, cola a chave e aperta Ligar.";
+    }
+  }
+  if (field && status?.stored) field.placeholder = "chave já salva — cola outra pra trocar";
+};
+
+const postFeedAdmin = async (action, key) => {
+  const res = await fetch("/api/feed", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, pin: mvpAdminPin, key }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 403) throw new Error("pin");
+  if (!res.ok) throw new Error(data.erro || data.error || "feed");
+  paintAdmFeed(data);
+  await pullInstaFeed();
+  return data;
+};
+
+const refreshAdmFeed = () => {
+  if (!mvpAdminPin) return;
+  postFeedAdmin("status").catch((err) => {
+    paintAdmFeed({ live: false, erro: err.message === "pin" ? "Código admin errado." : "Não deu pra ler o Feed agora." });
+  });
+};
 
 document.getElementById("squad").innerHTML = club.squad
   .map(
@@ -964,6 +1030,7 @@ const showMvpAdminOps = () => {
   const login = document.getElementById("mvp-admin-login");
   if (login) login.hidden = true;
   if (mvpAdminOps) mvpAdminOps.hidden = false;
+  refreshAdmFeed();
 };
 
 if (mvpAdminPin) showMvpAdminOps();
@@ -1027,6 +1094,37 @@ document.getElementById("mvp-close")?.addEventListener("click", () => {
 document.getElementById("mvp-reset")?.addEventListener("click", () => {
   if (!window.confirm("Recomeçar do zero? Apaga todos os votos e volta a urna pro começo.")) return;
   postMvpAdmin("reset").catch(() => {});
+});
+
+document.getElementById("adm-feed-form")?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const field = document.getElementById("adm-feed-key");
+  const hint = document.getElementById("adm-feed-hint");
+  try {
+    await postFeedAdmin("save", field?.value || "");
+    if (field) field.value = "";
+  } catch (err) {
+    if (hint) {
+      hint.classList.add("is-error");
+      hint.textContent =
+        err.message === "pin"
+          ? "Código admin errado."
+          : err.message === "key" || err.message === "chave curta"
+            ? "Essa chave está curta demais."
+            : "O Feedframer recusou a chave. Confere se copiou inteira.";
+    }
+  }
+});
+
+document.getElementById("adm-feed-clear")?.addEventListener("click", () => {
+  if (!window.confirm("Voltar o Feed pras três artes locais?")) return;
+  postFeedAdmin("clear").catch((err) => {
+    const hint = document.getElementById("adm-feed-hint");
+    if (hint) {
+      hint.classList.add("is-error");
+      hint.textContent = err.message === "pin" ? "Código admin errado." : "Não deu pra desligar agora.";
+    }
+  });
 });
 
 document.getElementById("mvp-grid")?.addEventListener("click", async (event) => {

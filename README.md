@@ -100,13 +100,15 @@ Como ligar (uma vez):
 1. Cria conta em [feedframer.com/register](https://feedframer.com/register) e confirma o e-mail.
 2. **Connect Instagram Account** e entra com a `@balademunich` (conta profissional).
 3. **Settings → API Keys** → copia a chave da conta (64 caracteres).
-4. Na Vercel: **Settings → Environment Variables** → `FEEDFRAMER_KEY` = essa chave → **Production** → **Redeploy**.
+4. No site: `https://balademunich.vercel.app/?admin#mvp` → entra com o código admin → bloco **Instagram · Feed** (é o retângulo dourado, separado da urna) → cola a chave → **Ligar**.
+
+A chave fica no Redis (o mesmo do MVP), não no GitHub. Dá pra colar `FEEDFRAMER_KEY` na Vercel também; se as duas existirem, a do painel manda. **Voltar pras fotos locais** apaga só a chave do painel.
 
 Não cola a chave no chat nem no GitHub. No plano grátis o Feedframer atualiza o acervo **1× por dia** (Premium, US$ 6/mês, atualiza de hora em hora). O site consulta `/api/feed` a cada 10 min, então um post novo pode levar até o ciclo diário deles pra aparecer.
 
 Variáveis:
 
-- `FEEDFRAMER_KEY` — chave do Feedframer. Caminho principal.
+- `FEEDFRAMER_KEY` — chave do Feedframer na Vercel. Opcional se a chave foi colada no painel admin.
 - `IG_TOKEN` — token longo da Meta (reserva). Só entra se o Feedframer falhar.
 - `IG_LIMIT` — quantos posts mostrar (padrão 3; o grátis do Feedframer entrega até 6).
 - `IG_CACHE_MS` — validade do cache em memória (padrão 10 min).

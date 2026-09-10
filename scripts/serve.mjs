@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getCopaLive, startCopaSync } from "../api/_lib/copa.mjs";
 import { handleMvp } from "../api/_lib/mvp.mjs";
-import { getInstaFeed } from "../api/_lib/insta.mjs";
+import { handleFeed } from "../api/_lib/insta.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const preferredPort = Number(process.env.PORT) || 8765;
@@ -58,7 +58,8 @@ const server = http.createServer(async (req, res) => {
       return;
     }
     if (url.pathname === "/api/feed") {
-      sendJson(res, await getInstaFeed());
+      const out = await handleFeed(req);
+      sendJson(res, out.json, out.status, out.headers);
       return;
     }
     const file = safeFile(url.pathname);
