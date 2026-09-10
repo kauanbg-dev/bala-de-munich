@@ -15,6 +15,7 @@ export const allow = [
   "Davasco",
   "Nebacetin",
   "Bluue",
+  "pedrosemfreio",
   "Pedro Sem Freio",
   "luccaf14",
   "Gordin",

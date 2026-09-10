@@ -2,7 +2,7 @@ $root = Split-Path -Parent $PSScriptRoot
 $votesFile = Join-Path $root "data\votes.json"
 $allow = @(
   "tteuw", "Brkk", "DG", "Davasco", "Nebacetin", "Bluue",
-  "Pedro Sem Freio", "luccaf14", "Gordin", "Baraka", "Vini Show",
+  "pedrosemfreio", "Pedro Sem Freio", "luccaf14", "Gordin", "Baraka", "Vini Show",
   "Jmdeck", "Beliene", "2Tclipes"
 )
 $pollId = "semifinal-e2"

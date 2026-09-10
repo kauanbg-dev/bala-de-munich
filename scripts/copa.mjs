@@ -25,7 +25,7 @@ const ALIASES = {
   onebacetin: "Nebacetin",
   bluue: "Bluue",
   ptbluue: "Bluue",
-  pedrosemfreio: "Pedro Sem Freio",
+  pedrosemfreio: "pedrosemfreio",
   luccaf14: "luccaf14",
   lucca: "luccaf14",
   gordin: "Gordin",
