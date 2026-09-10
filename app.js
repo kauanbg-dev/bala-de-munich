@@ -62,10 +62,12 @@ const paintCompetition = () => {
     const homeWin = played && t.hs > t.as;
     const awayWin = played && t.as > t.hs;
     return `
-    <article class="chave-match${t.us ? " is-us" : ""}${t.final ? " is-final" : ""}${played ? " is-done" : ""}" id="${t.id}">
-      ${t.final ? `<span class="chave-cup" aria-hidden="true"></span>` : ""}
+      <article class="chave-match${t.us ? " is-us" : ""}${t.final ? " is-final" : ""}${played ? " is-done" : ""}" id="${t.id}">
       <header class="chave-top">
-        <span class="chave-round">${round.round}</span>
+        <span class="chave-round">
+          ${t.final ? `<i class="chave-cup" aria-hidden="true"></i>` : ""}
+          ${round.round}
+        </span>
         <span class="chave-state">${played ? "Encerrada" : "A disputar"}</span>
       </header>
       ${chaveSide(t.home, played ? t.hs : "–", homeWin, played)}
