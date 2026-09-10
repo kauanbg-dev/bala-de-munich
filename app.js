@@ -311,16 +311,75 @@ if (squadGrid && squadCards.length && window.matchMedia("(hover: hover) and (poi
   squadGrid.addEventListener("pointerleave", resetSquadNear);
 }
 
-document.getElementById("pitch").innerHTML = club.formation.slots
+const squadMatch = (tag) => {
+  const want = String(tag).toLowerCase();
+  return (
+    club.squad.find((p) => p.tag.toLowerCase() === want) ||
+    club.squad.find((p) => p.tag.toLowerCase().startsWith(want)) ||
+    null
+  );
+};
+
+const pitchMarkings = `
+  <svg class="pitch-lines" viewBox="0 0 300 400" preserveAspectRatio="none" aria-hidden="true">
+    <rect x="8" y="8" width="284" height="384" rx="2" />
+    <line x1="8" y1="200" x2="292" y2="200" />
+    <circle cx="150" cy="200" r="46" />
+    <circle class="pitch-spot" cx="150" cy="200" r="2.5" />
+    <rect x="70" y="8" width="160" height="58" />
+    <rect x="112" y="8" width="76" height="24" />
+    <circle class="pitch-spot" cx="150" cy="50" r="2.5" />
+    <rect x="70" y="334" width="160" height="58" />
+    <rect x="112" y="368" width="76" height="24" />
+    <circle class="pitch-spot" cx="150" cy="350" r="2.5" />
+    <path d="M8 20 A 12 12 0 0 0 20 8" />
+    <path d="M292 20 A 12 12 0 0 1 280 8" />
+    <path d="M8 380 A 12 12 0 0 1 20 392" />
+    <path d="M292 380 A 12 12 0 0 0 280 392" />
+  </svg>`;
+
+const pitchSlots = club.formation.slots
   .map((slot) => {
     const kind = slot.pos === "GOL" ? "gk" : slot.pos === "TEC" ? "coach" : "";
+    const player = squadMatch(slot.tag);
+    const num = player && player.number > 0 ? String(player.number).padStart(2, "0") : "";
+    const token = slot.pos === "TEC" ? "TEC" : num || slot.pos;
     return `
     <div class="slot ${kind}" style="left:${slot.x}%;top:${slot.y}%">
-      <div class="dot"></div>
+      <div class="dot"><i>${token}</i></div>
       <span><small>${slot.pos === "TEC" ? "TEC" : slot.pos}</small><b>${slot.tag}</b></span>
     </div>`;
   })
   .join("");
+
+const startersOnPitch = new Set(
+  club.formation.slots.map((slot) => squadMatch(slot.tag)?.tag).filter(Boolean)
+);
+const benchPlayers = club.squad.filter((p) => !startersOnPitch.has(p.tag));
+
+const pitchBench = benchPlayers.length
+  ? `
+  <aside class="pitch-bench" aria-label="Banco de reservas">
+    <p>Banco</p>
+    <ul>
+      ${benchPlayers
+        .map(
+          (p) => `
+        <li>
+          ${
+            p.photo
+              ? `<img src="${p.photo}" alt="" />`
+              : `<img class="fallback" src="assets/crest.png" alt="" />`
+          }
+          <span><b>${p.tag}</b><small>${p.pos !== "—" ? p.pos : "TEC"}</small></span>
+        </li>`
+        )
+        .join("")}
+    </ul>
+  </aside>`
+  : "";
+
+document.getElementById("pitch").innerHTML = pitchMarkings + pitchSlots + pitchBench;
 
 const mvpPoll = club.mvp;
 const mvpKey = `mvp-vote:${mvpPoll.id}`;

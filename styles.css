@@ -855,22 +855,34 @@ h2 {
 .pitch {
   position: relative;
   aspect-ratio: 3 / 4;
-  max-width: 520px;
+  max-width: 560px;
   margin: 0 auto;
-  border: 2px solid rgba(244, 234, 214, 0.35);
-  border-radius: 8px;
+  border: 1px solid rgba(244, 234, 214, 0.22);
+  border-radius: 14px;
   overflow: hidden;
+  box-shadow:
+    inset 0 0 90px rgba(0, 0, 0, 0.55),
+    0 24px 60px rgba(0, 0, 0, 0.45);
   background:
-    radial-gradient(circle at 50% 0, rgba(244, 234, 214, 0.08), transparent 28%),
-    repeating-linear-gradient(90deg, #1a3a22 0 40px, #16351e 40px 80px);
+    radial-gradient(ellipse at 50% -10%, rgba(211, 18, 42, 0.22), transparent 55%),
+    radial-gradient(ellipse at 50% 110%, rgba(0, 0, 0, 0.5), transparent 55%),
+    repeating-linear-gradient(180deg, #17381f 0 48px, #143318 48px 96px);
 }
 
-.pitch::before {
-  content: "";
+.pitch-lines {
   position: absolute;
-  inset: 8%;
-  border: 1px solid rgba(244, 234, 214, 0.28);
-  border-radius: 4px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: rgba(244, 234, 214, 0.32);
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.pitch-lines .pitch-spot {
+  fill: rgba(244, 234, 214, 0.45);
+  stroke: none;
 }
 
 .slot {
@@ -882,15 +894,29 @@ h2 {
   text-align: center;
   width: 96px;
   line-height: 1.1;
+  z-index: 2;
 }
 
 .dot {
-  width: 12px;
-  height: 12px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: var(--gold);
-  margin: 0 auto 4px;
-  box-shadow: 0 0 0 3px rgba(211, 18, 42, 0.45);
+  margin: 0 auto 5px;
+  background: linear-gradient(160deg, #e2213c, #9d0d22);
+  border: 1px solid rgba(244, 234, 214, 0.75);
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.dot i {
+  font-style: normal;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  color: var(--paper);
 }
 
 .slot span {
@@ -898,6 +924,10 @@ h2 {
   flex-direction: column;
   align-items: center;
   gap: 1px;
+  padding: 2px 7px 3px;
+  border-radius: 999px;
+  background: rgba(9, 12, 10, 0.62);
+  backdrop-filter: blur(2px);
 }
 
 .slot small {
@@ -916,6 +946,10 @@ h2 {
   width: 76px;
 }
 
+.slot.gk .dot {
+  background: linear-gradient(160deg, #2f7d4f, #17492c);
+}
+
 .slot.gk b {
   font-size: 0.62rem;
   font-weight: 600;
@@ -931,8 +965,86 @@ h2 {
 }
 
 .slot.coach .dot {
-  background: var(--paper);
-  box-shadow: 0 0 0 3px rgba(212, 177, 90, 0.45);
+  width: 26px;
+  height: 26px;
+  background: linear-gradient(160deg, #f4ead6, #c8b78d);
+  border-color: rgba(212, 177, 90, 0.9);
+}
+
+.slot.coach .dot i {
+  color: #16130f;
+  font-size: 0.7rem;
+}
+
+.pitch-bench {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 3;
+  width: 128px;
+  padding: 8px 9px 9px;
+  border-radius: 12px;
+  border: 1px solid rgba(244, 234, 214, 0.18);
+  background: rgba(9, 12, 10, 0.78);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+.pitch-bench p {
+  margin: 0 0 6px;
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.pitch-bench ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pitch-bench li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pitch-bench img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #050506;
+  border: 1px solid rgba(244, 234, 214, 0.3);
+}
+
+.pitch-bench img.fallback {
+  object-fit: contain;
+  padding: 3px;
+}
+
+.pitch-bench span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+  min-width: 0;
+}
+
+.pitch-bench b {
+  font-size: 0.64rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pitch-bench small {
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mute);
 }
 
 .results { list-style: none; }
@@ -1389,6 +1501,16 @@ footer p {
   .results li { gap: 6px; }
   h1 { font-size: 4.6rem; }
   .site-creator { right: 12px; bottom: 12px; }
+  .pitch-bench {
+    right: 6px;
+    bottom: 6px;
+    width: 104px;
+    padding: 6px 7px 7px;
+  }
+  .pitch-bench img { width: 20px; height: 20px; }
+  .pitch-bench b { font-size: 0.58rem; }
+  .dot { width: 26px; height: 26px; }
+  .dot i { font-size: 0.78rem; }
   footer {
     padding: 20px 168px 20px 16px;
   }
