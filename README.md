@@ -8,19 +8,13 @@ A página em si é estática (`index.html`). Tabela ao vivo e urna de MVP usam a
 
 Não precisa de `npm start` na nuvem. A Vercel serve o HTML/CSS/JS e executa `/api/*` sob demanda.
 
-1. Sobe o código no GitHub, branch `master` (na máquina de casa):
+1. Sobe o código no GitHub. Se o repo veio do botão **Create repo** do Cursor, isso já está feito. Se for empurrar da máquina de casa:
 
 ```powershell
-git push https://github.com/kauanbg-dev/Balademunich.git main:master
+git push origin main
 ```
 
-Se o remoto já for o GitHub:
-
-```powershell
-git push origin main:master
-```
-
-2. Em [vercel.com](https://vercel.com) (mesma conta do Pilates): **Add New… → Project → Import** o repo **Balademunich**.
+2. Em [vercel.com](https://vercel.com) (mesma conta do Pilates): **Add New… → Project → Import** e escolhe o repo do site.
 3. Framework Preset: **Other**. **Build Command** vazio. **Output Directory** vazio. Root `.`
 4. **Environment Variables**: `MVP_ADMIN_PIN` = um código novo, só seu.
 
@@ -44,7 +38,7 @@ Cada push no GitHub (`master`) publica de novo. Copa e MVP já funcionam nessa U
 Alternativa se quiser um processo Node 24h (`npm start`):
 
 1. Conta em [render.com](https://render.com) com o GitHub `kauanbg-dev`.
-2. **New → Web Service** → repo **Balademunich** (branch `master`).
+2. **New → Web Service** → o repo do site.
 3. Runtime **Node**, build `npm install`, start `npm start`.
 4. Variável `MVP_ADMIN_PIN` = `tteuw` (opcional; esse já é o padrão).
 5. Create Web Service.
@@ -56,8 +50,8 @@ No plano gratuito o Render **dorme** ~15 min sem visita. Na Vercel isso não aco
 No Windows:
 
 ```powershell
-git clone https://github.com/kauanbg-dev/Balademunich.git
-cd Balademunich
+git clone SUA-URL-DO-GITHUB.git
+cd NOME-DA-PASTA
 powershell -ExecutionPolicy Bypass -File scripts\serve.ps1
 ```
 
