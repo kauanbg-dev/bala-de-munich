@@ -63,7 +63,16 @@ Pra tabela ao vivo + votação juntas: `npm start` (precisa do Node).
 
 Tabela, chave, última/próxima série, artilharia e assistências vêm do [copastreamers.com.br](https://copastreamers.com.br). O site consulta `/api/copa` a cada 60s. Elenco, fotos, Instagram, MVP e Sociais continuam em `data.js`.
 
-Os amistosos saem da página `/partidas` da Copa, que não tem API: o parser lê o payload do Next embutido no HTML e fica só com os jogos do Bala. Jogo que os times quitaram no meio é descartado — fica sempre 0–0 e não diz nada sobre o time. Se a página mudar de formato, a seção mantém o último acervo em cache e a Copa continua atualizando normalmente.
+Os amistosos saem da página `/partidas` da Copa, que não tem API: o parser lê o payload do Next embutido no HTML e fica só com os jogos do Bala.
+
+Dois cortes acontecem depois disso:
+
+- **Jogo quitado no meio** é descartado: fica sempre 0–0 e não diz nada sobre o time.
+- **Noite de confronto oficial** é descartada. O acervo da Copa é o histórico bruto do EA FC e as séries oficiais entram nele misturadas com os amistosos — dá pra provar reconstruindo Botafofo 3x1 Osempic e Narizes 3x2 Cobra a partir do acervo, que batem exatamente com o placar oficial das quartas. Como nada no dado separa um do outro, no dia em que o Bala tinha confronto marcado, jogo contra aquele adversário não entra. A série oficial já aparece na chave e nos resultados.
+
+Madrugada conta como a noite anterior (corte às 5h): quem jogou 00:21 de quarta jogou na terça à noite.
+
+Se a página mudar de formato, a seção mantém o último acervo em cache e a Copa continua atualizando normalmente.
 
 Cache local: `data/copa-cache.json` (gitignored). Na Vercel o cache vai em `/tmp`. Sem internet, cai no `data.js`.
 

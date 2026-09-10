@@ -698,11 +698,20 @@ function friendlyList(flight) {
 const brParts = (date, opts) =>
   new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", ...opts }).formatToParts(date);
 
+// Jogo de madrugada pertence à noite anterior: quem jogou 00:21 de quarta jogou
+// na terça à noite. Serve tanto pra data do card quanto pra achar a noite do
+// confronto oficial.
+function sessionNight(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(
+    new Date(d.getTime() - 5 * 3600 * 1000)
+  );
+}
+
 function friendlyDate(iso) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "–";
-  // Quem jogou 00:21 de quarta jogou na terça à noite. Sem recuar a madrugada
-  // para a noite anterior, a lista marca jogo em dia que ninguém entrou em campo.
   const night = new Date(d.getTime() - 5 * 3600 * 1000);
   const day = brParts(night, { weekday: "short", day: "2-digit", month: "2-digit" });
   const time = brParts(d, { hour: "2-digit", minute: "2-digit" });
@@ -749,6 +758,31 @@ function toFriendly(match) {
   };
 }
 
+// O acervo da Copa é o histórico bruto do EA FC: as séries oficiais entram nele
+// junto com os amistosos. Dá pra provar reconstruindo Botafofo 3x1 Osempic e
+// Narizes 3x2 Cobra a partir dele — dá exatamente o placar oficial das quartas.
+// Como não existe marca separando um do outro, o corte é por noite: no dia em
+// que o Bala tinha confronto oficial, jogo contra aquele adversário fica fora.
+function officialNights(e2) {
+  const keys = new Set();
+  const add = (iso, slugA, slugB) => {
+    if (!iso) return;
+    if (slugA !== TEAM_SLUG && slugB !== TEAM_SLUG) return;
+    const night = sessionNight(iso);
+    const opponent = nameOf(slugA === TEAM_SLUG ? slugB : slugA);
+    if (night && opponent) keys.add(`${night}|${opponent}`);
+  };
+  for (const p of e2?.partidas || []) add(p.quando, p.time_a, p.time_b);
+  for (const c of e2?.confrontos || []) add(c.quando, c.lado_a, c.lado_b);
+  return keys;
+}
+
+function dropOfficial(list, e2) {
+  const keys = officialNights(e2);
+  if (!keys.size) return list;
+  return list.filter((m) => !keys.has(`${sessionNight(m.iso)}|${m.opponent}`));
+}
+
 async function fetchFriendlies() {
   // Página inteira do Next (~500 KB) e a função tem 10s de teto na Vercel: se
   // demorar, é melhor devolver a Copa sem amistoso do que estourar o limite.
@@ -771,13 +805,14 @@ function usefulLive(payload) {
 
 async function buildLive() {
   // Amistoso quebrado não pode derrubar a Copa: por isso o catch separado.
-  const [e2, friendlies] = await Promise.all([
+  const [e2, acervo] = await Promise.all([
     fetchJson(`${BASE}/api/e2-dados`),
     fetchFriendlies().catch((err) => {
       console.error("amistosos sync", err.message);
       return null;
     }),
   ]);
+  const friendlies = acervo ? dropOfficial(acervo, e2) : null;
   const groupTable = computeGroupC(e2.partidas);
   const parsedBracket = bracketFromConfrontos(e2.confrontos);
   const series = parsedBracket ? balaSeries(parsedBracket.bracket) : {};
