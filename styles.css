@@ -98,12 +98,19 @@ code { color: var(--gold); font-size: 0.9em; }
   margin: 0 auto;
 }
 
+/* Três filhos em duas colunas: sem posição explícita a faixa cairia ao lado do
+   escudo. O escudo ocupa as duas linhas à direita e a faixa fica colada nos
+   botões, que é onde ela tem que estar. */
 .hero-grid {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
-  gap: 40px;
+  column-gap: 40px;
+  row-gap: 0;
   align-items: center;
 }
+
+.hero-copy { grid-column: 1; grid-row: 1; }
+.hero-grid .crest-wrap { grid-column: 2; grid-row: 1 / span 2; }
 
 .gothic {
   font-family: var(--font-serif);
@@ -324,9 +331,11 @@ h1 {
 
 .match-card p { color: var(--mute); margin-top: 6px; }
 
-/* Mora dentro do hero, logo abaixo do escudo: o hero já dá margem e padding. */
+/* Mora dentro do hero, logo abaixo dos botões: o hero já dá margem e padding. */
 .live-band {
-  margin-top: 40px;
+  grid-column: 1;
+  grid-row: 2;
+  margin-top: 30px;
 }
 
 .live-head {
@@ -368,6 +377,51 @@ h1 {
   100% { box-shadow: 0 0 0 0 rgba(211, 18, 42, 0); }
 }
 
+/* Sem jogo, o ponto para de piscar: bolinha vermelha pulsando com ninguém em
+   campo é promessa falsa. */
+.live-band.is-off .live-dot {
+  background: var(--mute);
+  box-shadow: none;
+  animation: none;
+}
+
+.live-band.is-off .live-head h2 { color: rgba(244, 234, 214, 0.7); }
+
+.live-off {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  background: rgba(22, 18, 23, 0.6);
+}
+
+.live-off img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.live-off div { display: flex; flex-direction: column; gap: 4px; }
+
+.live-off b {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.live-off span {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--mute);
+}
+
 .live-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -397,6 +451,7 @@ h1 {
 .live-card.is-W::before { background: #2e8b52; }
 .live-card.is-D::before { background: var(--gold); }
 .live-card.is-L::before { background: var(--red); }
+.live-card.is-on::before { background: var(--red); animation: livePulse 2s ease-out infinite; }
 
 .live-when {
   font-size: 0.58rem;
@@ -459,6 +514,12 @@ h1 {
 .live-card.is-W .live-tag { color: #8fd6a8; border-color: rgba(46, 139, 82, 0.6); }
 .live-card.is-D .live-tag { color: var(--gold); border-color: rgba(212, 177, 90, 0.55); }
 .live-card.is-L .live-tag { color: #ff8f9d; border-color: rgba(211, 18, 42, 0.55); }
+.live-card.is-on .live-tag { color: #ff8f9d; border-color: rgba(211, 18, 42, 0.55); }
+
+/* Série em andamento não tem placar parcial: os pontos ocupam o lugar dos gols
+   sem fingir número. */
+.live-teams.is-open b { color: var(--mute); font-size: 1.2rem; }
+.live-teams.is-open i { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; }
 
 .match-card.last { border-left: 4px solid var(--gold); }
 .match-card.next { border-left: 4px solid var(--red); }
@@ -2244,10 +2305,19 @@ footer p {
   }
   .topbar nav.is-open { display: flex; }
   .topbar { flex-wrap: wrap; }
-  /* Empilhar quatro cards empurraria o hero inteiro pra baixo: no celular a
-     faixa vira carrossel. */
-  .live-band { margin-top: 28px; }
-  .live-row {
+  /* Numa coluna só, a colocação explícita do hero atrapalha: aqui vale a ordem
+     do HTML, que já põe a faixa logo depois dos botões. */
+  .hero-copy,
+  .hero-grid .crest-wrap,
+  .live-band {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  /* Empilhar três cards empurraria o escudo pra fora da tela: no celular a
+     faixa vira carrossel. O aviso de "ninguém em campo" fica de fora, senão
+     viraria um card solto de 74% da largura. */
+  .live-band { margin-top: 26px; }
+  .live-band:not(.is-off) .live-row {
     grid-template-columns: none;
     grid-auto-flow: column;
     grid-auto-columns: 74%;
@@ -2256,6 +2326,7 @@ footer p {
     padding-bottom: 4px;
   }
   .live-card { scroll-snap-align: start; }
+  .live-off { flex-direction: column; align-items: flex-start; gap: 10px; }
   /* No celular a barra já tem marca, MVP e menu: um quarto item quebra a linha.
      O link de amistosos continua ali dentro do menu. */
   .btn-topo { display: none; }

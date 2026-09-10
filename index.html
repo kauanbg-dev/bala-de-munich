@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=76" />
+  <link rel="stylesheet" href="styles.css?v=77" />
 </head>
 <body>
   <header class="topbar">
@@ -37,7 +37,7 @@
   <main id="topo">
     <section class="hero">
       <div class="hero-grid">
-        <div>
+        <div class="hero-copy">
           <p class="gothic">Pro Clubs · Super Copa dos Streamers</p>
           <h1>Bala de<br />Munich</h1>
           <p class="motto" id="motto"></p>
@@ -46,6 +46,14 @@
             <a class="btn btn-ghost" href="#mvp">Votar MVP</a>
           </div>
         </div>
+        <section class="live-band" id="live-band" aria-live="polite">
+          <header class="live-head">
+            <span class="live-dot" aria-hidden="true"></span>
+            <h2 id="live-title">Bala ao vivo</h2>
+            <a href="#amistosos">Ver amistosos</a>
+          </header>
+          <div class="live-row" id="live-row"></div>
+        </section>
         <div class="crest-wrap">
           <span class="crest-flash" aria-hidden="true"></span>
           <span class="crest-tracer" aria-hidden="true"></span>
@@ -55,14 +63,6 @@
           <span class="crest-ring crest-ring-late" aria-hidden="true"></span>
         </div>
       </div>
-      <section class="live-band" id="live-band" hidden>
-        <header class="live-head">
-          <span class="live-dot" aria-hidden="true"></span>
-          <h2>Amistosos ao vivo</h2>
-          <a href="#amistosos">Ver todos</a>
-        </header>
-        <div class="live-row" id="live-row"></div>
-      </section>
 
       <dl class="stat-strip" id="stat-strip"></dl>
     </section>
@@ -242,7 +242,7 @@
     </span>
   </a>
 
-  <script src="data.js?v=76"></script>
-  <script src="app.js?v=76"></script>
+  <script src="data.js?v=77"></script>
+  <script src="app.js?v=77"></script>
 </body>
 </html>

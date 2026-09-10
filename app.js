@@ -137,6 +137,7 @@ const paintCompetition = () => {
     .join("");
 
   paintFriendlies(clubMeta);
+  paintLiveNow();
 };
 
 let amiExpanded = false;
@@ -152,7 +153,6 @@ function paintFriendlies(clubMeta) {
   if (!grid || !strip) return;
 
   const list = Array.isArray(club.friendlies) ? club.friendlies : [];
-  paintLiveBand(list, clubMeta("Bala de Munich").crest || "assets/crest.png");
 
   if (!list.length) {
     strip.innerHTML = "";
@@ -228,43 +228,138 @@ function paintFriendlies(clubMeta) {
   }
 }
 
-// A faixa do topo só existe pra jogo que a Copa mandou agora. O histórico
-// escrito na mão fica fora: ele não é notícia, é arquivo.
-const LIVE_BAND_MAX = 4;
+// Nem a Copa nem a EA publicam partida em andamento: o placar só nasce depois
+// que o jogo acaba. Então "ao vivo" aqui é deduzido de dois sinais concretos.
+// Um: série oficial com horário já iniciado e ainda sem placar. Dois: amistoso
+// que entrou no acervo há poucos minutos — no Pro Clubs os jogos são emendados,
+// então resultado recém-chegado quer dizer que o time ainda está em campo.
+const LIVE_MAX = 3;
+// Uma partida leva uns 15 min de relógio real. Meia hora sem nada novo já é
+// sessão encerrada, não intervalo entre jogos.
+const LIVE_FRESH_MS = 28 * 60 * 1000;
+const LIVE_GAP_MS = 40 * 60 * 1000;
+const LIVE_OFICIAL_MS = 3 * 60 * 60 * 1000;
 
-function paintLiveBand(list, ourCrest) {
+function agoLabel(ms) {
+  const min = Math.round(ms / 60_000);
+  if (min < 2) return "agora mesmo";
+  if (min < 60) return `há ${min} min`;
+  const h = Math.floor(min / 60);
+  return `há ${h}h${String(min % 60).padStart(2, "0")}`;
+}
+
+// Puxa a sessão de agora: o amistoso mais recente, se for fresco, e os que
+// vierem colados nele. Parar no primeiro buraco grande evita varrer o acervo
+// inteiro de uma noite antiga.
+function liveSession(list, now) {
+  const out = [];
+  let ref = now;
+  for (const m of list) {
+    if (!m.live || !m.iso || !m.result) continue;
+    const at = Date.parse(m.iso);
+    if (!Number.isFinite(at)) continue;
+    if (ref - at > (out.length ? LIVE_GAP_MS : LIVE_FRESH_MS)) break;
+    out.push({ ...m, at });
+    ref = at;
+    if (out.length >= LIVE_MAX) break;
+  }
+  return out;
+}
+
+function liveOficial(now) {
+  return (club.bracket || [])
+    .flatMap((round) => (round.ties || []).map((t) => ({ ...t, round: round.round })))
+    .filter((t) => {
+      if (!t.us || !t.iso || t.hs != null || t.as != null) return false;
+      const at = Date.parse(t.iso);
+      return Number.isFinite(at) && now >= at && now - at <= LIVE_OFICIAL_MS;
+    })
+    .map((t) => ({ ...t, at: Date.parse(t.iso) }));
+}
+
+function liveOffCard(ourCrest) {
+  const next = club.nextMatch || {};
+  const quando = [next.competition, next.date].filter((v) => v && v !== "A agendar").join(" · ");
+  const rival = next.opponent && next.opponent !== "A definir" ? next.opponent : null;
+  const proximo = rival
+    ? ` A próxima é contra o ${rival}${quando ? ` — ${quando}` : ""}.`
+    : quando
+      ? ` A próxima é ${quando}.`
+      : " Assim que a Copa marcar o próximo confronto, ele aparece aqui.";
+  return `
+      <div class="live-off">
+        <img src="${ourCrest}" alt="" loading="lazy" />
+        <div>
+          <b>Ninguém em campo agora.</b>
+          <span>Quando o Bala entrar em partida, o placar sobe aqui sozinho, amistoso ou Copa.${proximo}</span>
+        </div>
+      </div>`;
+}
+
+function paintLiveNow() {
   const band = document.getElementById("live-band");
   const row = document.getElementById("live-row");
+  const title = document.getElementById("live-title");
   if (!band || !row) return;
 
-  const live = list.filter((m) => m.live && m.result).slice(0, LIVE_BAND_MAX);
-  band.hidden = live.length === 0;
-  if (!live.length) {
-    row.innerHTML = "";
+  const now = Date.now();
+  const ourCrest = club.clubs?.["Bala de Munich"]?.crest || "assets/crest.png";
+  const oficial = liveOficial(now);
+  const sessao = liveSession(Array.isArray(club.friendlies) ? club.friendlies : [], now);
+  const emCampo = oficial.length > 0 || sessao.length > 0;
+
+  band.classList.toggle("is-off", !emCampo);
+  if (title) title.textContent = emCampo ? "Bala em campo agora" : "Bala ao vivo";
+
+  if (!emCampo) {
+    row.innerHTML = liveOffCard(ourCrest);
     return;
   }
 
+  const crestOf = (crest) =>
+    crest
+      ? `<img src="${crest}" alt="" loading="lazy" />`
+      : `<span class="live-crest is-empty" aria-hidden="true"></span>`;
+
   const label = { W: "Vitória", D: "Empate", L: "Derrota" };
-  row.innerHTML = live
-    .map(
+  const cards = [
+    // Série oficial em andamento não tem placar parcial em lugar nenhum, então
+    // o card mostra que está rolando e a que horas começou, sem inventar número.
+    ...oficial.map((t) => {
+      const rival = t.us && t.home === "Bala de Munich" ? t.away : t.home;
+      return `
+      <article class="live-card is-on">
+        <span class="live-when">${t.round} · começou ${agoLabel(now - t.at)}</span>
+        <div class="live-teams is-open">
+          ${crestOf(ourCrest)}
+          <b>·</b><i>vs</i><b>·</b>
+          ${crestOf(club.clubs?.[rival]?.crest)}
+        </div>
+        <span class="live-vs">vs ${rival}</span>
+        <span class="live-tag">Em andamento</span>
+      </article>`;
+    }),
+    ...sessao.map(
       (m) => `
       <article class="live-card is-${m.result}">
-        <span class="live-when">${m.date || "Amistoso"}</span>
+        <span class="live-when">Amistoso · ${agoLabel(now - m.at)}</span>
         <div class="live-teams">
-          <img src="${ourCrest}" alt="" loading="lazy" />
+          ${crestOf(ourCrest)}
           <b>${m.us}</b><i>–</i><b>${m.them}</b>
-          ${
-            m.crest
-              ? `<img src="${m.crest}" alt="" loading="lazy" />`
-              : `<span class="live-crest is-empty" aria-hidden="true"></span>`
-          }
+          ${crestOf(m.crest)}
         </div>
         <span class="live-vs">vs ${m.opponent}</span>
         <span class="live-tag">${label[m.result]}</span>
       </article>`
-    )
-    .join("");
+    ),
+  ];
+
+  row.innerHTML = cards.slice(0, LIVE_MAX).join("");
 }
+
+// O estado da faixa vence sozinho com o relógio, sem depender da Copa mandar
+// dado novo: sem este tique, "há 3 min" ficaria congelado na tela.
+window.setInterval(paintLiveNow, 30_000);
 
 document.getElementById("ami-more")?.addEventListener("click", () => {
   amiExpanded = !amiExpanded;

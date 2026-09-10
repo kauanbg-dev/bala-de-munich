@@ -603,6 +603,9 @@ function bracketFromConfrontos(confrontos) {
       hs: played ? Number(tie.placar_a) : null,
       as: played ? Number(tie.placar_b) : null,
       date: formatQuando(tie.quando),
+      // Horário cru, além do formatado: é com ele que o site descobre que a
+      // série já começou e ainda não tem placar, ou seja, está rolando agora.
+      iso: tie.quando || null,
       us: isUs(home) || isUs(away),
       ...extra,
     };

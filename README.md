@@ -78,6 +78,15 @@ Um cuidado pro futuro: o acervo da Copa é o histórico bruto do EA FC, e em alg
 
 Se a página mudar de formato, a seção mantém o último acervo em cache e a Copa continua atualizando normalmente.
 
+### Faixa "Bala ao vivo" (topo)
+
+Fica no hero, logo abaixo dos botões, e está sempre visível. Nem a Copa nem a EA publicam partida em andamento — o placar só existe depois que o jogo acaba —, então o estado "em campo agora" é deduzido de dois sinais concretos, em `paintLiveNow` (`app.js`):
+
+- **Série oficial**: confronto do Bala cujo horário (`iso`, o `quando` cru do confronto) já passou e que ainda está sem placar. Vale por 3h. O card não inventa parcial: mostra "Em andamento" e a que horas começou.
+- **Amistoso recente**: jogo que entrou no acervo há menos de 28 min. No Pro Clubs as partidas são emendadas, então resultado recém-chegado quer dizer que o time ainda está em campo. A partir do primeiro, os anteriores entram enquanto o intervalo entre eles for menor que 40 min — é a sessão daquela noite, não o acervo inteiro.
+
+Sem nenhum dos dois, a faixa mostra o escudo apagado, "Ninguém em campo agora" e o próximo confronto. O ponto vermelho para de piscar. A faixa se repinta sozinha a cada 30s pro "há 3 min" não congelar, mesmo sem dado novo da Copa.
+
 Cache local: `data/copa-cache.json` (gitignored). Na Vercel o cache vai em `/tmp`. Sem internet, cai no `data.js`.
 
 ## Feed do Instagram
