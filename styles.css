@@ -1502,6 +1502,62 @@ h2 {
   font-size: 0.55rem;
 }
 
+@media (min-width: 901px) and (max-width: 1180px) {
+  .chave-hint { display: block; }
+}
+
+@media (max-width: 900px) {
+  .chave-hint { display: none; }
+
+  .chave-scroll {
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .chave-stage {
+    min-width: 0;
+    padding: 0;
+  }
+
+  .chave-wires { display: none; }
+
+  .chave-cols {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    column-gap: 0;
+  }
+
+  .chave-lab {
+    justify-content: flex-start;
+    margin: 14px 0 2px;
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    padding: 8px 14px;
+  }
+
+  .chave-lab:first-child { margin-top: 0; }
+
+  .chave-match {
+    align-self: stretch;
+    width: 100%;
+  }
+
+  .chave-side { min-height: 62px; }
+
+  .chave-crest {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+  }
+
+  .chave-txt b { font-size: 0.92rem; }
+  .chave-txt small { font-size: 0.58rem; }
+  .chave-score { min-width: 2.8rem; font-size: 1.3rem; }
+  .chave-bg img { right: 40px; }
+}
+
 .feed-credit {
   margin-top: 14px;
   text-align: center;
@@ -1614,36 +1670,11 @@ footer p {
     flex-direction: column;
     align-items: flex-start;
   }
-  .chave-hint { display: block; }
-  .chave-stage { min-width: 720px; }
-  .chave-cols {
-    column-gap: 16px;
-    min-height: 600px;
-    grid-template-rows: auto repeat(8, minmax(40px, 1fr));
-  }
-  .chave-lab {
-    font-size: 0.56rem;
-    letter-spacing: 0.12em;
-    margin-bottom: 10px;
-    padding: 5px 8px;
-    gap: 6px;
-  }
-  .chave-lab i { font-size: 0.9rem; }
-  .chave-match { border-radius: 10px; }
-  .chave-top { padding: 6px 9px 5px; }
-  .chave-round { font-size: 0.52rem; letter-spacing: 0.1em; }
-  .chave-state { display: none; }
-  .chave-side {
-    min-height: 50px;
-    padding: 6px 0 6px 9px;
-    gap: 6px;
-  }
-  .chave-crest { width: 26px; height: 26px; border-radius: 6px; }
-  .chave-txt b { font-size: 0.78rem; }
-  .chave-txt small { display: none; }
-  .chave-score { min-width: 2.3rem; font-size: 1.15rem; }
-  .chave-bg img { right: 28px; }
-  .chave-foot { padding: 6px 9px 7px; font-size: 0.54rem; }
+  .chave-match { border-radius: 12px; }
+  .chave-top { padding: 7px 11px 6px; }
+  .chave-round { font-size: 0.56rem; letter-spacing: 0.1em; }
+  .chave-side { padding: 8px 0 8px 11px; gap: 8px; }
+  .chave-foot { padding: 7px 11px 8px; font-size: 0.56rem; }
   .chave-flag { font-size: 0.5rem; padding: 2px 6px; }
   .squad-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
