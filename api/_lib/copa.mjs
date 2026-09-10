@@ -701,30 +701,6 @@ function friendlyList(flight) {
   return null;
 }
 
-const brParts = (date, opts) =>
-  new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", ...opts }).formatToParts(date);
-
-// Jogo de madrugada pertence à noite anterior: quem jogou 00:21 de quarta jogou
-// na terça à noite. Serve tanto pra data do card quanto pra achar a noite do
-// confronto oficial.
-function sessionNight(iso) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return null;
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(
-    new Date(d.getTime() - 5 * 3600 * 1000)
-  );
-}
-
-function friendlyDate(iso) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "–";
-  const night = new Date(d.getTime() - 5 * 3600 * 1000);
-  const day = brParts(night, { weekday: "short", day: "2-digit", month: "2-digit" });
-  const time = brParts(d, { hour: "2-digit", minute: "2-digit" });
-  const get = (parts, type) => parts.find((p) => p.type === type)?.value.replace(".", "") || "";
-  return `${get(day, "weekday")} ${get(day, "day")}/${get(day, "month")} · ${get(time, "hour")}:${get(time, "minute")}`;
-}
-
 function friendlyCrest(name, avatar) {
   if (CREST[name]) return CREST[name];
   return avatar ? `${BASE}${avatar}` : null;
@@ -749,10 +725,10 @@ function toFriendly(match) {
     .map((p) => ({ name: canonPlayer(p.nome) || p.nome, goals: Number(p.gols) }))
     .sort((a, b) => b.goals - a.goals);
 
+  // `iso` só ordena a lista; o card não mostra data nem horário.
   return {
     id: String(match.id),
     iso: match.data,
-    date: friendlyDate(match.data),
     opponent: theirs.club,
     opponentOwner: theirs.presidente || "–",
     crest: friendlyCrest(theirs.club, theirs.avatar),

@@ -2249,7 +2249,7 @@ footer p {
   border-bottom: 1px solid var(--line);
 }
 
-.ami-date {
+.ami-kind {
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;

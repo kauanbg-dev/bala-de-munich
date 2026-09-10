@@ -128,22 +128,23 @@ window.CLUB = {
   // Pra somar um jogo: copia uma linha e troca os valores. `us` e `them` são os
   // gols (o placar da faixa sai deles), `result` é "W", "D" ou "L" do ponto de
   // vista do Bala, `star` é o craque da partida e `scorers` quem marcou.
-  // A ordem é da mais recente pra mais antiga.
+  // Não tem data nem horário: o card não mostra. A ordem da lista é que manda,
+  // da mais recente pra mais antiga.
   friendlies: [
-    { date: "ter 08/09 · 00:21", opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 4, them: 1, score: "4–1", result: "W", format: "11v11", star: "DG", scorers: [{ name: "DG", goals: 3 }, { name: "gstvcrvg", goals: 1 }] },
-    { date: "ter 08/09 · 23:54", opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 1, them: 3, score: "1–3", result: "L", format: "11v11", star: null, scorers: [{ name: "DG", goals: 1 }] },
-    { date: "ter 08/09 · 22:47", opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 4, them: 3, score: "4–3", result: "W", format: "11v11", star: "gstvcrvg", scorers: [{ name: "gstvcrvg", goals: 2 }, { name: "Nebacetin", goals: 1 }, { name: "DG", goals: 1 }] },
-    { date: "ter 08/09 · 21:55", opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 3, them: 3, score: "3–3", result: "D", format: "11v11", star: "DG", scorers: [{ name: "Brkk", goals: 1 }, { name: "DG", goals: 1 }] },
-    { date: "ter 08/09 · 21:28", opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 0, them: 1, score: "0–1", result: "L", format: "11v11", star: null, scorers: [] },
-    { date: "ter 08/09 · 21:10", opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 0, them: 0, score: "0–0", result: "D", format: "11v11", star: null, scorers: [] },
-    { date: "seg 07/09 · 01:23", opponent: "Narizes FC", crest: "assets/clubs/narizes-fc.png", us: 0, them: 1, score: "0–1", result: "L", format: "11v11", star: "Nebacetin", scorers: [] },
-    { date: "seg 07/09 · 22:16", opponent: "Cobra Del Toro FC", crest: "assets/clubs/cobra-del-toro-fc.png", us: 2, them: 2, score: "2–2", result: "D", format: "11v11", star: null, scorers: [{ name: "DimiContro", goals: 1 }] },
-    { date: "seg 07/09 · 21:40", opponent: "Cobra Del Toro FC", crest: "assets/clubs/cobra-del-toro-fc.png", us: 0, them: 5, score: "0–5", result: "L", format: "11v11", star: null, scorers: [] },
-    { date: "seg 07/09 · 21:10", opponent: "Cobra Del Toro FC", crest: "assets/clubs/cobra-del-toro-fc.png", us: 1, them: 3, score: "1–3", result: "L", format: "11v11", star: null, scorers: [{ name: "DimiContro", goals: 1 }] },
-    { date: "seg 07/09 · 20:48", opponent: "Cobra Del Toro FC", crest: "assets/clubs/cobra-del-toro-fc.png", us: 0, them: 1, score: "0–1", result: "L", format: "11v11", star: "Nebacetin", scorers: [] },
-    { date: "dom 06/09 · 01:33", opponent: "Botafofo", crest: "assets/clubs/botafofo.png", us: 1, them: 2, score: "1–2", result: "L", format: "11v11", star: null, scorers: [{ name: "guuizn_", goals: 1 }] },
-    { date: "dom 06/09 · 01:13", opponent: "Botafofo", crest: "assets/clubs/botafofo.png", us: 0, them: 1, score: "0–1", result: "L", format: "11v11", star: null, scorers: [] },
-    { date: "dom 06/09 · 00:55", opponent: "Botafofo", crest: "assets/clubs/botafofo.png", us: 1, them: 1, score: "1–1", result: "D", format: "11v11", star: "Nebacetin", scorers: [{ name: "guuizn_", goals: 1 }] },
+    { opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 4, them: 1, score: "4–1", result: "W", format: "11v11", star: "DG", scorers: [{ name: "DG", goals: 3 }, { name: "gstvcrvg", goals: 1 }] },
+    { opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 1, them: 3, score: "1–3", result: "L", format: "11v11", star: null, scorers: [{ name: "DG", goals: 1 }] },
+    { opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 4, them: 3, score: "4–3", result: "W", format: "11v11", star: "gstvcrvg", scorers: [{ name: "gstvcrvg", goals: 2 }, { name: "Nebacetin", goals: 1 }, { name: "DG", goals: 1 }] },
+    { opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 3, them: 3, score: "3–3", result: "D", format: "11v11", star: "DG", scorers: [{ name: "Brkk", goals: 1 }, { name: "DG", goals: 1 }] },
+    { opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 0, them: 1, score: "0–1", result: "L", format: "11v11", star: null, scorers: [] },
+    { opponent: "Raposo FC", crest: "assets/clubs/raposo-fc.png", us: 0, them: 0, score: "0–0", result: "D", format: "11v11", star: null, scorers: [] },
+    { opponent: "Narizes FC", crest: "assets/clubs/narizes-fc.png", us: 0, them: 1, score: "0–1", result: "L", format: "11v11", star: "Nebacetin", scorers: [] },
+    { opponent: "Cobra Del Toro FC", crest: "assets/clubs/cobra-del-toro-fc.png", us: 2, them: 2, score: "2–2", result: "D", format: "11v11", star: null, scorers: [{ name: "DimiContro", goals: 1 }] },
+    { opponent: "Cobra Del Toro FC", crest: "assets/clubs/cobra-del-toro-fc.png", us: 0, them: 5, score: "0–5", result: "L", format: "11v11", star: null, scorers: [] },
+    { opponent: "Cobra Del Toro FC", crest: "assets/clubs/cobra-del-toro-fc.png", us: 1, them: 3, score: "1–3", result: "L", format: "11v11", star: null, scorers: [{ name: "DimiContro", goals: 1 }] },
+    { opponent: "Cobra Del Toro FC", crest: "assets/clubs/cobra-del-toro-fc.png", us: 0, them: 1, score: "0–1", result: "L", format: "11v11", star: "Nebacetin", scorers: [] },
+    { opponent: "Botafofo", crest: "assets/clubs/botafofo.png", us: 1, them: 2, score: "1–2", result: "L", format: "11v11", star: null, scorers: [{ name: "guuizn_", goals: 1 }] },
+    { opponent: "Botafofo", crest: "assets/clubs/botafofo.png", us: 0, them: 1, score: "0–1", result: "L", format: "11v11", star: null, scorers: [] },
+    { opponent: "Botafofo", crest: "assets/clubs/botafofo.png", us: 1, them: 1, score: "1–1", result: "D", format: "11v11", star: "Nebacetin", scorers: [{ name: "guuizn_", goals: 1 }] },
   ],
   clubs: {
     "Bala de Munich": { owner: "tteuw & Brkk", crest: "assets/crest.png", us: true },
