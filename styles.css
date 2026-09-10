@@ -1025,6 +1025,19 @@ h1 {
   border-color: var(--gold);
 }
 
+.mvp-card button.is-undo {
+  background: transparent;
+  color: #ff8f9d;
+  border-color: rgba(211, 18, 42, 0.6);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+}
+
+.mvp-card button.is-undo:not(:disabled):hover {
+  background: rgba(211, 18, 42, 0.16);
+  filter: none;
+}
+
 .mvp-card.is-lead {
   grid-column: 1 / -1;
   flex-direction: row;

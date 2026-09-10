@@ -261,13 +261,21 @@ export async function handleMvp(req) {
     return result(mvpPayload(poll, voter), 200, headers);
   }
 
-  const player = String(body.player || "");
   const reqPoll = String(body.poll || "");
-  if (reqPoll !== pollId || !allow.includes(player)) return result({ error: "invalid" }, 400, headers);
+  if (reqPoll !== pollId) return result({ error: "invalid" }, 400, headers);
+
   const win = getWindow(poll);
   if (!win.started || !win.open) return result(mvpPayload(poll, voter), 403, headers);
-  const payload = mvpPayload(poll, voter);
-  if (payload.voted) return result(payload, 409, headers);
+
+  if (action === "unvote") {
+    delete poll.ballots[voter];
+    store.polls[pollId] = poll;
+    await saveVotes(store);
+    return result(mvpPayload(poll, voter), 200, headers);
+  }
+
+  const player = String(body.player || "");
+  if (!allow.includes(player)) return result({ error: "invalid" }, 400, headers);
   poll.ballots[voter] = player;
   store.polls[pollId] = poll;
   await saveVotes(store);

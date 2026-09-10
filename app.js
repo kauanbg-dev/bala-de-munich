@@ -529,7 +529,7 @@ const renderMvp = () => {
   const closeBtn = document.getElementById("mvp-close");
   const resetBtn = document.getElementById("mvp-reset");
   if (!grid || !status) return;
-  const locked = mvpState.voted || !mvpState.open;
+  const locked = !mvpState.open;
   const showCounts = Boolean(mvpAdminPin);
   paintMvpClock();
   if (mvpAdminOps && mvpAdminPin) {
@@ -575,9 +575,11 @@ const renderMvp = () => {
       ? `Votação pausada. ${mvpState.total} ${plural} até agora.`
       : "Votação pausada.";
   } else if (mvpState.voted) {
-    status.textContent = showCounts
-      ? `Voto registrado em ${mvpState.mine}. ${mvpState.total} ${plural} no total.`
-      : `Voto registrado em ${mvpState.mine}.`;
+    const tally = showCounts ? ` ${mvpState.total} ${plural} no total.` : "";
+    const change = mvpState.open
+      ? " Clicou errado? Toca em outro pra trocar, ou em \u201cTirar meu voto\u201d."
+      : "";
+    status.textContent = `Voto registrado em ${mvpState.mine}.${tally}${change}`;
   } else if (mvpState.open) {
     status.textContent = showCounts
       ? `${mvpState.total} ${plural} até agora. Escolhe um e confirma.`
@@ -625,7 +627,9 @@ const renderMvp = () => {
             <span class="mvp-bar" aria-hidden="true"><i style="width:${pct}%"></i></span>`
         : "";
       const label = mine
-        ? "Seu voto"
+        ? mvpState.open
+          ? "Tirar meu voto"
+          : "Seu voto"
         : !mvpState.started
           ? "Aguardando"
           : mvpState.paused
@@ -642,7 +646,7 @@ const renderMvp = () => {
             <b>${p.tag}</b>
             <small>${p.pos}</small>
             ${score}
-            <button type="button" data-mvp="${p.tag}" ${locked ? "disabled" : ""}>${label}</button>
+            <button type="button" class="${mine && mvpState.open ? "is-undo" : ""}" data-mvp="${p.tag}" data-action="${mine && mvpState.open ? "unvote" : "vote"}" ${locked ? "disabled" : ""}>${label}</button>
           </div>
         </article>`;
     })
@@ -763,23 +767,31 @@ document.getElementById("mvp-reset")?.addEventListener("click", () => {
 
 document.getElementById("mvp-grid")?.addEventListener("click", async (event) => {
   const btn = event.target.closest("button[data-mvp]");
-  if (!btn || mvpState.voted || !mvpState.open) return;
+  if (!btn || !mvpState.open) return;
   const tag = btn.getAttribute("data-mvp");
+  const undo = btn.getAttribute("data-action") === "unvote";
+  if (undo && !window.confirm(`Tirar seu voto em ${tag}? Depois dá pra votar de novo.`)) return;
   btn.disabled = true;
   try {
     const res = await fetch("/api/mvp", {
       method: "POST",
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ poll: mvpPoll.id, player: tag }),
+      body: undo
+        ? JSON.stringify({ poll: mvpPoll.id, action: "unvote" })
+        : JSON.stringify({ poll: mvpPoll.id, player: tag }),
     });
     const data = await res.json();
-    if (res.ok || res.status === 409) applyMvpData({ ...data, voted: true, mine: data.mine || tag });
+    if (res.ok) applyMvpData(undo ? { ...data, voted: false, mine: null } : { ...data, voted: true, mine: data.mine || tag });
     else if (res.status === 403) applyMvpData(data);
     else throw new Error("vote");
   } catch {
     const status = document.getElementById("mvp-status");
-    if (status) status.textContent = "Não rolou registrar o voto. Tenta de novo.";
+    if (status) {
+      status.textContent = undo
+        ? "Não rolou tirar o voto. Tenta de novo."
+        : "Não rolou registrar o voto. Tenta de novo.";
+    }
     btn.disabled = false;
   }
   renderMvp();
