@@ -3,7 +3,7 @@
     { "source": "/healthz", "destination": "/api/healthz" }
   ],
   "functions": {
-    "api/copa.js": { "maxDuration": 15 },
+    "api/copa.js": { "maxDuration": 10 },
     "api/mvp.js": { "maxDuration": 10 }
   }
 }
