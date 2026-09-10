@@ -65,8 +65,9 @@ Tabela, chave, última/próxima série, artilharia e assistências vêm do [copa
 
 Os amistosos saem da página `/partidas` da Copa, que não tem API: o parser lê o payload do Next embutido no HTML e fica só com os jogos do Bala.
 
-Dois cortes acontecem depois disso:
+Três cortes acontecem depois disso:
 
+- **Jogo anterior a `COPA_AMISTOSOS_DESDE`** é descartado. A contagem recomeçou em 10/09/2026 porque o acervo antigo misturava série oficial com treino. Pra zerar de novo, muda a constante `FRIENDLIES_SINCE` em `api/_lib/copa.mjs` ou define a variável de ambiente.
 - **Jogo quitado no meio** é descartado: fica sempre 0–0 e não diz nada sobre o time.
 - **Noite de confronto oficial** é descartada. O acervo da Copa é o histórico bruto do EA FC e as séries oficiais entram nele misturadas com os amistosos — dá pra provar reconstruindo Botafofo 3x1 Osempic e Narizes 3x2 Cobra a partir do acervo, que batem exatamente com o placar oficial das quartas. Como nada no dado separa um do outro, no dia em que o Bala tinha confronto marcado, jogo contra aquele adversário não entra. A série oficial já aparece na chave e nos resultados.
 

@@ -152,7 +152,7 @@ function paintFriendlies(clubMeta) {
   if (!list.length) {
     strip.innerHTML = "";
     if (more) more.hidden = true;
-    grid.innerHTML = `<p class="ami-empty">Ainda não temos amistoso registrado na Copa. Assim que o Bala jogar fora do torneio, os jogos aparecem aqui sozinhos.</p>`;
+    grid.innerHTML = `<p class="ami-empty">Nenhum amistoso registrado ainda. O próximo jogo do Bala fora da Copa entra aqui sozinho, com placar, craque e goleadores.</p>`;
     return;
   }
 
@@ -340,7 +340,7 @@ const applyCopaPayload = (live) => {
     club.bracket = live.bracket;
   }
   if (live.clubs) club.clubs = { ...club.clubs, ...live.clubs };
-  if (live.friendlies?.length) club.friendlies = live.friendlies;
+  if (Array.isArray(live.friendlies)) club.friendlies = live.friendlies;
   club.results = mergeResults(club.results, live.results);
   club.scorers = mergeStatRows(club.scorers, live.scorers);
   club.assists = mergeStatRows(club.assists, live.assists);

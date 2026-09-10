@@ -10,6 +10,12 @@ const TEAM_SLUG = "tteuw-brkk";
 const TEAM_NAME = "Bala de Munich";
 const BASE = "https://copastreamers.com.br";
 const REFRESH_MS = Number(process.env.COPA_REFRESH_MS) || 90_000;
+// A contagem de amistosos começa daqui pra frente: o acervo antigo misturava
+// série oficial com treino e não dava pra separar. Pra recomeçar de novo, é só
+// mudar esta data (ou passar COPA_AMISTOSOS_DESDE).
+const FRIENDLIES_SINCE = Date.parse(
+  process.env.COPA_AMISTOSOS_DESDE || "2026-09-10T15:20:00.000Z"
+);
 const FETCH_MS = 12_000;
 
 const ALIASES = {
@@ -728,6 +734,7 @@ function toFriendly(match) {
   // Jogo que os times quitaram no meio fica sempre 0–0 e não diz nada sobre o
   // time, então nem entra na lista.
   if (match?.abandonada) return null;
+  if (!(Date.parse(match?.data) >= FRIENDLIES_SINCE)) return null;
   if (!Array.isArray(match?.lados) || match.lados.length !== 2) return null;
   const sides = match.lados.map((side) => ({ ...side, club: canonClub(side.time || side.clube) }));
   const ours = sides.find((side) => isUs(side.club));
@@ -789,12 +796,12 @@ async function fetchFriendlies() {
   const html = await fetchText(`${BASE}/partidas`, 6_000);
   const list = friendlyList(flightPayload(html));
   if (!list) throw new Error("amistosos sem payload");
-  const ours = list
+  // Lista vazia é resposta legítima (ainda não teve amistoso novo), então não
+  // vira erro: só falha de verdade sobe, pra não apagar o acervo em cache.
+  return list
     .map(toFriendly)
     .filter(Boolean)
     .sort((a, b) => String(b.iso).localeCompare(String(a.iso)));
-  if (!ours.length) throw new Error("amistosos sem jogo do Bala");
-  return ours;
 }
 
 function usefulLive(payload) {
@@ -871,7 +878,9 @@ export async function getCopaLive(force = false) {
       if (!usefulLive(payload) && usefulLive(cache?.payload || readDisk())) {
         throw new Error("copa json vazio");
       }
-      if (!payload.friendlies?.length) {
+      // Só falha de leitura recupera o cache. Lista vazia é estado real e tem
+      // que sobrescrever, senão amistoso apagado volta do túmulo.
+      if (!payload.friendlies) {
         const kept = (cache?.payload || readDisk())?.friendlies;
         if (kept?.length) payload.friendlies = kept;
       }
