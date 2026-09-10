@@ -1,4 +1,4 @@
-import { getCopaLive } from "../scripts/copa.mjs";
+import { getCopaLive } from "./_lib/copa.mjs";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {

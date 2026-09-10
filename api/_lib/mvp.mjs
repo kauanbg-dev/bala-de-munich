@@ -3,7 +3,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const dataDir = process.env.DATA_DIR || (process.env.VERCEL ? "/tmp" : path.join(root, "data"));
 const votesFile = path.join(dataDir, "votes.json");
 const kvKey = "mvp-votes";

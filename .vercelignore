@@ -1,0 +1,7 @@
+# A Vercel publica a raiz do repo como arquivo estático. Tudo que fica aqui é
+# servidor local ou config de outra hospedagem, e não deve ficar legível na web.
+scripts/
+render.yaml
+Dockerfile
+Procfile
+data/

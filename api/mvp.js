@@ -1,4 +1,4 @@
-import { handleMvp } from "../scripts/mvp.mjs";
+import { handleMvp } from "./_lib/mvp.mjs";
 
 export default async function handler(req, res) {
   try {

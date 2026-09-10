@@ -2,8 +2,8 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getCopaLive, startCopaSync } from "./copa.mjs";
-import { handleMvp } from "./mvp.mjs";
+import { getCopaLive, startCopaSync } from "../api/_lib/copa.mjs";
+import { handleMvp } from "../api/_lib/mvp.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const preferredPort = Number(process.env.PORT) || 8765;
