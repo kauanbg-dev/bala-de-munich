@@ -72,7 +72,7 @@ Dois cortes acontecem depois disso:
 
 O `paintFriendlies` mostra o que veio ao vivo e emenda o histórico do `data.js` embaixo. Como o ao vivo só traz jogo depois do corte, a ordem sai certa sem precisar reordenar.
 
-O card não mostra data nem horário — o horário que a Copa publica é o do fim da partida e não corresponde ao que o time reconhece como dia de jogo. A ordem da lista (mais recente em cima) é a única referência temporal.
+Data e horário aparecem só nos jogos que vieram ao vivo, em horário de Brasília e sem remendo de madrugada (jogo que terminou 00:21 de quarta é quarta). O carimbo vem do fim da partida, que é o que a EA registra. No histórico manual não tem data: o card cai pro rótulo "Amistoso" e a ordem da lista é a única referência temporal.
 
 Um cuidado pro futuro: o acervo da Copa é o histórico bruto do EA FC, e em alguns times a série oficial aparece lá junto dos amistosos — dá pra ver reconstruindo Botafofo 3x1 Osempic e Narizes 3x2 Cobra, que batem com o placar oficial das quartas. Nas quartas do Bala isso não aconteceu (os jogos daquela noite não fecham o 3x1 oficial), então nada é filtrado. Vale reconferir depois da semifinal.
 

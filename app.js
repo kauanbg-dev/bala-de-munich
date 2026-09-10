@@ -205,7 +205,7 @@ function paintFriendlies(clubMeta) {
       return `
       <article class="ami-card${done ? ` is-${m.result}` : " is-next"}">
         <header class="ami-top">
-          <span class="ami-kind">Amistoso</span>
+          <span class="ami-kind">${m.date || "Amistoso"}</span>
           <span class="ami-tag">${done ? label[m.result] : "A jogar"}</span>
         </header>
         ${side("Bala de Munich", ourCrest, done ? m.us : "–", m.result === "W")}

@@ -701,6 +701,24 @@ function friendlyList(flight) {
   return null;
 }
 
+// Data literal de Brasília, sem remendo de madrugada: jogo que terminou 00:21
+// de quarta é quarta mesmo. Misturar o dia da véspera com a hora da madrugada
+// produzia card que se contradizia sozinho.
+function friendlyDate(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  const parts = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).formatToParts(d);
+  const get = (type) => parts.find((p) => p.type === type)?.value.replace(".", "") || "";
+  return `${get("weekday")} ${get("day")}/${get("month")} · ${get("hour")}:${get("minute")}`;
+}
+
 function friendlyCrest(name, avatar) {
   if (CREST[name]) return CREST[name];
   return avatar ? `${BASE}${avatar}` : null;
@@ -725,10 +743,10 @@ function toFriendly(match) {
     .map((p) => ({ name: canonPlayer(p.nome) || p.nome, goals: Number(p.gols) }))
     .sort((a, b) => b.goals - a.goals);
 
-  // `iso` só ordena a lista; o card não mostra data nem horário.
   return {
     id: String(match.id),
     iso: match.data,
+    date: friendlyDate(match.data),
     opponent: theirs.club,
     opponentOwner: theirs.presidente || "–",
     crest: friendlyCrest(theirs.club, theirs.avatar),
