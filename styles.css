@@ -1829,15 +1829,100 @@ h2 {
 .score { font-family: var(--font-display); font-size: 1.6rem; }
 
 .sociais-panel {
-  padding: 48px 32px;
-  text-align: center;
+  padding: 28px;
   background:
     linear-gradient(135deg, rgba(211, 18, 42, 0.28), rgba(7, 7, 10, 0.4)),
     var(--ink);
   border: 1px solid var(--line);
+  border-radius: 18px;
 }
 
-.sociais-panel .hero-actions { justify-content: center; }
+.sociais-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.social-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 88px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid transparent;
+  transition: transform 0.16s ease, filter 0.16s ease, border-color 0.16s ease;
+}
+
+.social-card:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.08);
+}
+
+.social-logo {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.social-logo svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+.social-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.social-copy b {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.social-copy small {
+  color: inherit;
+  opacity: 0.82;
+  font-size: 0.78rem;
+}
+
+.social-card.is-discord {
+  background: #5865f2;
+  color: #fff;
+}
+
+.social-card.is-instagram {
+  background: linear-gradient(135deg, #f09433 0%, #e6683c 28%, #dc2743 52%, #cc2366 76%, #bc1888 100%);
+  color: #fff;
+}
+
+.social-card.is-kick {
+  background: #0b0b0b;
+  color: #53fc18;
+  border-color: rgba(83, 252, 24, 0.35);
+}
+
+.social-card.is-kick .social-logo {
+  background: #53fc18;
+  color: #0b0b0b;
+}
+
+.social-card.is-kick .social-logo svg {
+  width: 18px;
+  height: 24px;
+}
 
 .section-sociais { padding-bottom: 88px; }
 
@@ -2489,6 +2574,8 @@ footer p {
   .player .tag { font-size: 0.9rem; margin-top: 4px; }
   .player .meta { font-size: 0.72rem; }
   .player .ovr { font-size: 1.2rem; top: 8px; right: 8px; }
+  .sociais-grid { grid-template-columns: 1fr; }
+  .social-card { min-height: 76px; }
   .feed {
     grid-template-rows: none;
   }

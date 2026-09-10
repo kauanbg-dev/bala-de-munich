@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=80" />
+  <link rel="stylesheet" href="styles.css?v=81" />
 </head>
 <body>
   <header class="topbar">
@@ -233,13 +233,37 @@
     <section id="sociais" class="section section-sociais">
       <header class="section-head">
         <h2>Sociais</h2>
-        <p>Discord, Instagram do Bala e lives do elenco.</p>
+        <p>Comunidade, Instagram e as lives do elenco no Kick.</p>
       </header>
       <div class="sociais-panel">
-        <div class="hero-actions">
-          <a class="btn btn-gold" id="discord" href="https://discord.gg/S9AfyBHSVr" target="_blank" rel="noreferrer">Discord</a>
-          <a class="btn btn-ghost" id="instagram" href="https://www.instagram.com/balademunich/" target="_blank" rel="noreferrer">Instagram</a>
-          <a class="btn btn-red" id="lives" href="https://linkme.bio/balademunich" target="_blank" rel="noreferrer">Lives</a>
+        <div class="sociais-grid">
+          <a class="social-card is-discord" id="discord" href="https://discord.gg/S9AfyBHSVr" target="_blank" rel="noreferrer">
+            <span class="social-logo" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.37-.44.86-.61 1.25a18.27 18.27 0 0 0-5.48 0 12.6 12.6 0 0 0-.62-1.25.08.08 0 0 0-.08-.04 19.74 19.74 0 0 0-4.89 1.52.07.07 0 0 0-.03.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.06 19.9 19.9 0 0 0 5.99 3.03.08.08 0 0 0 .09-.03c.36-.7.77-1.36 1.22-1.99a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.89.08.08 0 0 1-.01-.13c.12-.1.25-.2.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01c.12.1.25.2.37.29a.08.08 0 0 1 0 .13 12.3 12.3 0 0 1-1.87.89.08.08 0 0 0-.04.11c.46.63.87 1.29 1.23 1.99a.08.08 0 0 0 .08.03 19.84 19.84 0 0 0 6-3.03.08.08 0 0 0 .03-.06c.5-5.18-.84-9.67-3.55-13.66a.06.06 0 0 0-.03-.03zM8.02 15.33c-1.18 0-2.16-1.09-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.33-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.15-1.09-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.33-.95 2.42-2.16 2.42z"/></svg>
+            </span>
+            <span class="social-copy">
+              <b>Discord</b>
+              <small>Comunidade do Bala</small>
+            </span>
+          </a>
+          <a class="social-card is-instagram" id="instagram" href="https://www.instagram.com/balademunich/" target="_blank" rel="noreferrer">
+            <span class="social-logo" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11.2 1.3a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2zM12 8.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2zm0 2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z"/></svg>
+            </span>
+            <span class="social-copy">
+              <b>Instagram</b>
+              <small>@balademunich</small>
+            </span>
+          </a>
+          <a class="social-card is-kick" id="lives" href="https://linkme.bio/balademunich" target="_blank" rel="noreferrer">
+            <span class="social-logo" aria-hidden="true">
+              <svg viewBox="0 0 24 32"><path fill="currentColor" d="M0 0h8v8H0zm0 12h8v20H0zm12-4h4v4h-4zm8-8h4v8h-4zm0 12h4v20h-4zM16 8h4v4h-4z"/></svg>
+            </span>
+            <span class="social-copy">
+              <b>Lives</b>
+              <small>Elenco no Kick</small>
+            </span>
+          </a>
         </div>
       </div>
     </section>
@@ -260,7 +284,7 @@
     </span>
   </a>
 
-  <script src="data.js?v=80"></script>
-  <script src="app.js?v=80"></script>
+  <script src="data.js?v=81"></script>
+  <script src="app.js?v=81"></script>
 </body>
 </html>
