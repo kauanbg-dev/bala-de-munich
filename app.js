@@ -594,9 +594,14 @@ if (siteNav && navToggle) {
 }
 
 const creatorBtn = document.querySelector(".site-creator");
-const fadeCreator = () => {
+const siteFooter = document.querySelector("footer");
+const placeCreator = () => {
   if (!creatorBtn) return;
-  creatorBtn.classList.toggle("is-faded", window.scrollY > 24);
+  const footerBox = siteFooter?.getBoundingClientRect();
+  const footerInView = Boolean(footerBox && footerBox.top < window.innerHeight && footerBox.bottom > 0);
+  creatorBtn.classList.toggle("is-faded", window.scrollY > 24 && !footerInView);
+  creatorBtn.classList.toggle("is-at-footer", footerInView);
 };
-fadeCreator();
-window.addEventListener("scroll", fadeCreator, { passive: true });
+placeCreator();
+window.addEventListener("scroll", placeCreator, { passive: true });
+window.addEventListener("resize", placeCreator);

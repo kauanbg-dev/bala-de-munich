@@ -1273,6 +1273,10 @@ h2 {
   background: rgba(17, 14, 18, 0.55);
 }
 
+.site-creator.is-at-footer {
+  opacity: 1;
+}
+
 .site-creator:hover,
 .site-creator:focus-visible {
   opacity: 1;
@@ -1303,10 +1307,16 @@ footer {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 28px;
+  padding: 28px 210px 28px 28px;
   color: var(--mute);
   border-top: 1px solid var(--line);
   font-size: 0.85rem;
+}
+
+footer p {
+  margin: 0;
+  max-width: 36rem;
+  text-wrap: pretty;
 }
 
 @media (max-width: 800px) {
@@ -1374,4 +1384,7 @@ footer {
   .results li { gap: 6px; }
   h1 { font-size: 4.6rem; }
   .site-creator { right: 12px; bottom: 12px; }
+  footer {
+    padding: 22px 18px 96px;
+  }
 }
