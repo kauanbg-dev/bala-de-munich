@@ -472,14 +472,6 @@ let mvpTimer = null;
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
-const formatRemain = (ms) => {
-  const s = Math.max(0, Math.ceil(ms / 1000));
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
-  return `${h}h ${pad2(m)}m ${pad2(sec)}s`;
-};
-
 const mvpPct = (tag) => {
   if (!mvpState.total) return 0;
   return Math.round((100 * (Number(mvpState.totals[tag]) || 0)) / mvpState.total);
@@ -492,10 +484,45 @@ const mvpRatingOf = (player) => {
   return Number.isFinite(n) ? n : 0;
 };
 
+const clockSegments = (ms) => {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  const parts = [
+    [pad2(Math.floor(s / 3600)), "horas"],
+    [pad2(Math.floor((s % 3600) / 60)), "min"],
+    [pad2(s % 60), "seg"],
+  ];
+  return parts
+    .map(([value, label]) => `<span class="mvp-seg"><b>${value}</b><small>${label}</small></span>`)
+    .join('<i class="mvp-sep" aria-hidden="true">:</i>');
+};
+
+const paintMvpClock = () => {
+  const clock = document.getElementById("mvp-clock");
+  const stage = document.getElementById("mvp-stage");
+  const live = document.getElementById("mvp-live");
+  const label = document.getElementById("mvp-clock-label");
+  const progress = document.getElementById("mvp-progress");
+  const fullMs = (mvpPoll.durationHours || 2) * 3600 * 1000;
+  const state = !mvpState.started
+    ? { cls: "is-idle", pill: "Urna fechada", label: "duração da votação", ms: fullMs, bar: 0 }
+    : mvpState.paused
+      ? { cls: "is-paused", pill: "Pausada", label: "votação pausada", ms: mvpState.remainingMs, bar: mvpState.remainingMs / fullMs }
+      : mvpState.open
+        ? { cls: "is-open", pill: "Ao vivo", label: "tempo restante", ms: mvpState.remainingMs, bar: mvpState.remainingMs / fullMs }
+        : { cls: "is-closed", pill: "Encerrada", label: "votação encerrada", ms: 0, bar: 0 };
+  if (clock) clock.innerHTML = clockSegments(state.ms);
+  if (stage) stage.className = `mvp-stage ${state.cls}`;
+  if (live) {
+    live.innerHTML = `<i aria-hidden="true"></i>${state.pill}`;
+    live.className = `mvp-live ${state.cls}`;
+  }
+  if (label) label.textContent = state.label;
+  if (progress) progress.style.width = `${Math.max(0, Math.min(100, state.bar * 100))}%`;
+};
+
 const renderMvp = () => {
   const grid = document.getElementById("mvp-grid");
   const status = document.getElementById("mvp-status");
-  const clock = document.getElementById("mvp-clock");
   const startBtn = document.getElementById("mvp-start");
   const pauseBtn = document.getElementById("mvp-pause");
   const resumeBtn = document.getElementById("mvp-resume");
@@ -504,12 +531,7 @@ const renderMvp = () => {
   if (!grid || !status) return;
   const locked = mvpState.voted || !mvpState.open;
   const showCounts = Boolean(mvpAdminPin);
-  if (clock) {
-    if (!mvpState.started) clock.textContent = "Aguardando início";
-    else if (mvpState.paused) clock.textContent = `Pausada · ${formatRemain(mvpState.remainingMs)}`;
-    else if (mvpState.open) clock.textContent = formatRemain(mvpState.remainingMs);
-    else clock.textContent = "Encerrada";
-  }
+  paintMvpClock();
   if (mvpAdminOps && mvpAdminPin) {
     mvpAdminOps.hidden = false;
     if (startBtn) startBtn.disabled = mvpState.started;
@@ -580,8 +602,9 @@ const renderMvp = () => {
       adminHint.textContent = `${mvpState.total} ${plural} contabilizados${lead}. O público só vê a porcentagem.`;
     }
   }
+  grid.className = `mvp-grid${mvpState.started ? "" : " is-idle"}`;
   grid.innerHTML = ranked
-    .map((p) => {
+    .map((p, i) => {
       const n = mvpVotesOf(p.tag);
       const pct = mvpPct(p.tag);
       const photo = p.photo || "assets/crest.png";
@@ -589,20 +612,36 @@ const renderMvp = () => {
       const lead = uniqueLead && uniqueLead.tag === p.tag;
       const winner = lead && votingOver;
       const badge = winner
-        ? `<span class="mvp-badge">Vencedor da votação de MVP</span>`
+        ? `<span class="mvp-badge">Vencedor da votação</span>`
         : lead
           ? `<span class="mvp-badge is-lead">Na frente</span>`
           : "";
+      const score = mvpState.started
+        ? `<div class="mvp-score">
+              <strong>${pct}<i>%</i></strong>
+              ${showCounts ? `<span>${n} ${n === 1 ? "voto" : "votos"}</span>` : ""}
+            </div>
+            <span class="mvp-bar" aria-hidden="true"><i style="width:${pct}%"></i></span>`
+        : "";
+      const label = mine
+        ? "Seu voto"
+        : !mvpState.started
+          ? "Aguardando"
+          : mvpState.paused
+            ? "Pausada"
+            : mvpState.open
+              ? "Votar"
+              : "Encerrada";
       return `
         <article class="mvp-card${mine ? " is-mine" : ""}${lead ? " is-lead" : ""}${winner ? " is-winner" : ""}">
-          ${badge}
-          <img src="${photo}" alt="" class="${p.photo ? "" : "fallback"}" />
-          <div>
+          <span class="mvp-rank">${mvpState.started ? `${i + 1}º` : p.number ? `#${p.number}` : "—"}</span>
+          <span class="mvp-face"><img src="${photo}" alt="" loading="lazy" class="${p.photo ? "" : "fallback"}" /></span>
+          <div class="mvp-body">
+            ${badge}
             <b>${p.tag}</b>
             <small>${p.pos}</small>
-            <span class="mvp-bar" aria-hidden="true"><i style="width:${pct}%"></i></span>
-            <em>${showCounts ? `${n} · ${pct}%` : `${pct}%`}</em>
-            <button type="button" data-mvp="${p.tag}" ${locked ? "disabled" : ""}>${mine ? "Seu voto" : "Votar"}</button>
+            ${score}
+            <button type="button" data-mvp="${p.tag}" ${locked ? "disabled" : ""}>${label}</button>
           </div>
         </article>`;
     })
@@ -633,8 +672,7 @@ const tickMvp = () => {
     refreshMvp();
     return;
   }
-  const clock = document.getElementById("mvp-clock");
-  if (clock) clock.textContent = formatRemain(mvpState.remainingMs);
+  paintMvpClock();
 };
 
 const refreshMvp = async () => {

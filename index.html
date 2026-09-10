@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=57" />
+  <link rel="stylesheet" href="styles.css?v=58" />
 </head>
 <body>
   <header class="topbar">
@@ -81,8 +81,13 @@
         <h2>Votação · MVP</h2>
         <p id="mvp-copy">Votação de MVP do jogo contra o Raposo FC. Duração da votação: 2 horas.</p>
       </header>
-      <p class="mvp-clock" id="mvp-clock" aria-live="polite"></p>
-      <p class="mvp-status" id="mvp-status" role="status"></p>
+      <div class="mvp-stage" id="mvp-stage">
+        <span class="mvp-live" id="mvp-live"><i aria-hidden="true"></i>Urna fechada</span>
+        <p class="mvp-clock" id="mvp-clock"></p>
+        <span class="mvp-clock-label" id="mvp-clock-label">duração da votação</span>
+        <div class="mvp-progress" aria-hidden="true"><i id="mvp-progress"></i></div>
+        <p class="mvp-status" id="mvp-status" role="status" aria-live="polite"></p>
+      </div>
       <aside class="mvp-admin" id="mvp-admin" hidden>
         <header class="mvp-admin-head">
           <span class="mvp-admin-title">Painel do chefe</span>
@@ -216,7 +221,7 @@
     </span>
   </a>
 
-  <script src="data.js?v=57"></script>
-  <script src="app.js?v=57"></script>
+  <script src="data.js?v=58"></script>
+  <script src="app.js?v=58"></script>
 </body>
 </html>
