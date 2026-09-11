@@ -233,6 +233,9 @@ function paintFriendlies(clubMeta) {
 // que entrou no acervo há poucos minutos — no Pro Clubs os jogos são emendados,
 // então resultado recém-chegado quer dizer que o time ainda está em campo.
 const LIVE_MAX = 3;
+// Quem está em live (Kick/Twitch) entra na faixa do hero. A lista só enche
+// depois do /api/lives — por isso começa vazia e o paintLiveNow roda de novo.
+let streamersOnAir = [];
 // Uma partida leva uns 15 min de relógio real. Meia hora sem nada novo já é
 // sessão encerrada, não intervalo entre jogos.
 const LIVE_FRESH_MS = 28 * 60 * 1000;
@@ -295,10 +298,28 @@ function liveOffCard(ourCrest) {
       </div>`;
 }
 
+function streamerCards() {
+  return streamersOnAir
+    .map(
+      (p) => `
+      <a class="live-card is-stream is-${p.kind}" href="#lives" data-live-tag="${p.tag}">
+        <span class="live-when">${p.label}</span>
+        <div class="live-teams">
+          <img src="${p.photo || "assets/crest.png"}" alt="" loading="lazy" />
+          <b>${p.tag}</b>
+        </div>
+        <span class="live-vs">${p.title || "Ao vivo agora"}</span>
+        <span class="live-tag">Ao vivo</span>
+      </a>`
+    )
+    .join("");
+}
+
 function paintLiveNow() {
   const band = document.getElementById("live-band");
   const row = document.getElementById("live-row");
   const title = document.getElementById("live-title");
+  const more = document.getElementById("live-more");
   if (!band || !row) return;
 
   const now = Date.now();
@@ -306,12 +327,23 @@ function paintLiveNow() {
   const oficial = liveOficial(now);
   const sessao = liveSession(Array.isArray(club.friendlies) ? club.friendlies : [], now);
   const emCampo = oficial.length > 0 || sessao.length > 0;
+  const noAr = streamersOnAir.length > 0;
 
-  band.classList.toggle("is-off", !emCampo);
-  if (title) title.textContent = emCampo ? "Bala em campo agora" : "Bala ao vivo";
+  band.classList.toggle("is-off", !emCampo && !noAr);
+  if (title) {
+    title.textContent = emCampo ? "Bala em campo agora" : noAr ? "Elenco ao vivo" : "Bala ao vivo";
+  }
+  if (more) {
+    more.href = noAr ? "#lives" : "#amistosos";
+    more.textContent = noAr ? "Ver lives" : "Ver amistosos";
+  }
 
-  if (!emCampo) {
+  if (!emCampo && !noAr) {
     row.innerHTML = liveOffCard(ourCrest);
+    return;
+  }
+  if (!emCampo && noAr) {
+    row.innerHTML = streamerCards();
     return;
   }
 
@@ -353,7 +385,7 @@ function paintLiveNow() {
     ),
   ];
 
-  row.innerHTML = cards.slice(0, LIVE_MAX).join("");
+  row.innerHTML = cards.slice(0, LIVE_MAX).join("") + streamerCards();
 }
 
 // O estado da faixa vence sozinho com o relógio, sem depender da Copa mandar
@@ -668,6 +700,7 @@ const pullLiveStatus = async () => {
       c.viewers = hit?.viewers;
       c.title = hit?.title;
     });
+    streamersOnAir = liveChannels.filter((c) => c.onAir);
     if (!liveAutoPicked) {
       const air = liveChannels.find((c) => c.onAir);
       if (air) liveSelected = air.tag;
@@ -675,6 +708,7 @@ const pullLiveStatus = async () => {
     }
     paintLives();
     paintHeroLive();
+    paintLiveNow();
   } catch {
     /* mantém a grade sem selo */
   }
@@ -687,6 +721,16 @@ const paintHeroLive = () => {
   btn.classList.toggle("is-on", air);
   btn.setAttribute("aria-label", air ? "Ir para as lives — alguém ao vivo agora" : "Ir para as lives");
 };
+
+document.getElementById("live-band")?.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-live-tag]");
+  if (!card) return;
+  const channel = liveChannels.find((p) => p.tag === card.getAttribute("data-live-tag"));
+  if (channel) {
+    liveSelected = channel.tag;
+    paintLives();
+  }
+});
 
 document.getElementById("lives-grid")?.addEventListener("click", (event) => {
   const card = event.target.closest(".lives-card");

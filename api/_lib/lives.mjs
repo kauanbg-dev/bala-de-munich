@@ -14,7 +14,10 @@ function cleanSlug(raw) {
 
 function slugsFrom(req, key) {
   const url = new URL(req.url || "/", "http://x");
-  return [...new Set(String(url.searchParams.get(key) || "").split(",").map(cleanSlug).filter(Boolean))].slice(0, MAX);
+  const fromUrl = url.searchParams.get(key);
+  const fromQuery = req?.query?.[key];
+  const raw = fromUrl || fromQuery || "";
+  return [...new Set(String(raw).split(",").map(cleanSlug).filter(Boolean))].slice(0, MAX);
 }
 
 async function kickStatus(slug) {

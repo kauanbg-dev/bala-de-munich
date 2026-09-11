@@ -544,6 +544,39 @@ h1 {
 .live-card.is-L .live-tag { color: #ff8f9d; border-color: rgba(211, 18, 42, 0.55); }
 .live-card.is-on .live-tag { color: #ff8f9d; border-color: rgba(211, 18, 42, 0.55); }
 
+.live-card.is-stream {
+  text-decoration: none;
+  color: inherit;
+}
+
+.live-card.is-stream .live-teams img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.live-card.is-stream .live-teams b {
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+}
+
+.live-card.is-kick::before { background: #53fc18; }
+.live-card.is-twitch::before { background: #9146ff; }
+
+.live-card.is-kick {
+  border-color: rgba(83, 252, 24, 0.4);
+  box-shadow: 0 0 0 1px rgba(83, 252, 24, 0.18);
+}
+
+.live-card.is-twitch {
+  border-color: rgba(145, 70, 255, 0.5);
+  box-shadow: 0 0 0 1px rgba(145, 70, 255, 0.22);
+}
+
+.live-card.is-kick .live-tag { color: #b6ff8a; border-color: rgba(83, 252, 24, 0.55); }
+.live-card.is-twitch .live-tag { color: #d4b8ff; border-color: rgba(145, 70, 255, 0.55); }
+
 /* Série em andamento não tem placar parcial: os pontos ocupam o lugar dos gols
    sem fingir número. */
 .live-teams.is-open b { color: var(--mute); font-size: 1.2rem; }
