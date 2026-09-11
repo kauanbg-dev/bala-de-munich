@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=93" />
+  <link rel="stylesheet" href="styles.css?v=94" />
 </head>
 <body class="page-lives">
   <header class="topbar">
@@ -49,18 +49,17 @@
     </section>
 
     <section class="section section-lives lives-desk">
-      <header class="section-head">
-        <h2>Quem está no ar</h2>
-        <p id="lives-onair-n">Checando as lives…</p>
-      </header>
-      <div class="lives-onair" id="lives-onair"></div>
-
-      <div class="lives-watch">
+      <div class="lives-watch" id="lives-watch">
         <div class="lives-stage is-idle" id="lives-stage">
           <div class="lives-screen" id="lives-screen"></div>
           <p class="lives-now" id="lives-now">Clica em alguém pra abrir a live.</p>
         </div>
-        <div>
+        <div class="lives-pick">
+          <header class="section-head lives-air-head">
+            <h2>Quem está no ar</h2>
+            <p id="lives-onair-n">Checando as lives…</p>
+          </header>
+          <div class="lives-onair" id="lives-onair"></div>
           <header class="lives-all-head">
             <h3>Elenco</h3>
             <p>Verde é Kick. Roxo é Twitch.</p>
@@ -87,6 +86,6 @@
   </a>
 
   <script src="data.js?v=87"></script>
-  <script src="lives.js?v=93"></script>
+  <script src="lives.js?v=94"></script>
 </body>
 </html>

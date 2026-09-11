@@ -1994,6 +1994,7 @@ h2 {
 
 .lives-stage {
   margin-bottom: 18px;
+  scroll-margin-top: 80px;
 }
 
 .lives-stage.is-idle {
@@ -2216,6 +2217,8 @@ h2 {
   color: #fff;
 }
 
+.page-lives { overflow-x: clip; }
+
 .page-lives .lives-hero { padding-bottom: 8px; }
 
 .page-lives .lives-hero h1 {
@@ -2223,14 +2226,15 @@ h2 {
 }
 
 .page-lives .section-lives {
-  padding-top: 20px;
+  padding-top: 12px;
+  max-width: 1240px;
 }
 
 .lives-onair {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
-  margin: 0 0 32px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 0 0 36px;
 }
 
 .lives-onair-empty {
@@ -2245,7 +2249,11 @@ h2 {
   gap: 28px;
 }
 
-.lives-all-head { margin-bottom: 12px; }
+.lives-pick { min-width: 0; }
+
+.lives-air-head { margin-bottom: 18px; }
+
+.lives-all-head { margin: 8px 0 16px; }
 
 .lives-all-head h3 {
   font-family: var(--font-display);
@@ -2261,14 +2269,70 @@ h2 {
 
 .page-lives .topbar nav a[aria-current="page"] { color: var(--paper); }
 
+.page-lives .lives-grid {
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px 18px;
+}
+
+.page-lives .lives-card {
+  padding: 14px 16px;
+  gap: 14px;
+  min-height: 78px;
+  border-radius: 16px;
+}
+
+.page-lives .lives-card img,
+.page-lives .lives-face img {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+}
+
+.page-lives .lives-card b { font-size: 1.28rem; }
+.page-lives .lives-card small { font-size: 0.78rem; }
+
 @media (min-width: 960px) {
+  .page-lives .lives-hero {
+    padding: 32px 40px 4px;
+    max-width: 1240px;
+  }
+
+  .page-lives .lives-hero h1 { font-size: 4.6rem; }
+
+  .page-lives .lives-hero .crest-wrap img { width: 148px; }
+
+  .page-lives .section-lives {
+    padding: 8px 40px 88px;
+  }
+
   .page-lives .lives-watch {
-    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
+    grid-template-columns: 1fr;
+  }
+
+  .page-lives .lives-watch.is-watching {
+    grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.9fr);
+    gap: 36px;
     align-items: start;
   }
 
   .page-lives .lives-stage.is-idle {
     display: none;
+  }
+
+  .page-lives .lives-watch.is-watching .lives-stage {
+    position: sticky;
+    top: 84px;
+  }
+
+  .page-lives .lives-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px;
+  }
+
+  .page-lives .lives-watch:not(.is-watching) .lives-grid,
+  .page-lives .lives-watch:not(.is-watching) .lives-onair {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
   }
 }
 

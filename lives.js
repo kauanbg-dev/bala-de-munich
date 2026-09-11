@@ -51,6 +51,22 @@ const sortLiveChannels = () => {
   });
 };
 
+const markWatching = () => {
+  document.getElementById("lives-watch")?.classList.toggle("is-watching", Boolean(liveSelected));
+};
+
+const scrollToPlayer = () => {
+  const stage = document.getElementById("lives-stage");
+  if (!stage) return;
+  const run = () => {
+    const bar = document.querySelector(".topbar");
+    const offset = (bar?.getBoundingClientRect().height || 0) + 8;
+    const top = stage.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  };
+  requestAnimationFrame(() => requestAnimationFrame(run));
+};
+
 const paintLiveIdle = () => {
   const stage = document.getElementById("lives-stage");
   const screen = document.getElementById("lives-screen");
@@ -58,15 +74,16 @@ const paintLiveIdle = () => {
   liveSelected = null;
   livePlayerReady = false;
   stage?.classList.add("is-idle");
+  markWatching();
   screen?.classList.remove("is-live", "is-twitch", "is-kick");
   if (screen) screen.innerHTML = "";
   if (now) now.textContent = "Clica em alguém pra abrir a live.";
-  document.getElementById("lives-grid")?.querySelectorAll(".lives-card").forEach((card) => {
+  document.querySelectorAll("#lives-grid .lives-card, #lives-onair .lives-card").forEach((card) => {
     card.classList.remove("is-on");
   });
 };
 
-const paintLivePlayer = (channel) => {
+const paintLivePlayer = (channel, { scroll = false } = {}) => {
   const stage = document.getElementById("lives-stage");
   const screen = document.getElementById("lives-screen");
   const now = document.getElementById("lives-now");
@@ -74,6 +91,7 @@ const paintLivePlayer = (channel) => {
   const same = liveSelected === channel.tag;
   liveSelected = channel.tag;
   stage?.classList.remove("is-idle");
+  markWatching();
   screen.classList.toggle("is-live", Boolean(channel.onAir));
   screen.classList.toggle("is-twitch", channel.kind === "twitch");
   screen.classList.toggle("is-kick", channel.kind !== "twitch");
@@ -85,9 +103,11 @@ const paintLivePlayer = (channel) => {
     const watching = channel.onAir ? "Ao vivo" : `Canal ${channel.label}`;
     now.innerHTML = `${watching} · <b>${channel.tag}</b>. <a href="${channel.href}" target="_blank" rel="noreferrer">Abrir no app</a>`;
   }
-  document.getElementById("lives-grid")?.querySelectorAll(".lives-card").forEach((card) => {
-    card.classList.toggle("is-on", card.getAttribute("data-tag") === channel.tag);
+  document.querySelectorAll("#lives-grid .lives-card, #lives-onair .lives-card").forEach((card) => {
+    const tag = card.getAttribute("data-tag");
+    card.classList.toggle("is-on", tag === channel.tag);
   });
+  if (scroll) scrollToPlayer();
 };
 
 const paintLivesGrid = () => {
@@ -196,7 +216,7 @@ const openFromWatch = () => {
   const wanted = watchParam().toLowerCase();
   if (!wanted) return;
   const channel = liveChannels.find((p) => String(p.tag).toLowerCase() === wanted || String(p.slug).toLowerCase() === wanted);
-  if (channel) paintLivePlayer(channel);
+  if (channel) paintLivePlayer(channel, { scroll: true });
 };
 
 const pickFromEvent = (event) => {
@@ -204,7 +224,7 @@ const pickFromEvent = (event) => {
   if (!card) return;
   const tag = card.getAttribute("data-tag") || card.getAttribute("data-live-tag");
   const channel = liveChannels.find((p) => p.tag === tag);
-  if (channel) paintLivePlayer(channel);
+  if (channel) paintLivePlayer(channel, { scroll: true });
 };
 
 document.getElementById("lives-grid")?.addEventListener("click", pickFromEvent);
@@ -216,7 +236,7 @@ document.getElementById("live-band")?.addEventListener("click", (event) => {
   if (!channel) return;
   if (document.body.classList.contains("page-lives")) {
     event.preventDefault();
-    paintLivePlayer(channel);
+    paintLivePlayer(channel, { scroll: true });
     return;
   }
   /* no site principal o card já aponta pra /lives?watch= */
