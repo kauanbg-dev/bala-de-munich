@@ -633,6 +633,8 @@ const paintLivePlayer = (channel) => {
   const same = liveSelected === channel.tag;
   liveSelected = channel.tag;
   screen.classList.toggle("is-live", Boolean(channel.onAir));
+  screen.classList.toggle("is-twitch", channel.kind === "twitch");
+  screen.classList.toggle("is-kick", channel.kind !== "twitch");
   if (!same || !livePlayerReady) {
     screen.innerHTML = `<iframe src="${channel.embed}" title="Live de ${channel.tag}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
     livePlayerReady = true;
@@ -653,7 +655,7 @@ const paintLivesGrid = () => {
   grid.innerHTML = liveChannels
     .map(
       (p) => `
-      <button class="lives-card${p.onAir ? " is-live" : ""}${liveSelected === p.tag ? " is-on" : ""}" type="button" data-tag="${p.tag}">
+      <button class="lives-card is-${p.kind}${p.onAir ? " is-live" : ""}${liveSelected === p.tag ? " is-on" : ""}" type="button" data-tag="${p.tag}">
         <span class="lives-face">
           <img src="${p.photo || "assets/crest.png"}" alt="" loading="lazy" />
           ${p.onAir ? `<i class="lives-dot" aria-hidden="true"></i>` : ""}

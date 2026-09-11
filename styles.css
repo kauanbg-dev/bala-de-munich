@@ -2098,6 +2098,16 @@ h2 {
   box-shadow: inset 3px 0 0 #53fc18;
 }
 
+.lives-card.is-twitch:hover,
+.lives-card.is-twitch.is-on {
+  border-color: rgba(145, 70, 255, 0.55);
+}
+
+.lives-card.is-twitch.is-on {
+  background: rgba(145, 70, 255, 0.1);
+  box-shadow: inset 3px 0 0 #9146ff;
+}
+
 .lives-face {
   position: relative;
   flex: 0 0 auto;
@@ -2144,9 +2154,37 @@ h2 {
     0 12px 28px -16px rgba(83, 252, 24, 0.65);
 }
 
+.lives-card.is-twitch.is-live {
+  border-color: #9146ff;
+  background:
+    linear-gradient(135deg, rgba(145, 70, 255, 0.28), rgba(16, 13, 17, 0.96) 58%);
+  box-shadow: 0 0 0 1px rgba(145, 70, 255, 0.4), 0 12px 28px -16px rgba(145, 70, 255, 0.7);
+}
+
+.lives-card.is-twitch.is-live img {
+  box-shadow: 0 0 0 2px #9146ff;
+}
+
+.lives-card.is-twitch.is-live.is-on {
+  box-shadow:
+    inset 3px 0 0 #9146ff,
+    0 0 0 1px rgba(145, 70, 255, 0.5),
+    0 12px 28px -16px rgba(145, 70, 255, 0.7);
+}
+
+.lives-card.is-twitch .lives-dot {
+  background: #9146ff;
+  box-shadow: 0 0 0 0 rgba(145, 70, 255, 0.7);
+}
+
 .lives-screen.is-live {
   border-color: #53fc18;
   box-shadow: 0 0 0 1px rgba(83, 252, 24, 0.25), 0 20px 40px -24px rgba(83, 252, 24, 0.55);
+}
+
+.lives-screen.is-live.is-twitch {
+  border-color: #9146ff;
+  box-shadow: 0 0 0 1px rgba(145, 70, 255, 0.3), 0 20px 40px -24px rgba(145, 70, 255, 0.6);
 }
 
 .lives-screen.is-live::after {
@@ -2163,6 +2201,11 @@ h2 {
   border-radius: 999px;
   background: #53fc18;
   color: #0b0b0b;
+}
+
+.lives-screen.is-live.is-twitch::after {
+  background: #9146ff;
+  color: #fff;
 }
 
 .section-chave {
