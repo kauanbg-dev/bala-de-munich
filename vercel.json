@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/lives", "destination": "/lives.html" },
     { "source": "/healthz", "destination": "/api/healthz" }
   ],
   "functions": {

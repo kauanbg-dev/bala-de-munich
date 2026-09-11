@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=91" />
+  <link rel="stylesheet" href="styles.css?v=92" />
 </head>
 <body>
   <header class="topbar">
@@ -28,7 +28,7 @@
       <a href="#amistosos">Amistosos</a>
       <a href="#feed">Feed</a>
       <a href="#sociais">Sociais</a>
-      <a href="#lives">Lives</a>
+      <a href="/lives">Lives</a>
     </nav>
     <a class="btn btn-ghost btn-topo" href="#amistosos">Amistosos</a>
     <a class="btn btn-gold" href="#mvp">Votar MVP</a>
@@ -45,7 +45,7 @@
           <div class="hero-actions">
             <a class="btn btn-red" href="#elenco">Ver o elenco</a>
             <a class="btn btn-ghost" href="#mvp">Votar MVP</a>
-            <a class="btn btn-live" id="hero-live" href="#lives">
+            <a class="btn btn-live" id="hero-live" href="/lives">
               <i aria-hidden="true"></i>
               Live
             </a>
@@ -238,7 +238,7 @@
     <section id="sociais" class="section section-sociais">
       <header class="section-head">
         <h2>Sociais</h2>
-        <p>Discord, Instagram e as lives na Kick.</p>
+        <p>Discord, Instagram e as lives na Kick e na Twitch.</p>
       </header>
       <div class="sociais-panel">
         <div class="sociais-grid">
@@ -260,13 +260,13 @@
               <small>@balademunich</small>
             </span>
           </a>
-          <a class="social-card is-kick" id="lives-btn" href="#lives">
+          <a class="social-card is-kick" id="lives-btn" href="/lives">
             <span class="social-logo" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path fill="currentColor" d="M1.333 0h8v5.333H12V2.667h2.667V0h8v8H20v2.667h-2.667v2.666H20V16h2.667v8h-8v-2.667H12v-2.666H9.333V24h-8Z"/></svg>
             </span>
             <span class="social-copy">
               <b>Lives</b>
-              <small>Ao vivo na Kick</small>
+              <small>Ao vivo na Kick e na Twitch</small>
             </span>
           </a>
         </div>
@@ -276,7 +276,7 @@
     <section id="lives" class="section section-lives">
       <header class="section-head">
         <h2>Lives</h2>
-        <p>Kick e Twitch do elenco. Clica em alguém pra abrir a live aqui.</p>
+        <p>Kick e Twitch do elenco. Clica em alguém pra abrir aqui, ou <a href="/lives">abre o site de lives</a>.</p>
       </header>
       <div class="lives-stage is-idle" id="lives-stage">
         <div class="lives-screen" id="lives-screen"></div>
@@ -302,6 +302,7 @@
   </a>
 
   <script src="data.js?v=87"></script>
-  <script src="app.js?v=91"></script>
+  <script src="app.js?v=92"></script>
+  <script src="lives.js?v=92"></script>
 </body>
 </html>

@@ -2216,6 +2216,62 @@ h2 {
   color: #fff;
 }
 
+.page-lives .lives-hero { padding-bottom: 8px; }
+
+.page-lives .lives-hero h1 {
+  font-size: clamp(3.6rem, 11vw, 7.2rem);
+}
+
+.page-lives .section-lives {
+  padding-top: 20px;
+}
+
+.lives-onair {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 0 0 32px;
+}
+
+.lives-onair-empty {
+  grid-column: 1 / -1;
+  color: var(--mute);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.lives-watch {
+  display: grid;
+  gap: 28px;
+}
+
+.lives-all-head { margin-bottom: 12px; }
+
+.lives-all-head h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  font-size: 1.7rem;
+  text-transform: uppercase;
+}
+
+.lives-all-head p {
+  color: var(--mute);
+  font-size: 0.82rem;
+}
+
+.page-lives .topbar nav a[aria-current="page"] { color: var(--paper); }
+
+@media (min-width: 960px) {
+  .page-lives .lives-watch {
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
+    align-items: start;
+  }
+
+  .page-lives .lives-stage.is-idle {
+    display: none;
+  }
+}
+
 .section-chave {
   max-width: 1280px;
 }

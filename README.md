@@ -2,7 +2,7 @@
 
 Site do time de Pro Clubs no EA FC 26. Elenco, chave da Super Copa dos Streamers, stats e votação de MVP.
 
-A página em si é estática (`index.html`). Tabela ao vivo e urna de MVP usam as rotas `/api/copa` e `/api/mvp`. Em casa isso sobe com `npm start`. Na Vercel essas rotas viram funções serverless (já no repo).
+A página em si é estática (`index.html`). Tabela ao vivo e urna de MVP usam as rotas `/api/copa` e `/api/mvp`. As lives do elenco (Kick e Twitch) têm um site irmão em `/lives` — mesma cara do Bala, player só abre quando clica. Em casa isso sobe com `npm start`. Na Vercel essas rotas viram funções serverless (já no repo).
 
 ## Colocar no ar (Vercel)
 

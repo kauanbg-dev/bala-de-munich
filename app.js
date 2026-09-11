@@ -234,8 +234,7 @@ function paintFriendlies(clubMeta) {
 // então resultado recém-chegado quer dizer que o time ainda está em campo.
 const LIVE_MAX = 3;
 // Quem está em live (Kick/Twitch) entra na faixa do hero. A lista só enche
-// depois do /api/lives — por isso começa vazia e o paintLiveNow roda de novo.
-let streamersOnAir = [];
+// depois do /api/lives em lives.js.
 // Uma partida leva uns 15 min de relógio real. Meia hora sem nada novo já é
 // sessão encerrada, não intervalo entre jogos.
 const LIVE_FRESH_MS = 28 * 60 * 1000;
@@ -298,11 +297,15 @@ function liveOffCard(ourCrest) {
       </div>`;
 }
 
+function streamersNow() {
+  return Array.isArray(window.streamersOnAir) ? window.streamersOnAir : [];
+}
+
 function streamerCards() {
-  return streamersOnAir
+  return streamersNow()
     .map(
       (p) => `
-      <a class="live-card is-stream is-${p.kind}" href="#lives" data-live-tag="${p.tag}">
+      <a class="live-card is-stream is-${p.kind}" href="/lives?watch=${encodeURIComponent(p.tag)}" data-live-tag="${p.tag}">
         <span class="live-when">${p.label}</span>
         <div class="live-teams">
           <img src="${p.photo || "assets/crest.png"}" alt="" loading="lazy" />
@@ -327,14 +330,14 @@ function paintLiveNow() {
   const oficial = liveOficial(now);
   const sessao = liveSession(Array.isArray(club.friendlies) ? club.friendlies : [], now);
   const emCampo = oficial.length > 0 || sessao.length > 0;
-  const noAr = streamersOnAir.length > 0;
+  const noAr = streamersNow().length > 0;
 
   band.classList.toggle("is-off", !emCampo && !noAr);
   if (title) {
     title.textContent = emCampo ? "Bala em campo agora" : noAr ? "Elenco ao vivo" : "Bala ao vivo";
   }
   if (more) {
-    more.href = noAr ? "#lives" : "#amistosos";
+    more.href = noAr ? "/lives" : "#amistosos";
     more.textContent = noAr ? "Ver lives" : "Ver amistosos";
   }
 
@@ -387,6 +390,8 @@ function paintLiveNow() {
 
   row.innerHTML = cards.slice(0, LIVE_MAX).join("") + streamerCards();
 }
+
+window.paintLiveNow = paintLiveNow;
 
 // O estado da faixa vence sozinho com o relógio, sem depender da Copa mandar
 // dado novo: sem este tique, "há 3 min" ficaria congelado na tela.
@@ -583,181 +588,6 @@ const pullInstaFeed = async () => {
 pullInstaFeed();
 window.setInterval(pullInstaFeed, 10 * 60_000);
 
-const liveChannel = (player) => {
-  try {
-    const url = new URL(player.live, window.location.origin);
-    const host = url.hostname.replace(/^www\./, "");
-    const slug = url.pathname.replace(/^\//, "").split("/")[0];
-    if (!slug) return null;
-    if (host.includes("kick.com")) {
-      return { ...player, kind: "kick", slug, href: player.live, label: "Kick", embed: `https://player.kick.com/${encodeURIComponent(slug)}` };
-    }
-    if (host.includes("twitch.tv")) {
-      const parent = encodeURIComponent(window.location.hostname || "localhost");
-      return {
-        ...player,
-        kind: "twitch",
-        slug,
-        href: player.live,
-        label: "Twitch",
-        embed: `https://player.twitch.tv/?channel=${encodeURIComponent(slug)}&parent=${parent}&muted=true`,
-      };
-    }
-  } catch {
-    /* URL quebrada no data.js */
-  }
-  return null;
-};
-
-const liveChannels = club.squad.map(liveChannel).filter(Boolean);
-const livePrefer = [club.president, club.vice].filter(Boolean);
-let liveSelected = null;
-let livePlayerReady = false;
-
-const sortLiveChannels = () => {
-  liveChannels.sort((a, b) => {
-    if (Boolean(a.onAir) !== Boolean(b.onAir)) return a.onAir ? -1 : 1;
-    const rank = (p) => {
-      const i = livePrefer.findIndex((tag) => String(tag).toLowerCase() === String(p.tag).toLowerCase());
-      return i >= 0 ? i : 99;
-    };
-    return rank(a) - rank(b);
-  });
-};
-
-const paintLiveIdle = () => {
-  const stage = document.getElementById("lives-stage");
-  const screen = document.getElementById("lives-screen");
-  const now = document.getElementById("lives-now");
-  liveSelected = null;
-  livePlayerReady = false;
-  stage?.classList.add("is-idle");
-  screen?.classList.remove("is-live", "is-twitch", "is-kick");
-  if (screen) screen.innerHTML = "";
-  if (now) now.textContent = "Clica em alguém pra abrir a live.";
-  document.getElementById("lives-grid")?.querySelectorAll(".lives-card").forEach((card) => {
-    card.classList.remove("is-on");
-  });
-};
-
-const paintLivePlayer = (channel) => {
-  const stage = document.getElementById("lives-stage");
-  const screen = document.getElementById("lives-screen");
-  const now = document.getElementById("lives-now");
-  if (!screen || !channel) return;
-  const same = liveSelected === channel.tag;
-  liveSelected = channel.tag;
-  stage?.classList.remove("is-idle");
-  screen.classList.toggle("is-live", Boolean(channel.onAir));
-  screen.classList.toggle("is-twitch", channel.kind === "twitch");
-  screen.classList.toggle("is-kick", channel.kind !== "twitch");
-  if (!same || !livePlayerReady) {
-    screen.innerHTML = `<iframe src="${channel.embed}" title="Live de ${channel.tag}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
-    livePlayerReady = true;
-  }
-  if (now) {
-    const watching = channel.onAir ? "Ao vivo" : `Canal ${channel.label}`;
-    now.innerHTML = `${watching} · <b>${channel.tag}</b>. <a href="${channel.href}" target="_blank" rel="noreferrer">Abrir no app</a>`;
-  }
-  document.getElementById("lives-grid")?.querySelectorAll(".lives-card").forEach((card) => {
-    card.classList.toggle("is-on", card.getAttribute("data-tag") === channel.tag);
-  });
-};
-
-const paintLivesGrid = () => {
-  const grid = document.getElementById("lives-grid");
-  if (!grid) return;
-  sortLiveChannels();
-  grid.innerHTML = liveChannels
-    .map(
-      (p) => `
-      <button class="lives-card is-${p.kind}${p.onAir ? " is-live" : ""}${liveSelected === p.tag ? " is-on" : ""}" type="button" data-tag="${p.tag}">
-        <span class="lives-face">
-          <img src="${p.photo || "assets/crest.png"}" alt="" loading="lazy" />
-          ${p.onAir ? `<i class="lives-dot" aria-hidden="true"></i>` : ""}
-        </span>
-        <span>
-          <b>${p.tag}</b>
-          <small>${p.onAir ? "Ao vivo" : `${p.label} · ${p.slug}`}</small>
-        </span>
-      </button>`
-    )
-    .join("");
-};
-
-const paintLives = () => {
-  const grid = document.getElementById("lives-grid");
-  const screen = document.getElementById("lives-screen");
-  if (!grid || !screen) return;
-  if (!liveChannels.length) {
-    document.getElementById("lives-stage")?.classList.remove("is-idle");
-    screen.innerHTML = `<p class="lives-empty">Nenhuma live cadastrada no elenco ainda.</p>`;
-    grid.innerHTML = "";
-    return;
-  }
-  paintLivesGrid();
-  const current = liveChannels.find((p) => p.tag === liveSelected);
-  if (current) paintLivePlayer(current);
-  else paintLiveIdle();
-};
-
-const pullLiveStatus = async () => {
-  const kick = liveChannels.filter((c) => c.kind === "kick").map((c) => c.slug);
-  const twitch = liveChannels.filter((c) => c.kind === "twitch").map((c) => c.slug);
-  if (!kick.length && !twitch.length) return;
-  try {
-    const q = new URLSearchParams();
-    if (kick.length) q.set("c", kick.join(","));
-    if (twitch.length) q.set("t", twitch.join(","));
-    const res = await fetch(`/api/lives?${q}`, { cache: "no-store" });
-    if (!res.ok) return;
-    const data = await res.json();
-    const map = data?.live || {};
-    liveChannels.forEach((c) => {
-      const slug = String(c.slug).toLowerCase();
-      const hit = map[`${c.kind}:${slug}`] || map[slug];
-      c.onAir = Boolean(hit?.live);
-      c.viewers = hit?.viewers;
-      c.title = hit?.title;
-    });
-    streamersOnAir = liveChannels.filter((c) => c.onAir);
-    paintLives();
-    paintHeroLive();
-    paintLiveNow();
-  } catch {
-    /* mantém a grade sem selo */
-  }
-};
-
-const paintHeroLive = () => {
-  const btn = document.getElementById("hero-live");
-  if (!btn) return;
-  const air = liveChannels.some((c) => c.onAir);
-  btn.classList.toggle("is-on", air);
-  btn.setAttribute("aria-label", air ? "Ir para as lives — alguém ao vivo agora" : "Ir para as lives");
-};
-
-document.getElementById("live-band")?.addEventListener("click", (event) => {
-  const card = event.target.closest("[data-live-tag]");
-  if (!card) return;
-  const channel = liveChannels.find((p) => p.tag === card.getAttribute("data-live-tag"));
-  if (channel) {
-    liveSelected = channel.tag;
-    paintLives();
-  }
-});
-
-document.getElementById("lives-grid")?.addEventListener("click", (event) => {
-  const card = event.target.closest(".lives-card");
-  if (!card) return;
-  const channel = liveChannels.find((p) => p.tag === card.getAttribute("data-tag"));
-  if (channel) paintLivePlayer(channel);
-});
-
-paintLives();
-paintHeroLive();
-pullLiveStatus();
-window.setInterval(pullLiveStatus, 45_000);
 
 const paintAdmFeed = (status) => {
   const chip = document.getElementById("adm-feed-chip");

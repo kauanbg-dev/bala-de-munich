@@ -45,6 +45,8 @@ function safeFile(urlPath) {
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
+    let pathname = url.pathname;
+    if (pathname === "/lives" || pathname === "/lives/") pathname = "/lives.html";
     if (url.pathname === "/healthz") {
       sendJson(res, { ok: true });
       return;
@@ -67,7 +69,7 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, await getLivesStatus(req));
       return;
     }
-    const file = safeFile(url.pathname);
+    const file = safeFile(pathname);
     if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
       res.writeHead(404);
       res.end("Not found");

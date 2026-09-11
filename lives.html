@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lives — Bala de Munich</title>
+  <meta name="description" content="Lives do elenco do Bala de Munich na Kick e na Twitch." />
+  <link rel="icon" href="assets/crest.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=92" />
+</head>
+<body class="page-lives">
+  <header class="topbar">
+    <a class="brand" href="/">
+      <img class="brand-crest" src="assets/crest.png" alt="" width="40" height="40" />
+      <span>Bala de Munich</span>
+    </a>
+    <nav id="site-nav">
+      <a href="/">Site</a>
+      <a href="/#elenco">Elenco</a>
+      <a href="/#mvp">MVP</a>
+      <a href="/#amistosos">Amistosos</a>
+      <a href="/lives" aria-current="page">Lives</a>
+    </nav>
+    <a class="btn btn-ghost btn-topo" href="/">Voltar ao site</a>
+    <a class="btn btn-gold" href="/#mvp">Votar MVP</a>
+    <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">Menu</button>
+  </header>
+
+  <main id="topo">
+    <section class="hero lives-hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="gothic">Kick · Twitch · Elenco do Bala</p>
+          <h1>Lives</h1>
+          <p class="motto">Mesma cara do site. Clica em quem você quer assistir — o player só abre depois.</p>
+        </div>
+        <div class="crest-wrap">
+          <span class="crest-flash" aria-hidden="true"></span>
+          <span class="crest-tracer" aria-hidden="true"></span>
+          <span class="crest-sparks" aria-hidden="true"></span>
+          <img src="assets/crest.png" alt="Escudo Bala de Munich FC" />
+          <span class="crest-ring" aria-hidden="true"></span>
+          <span class="crest-ring crest-ring-late" aria-hidden="true"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-lives lives-desk">
+      <header class="section-head">
+        <h2>Quem está no ar</h2>
+        <p id="lives-onair-n">Checando as lives…</p>
+      </header>
+      <div class="lives-onair" id="lives-onair"></div>
+
+      <div class="lives-watch">
+        <div class="lives-stage is-idle" id="lives-stage">
+          <div class="lives-screen" id="lives-screen"></div>
+          <p class="lives-now" id="lives-now">Clica em alguém pra abrir a live.</p>
+        </div>
+        <div>
+          <header class="lives-all-head">
+            <h3>Elenco</h3>
+            <p>Verde é Kick. Roxo é Twitch.</p>
+          </header>
+          <div class="lives-grid" id="lives-grid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <img class="brand-crest" src="assets/crest.png" alt="" width="28" height="28" />
+    <p>Bala de Munich · <a href="/">voltar ao site</a></p>
+  </footer>
+
+  <a class="site-creator" href="https://www.instagram.com/bgkauan_/" target="_blank" rel="noreferrer" aria-label="Instagram de Budokai, @bgkauan_">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path fill="currentColor" d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11.2 1.3a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2zM12 8.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2zm0 2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z"/>
+    </svg>
+    <span>
+      <strong>Budokai</strong>
+      <small>@bgkauan_</small>
+    </span>
+  </a>
+
+  <script src="data.js?v=87"></script>
+  <script src="lives.js?v=92"></script>
+</body>
+</html>
