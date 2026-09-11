@@ -579,26 +579,62 @@ const liveChannel = (player) => {
 
 const liveChannels = club.squad.map(liveChannel).filter(Boolean);
 const livePrefer = [club.president, club.vice].filter(Boolean);
-liveChannels.sort((a, b) => {
-  const rank = (p) => {
-    const i = livePrefer.findIndex((tag) => String(tag).toLowerCase() === String(p.tag).toLowerCase());
-    return i >= 0 ? i : 99;
-  };
-  return rank(a) - rank(b);
-});
+let liveSelected = null;
+let livePlayerReady = false;
+
+const sortLiveChannels = () => {
+  liveChannels.sort((a, b) => {
+    if (Boolean(a.onAir) !== Boolean(b.onAir)) return a.onAir ? -1 : 1;
+    const rank = (p) => {
+      const i = livePrefer.findIndex((tag) => String(tag).toLowerCase() === String(p.tag).toLowerCase());
+      return i >= 0 ? i : 99;
+    };
+    return rank(a) - rank(b);
+  });
+};
 
 const paintLivePlayer = (channel) => {
   const screen = document.getElementById("lives-screen");
   const now = document.getElementById("lives-now");
-  const grid = document.getElementById("lives-grid");
   if (!screen || !channel) return;
-  screen.innerHTML = `<iframe src="${channel.embed}" title="Live de ${channel.tag}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
-  if (now) {
-    now.innerHTML = `Assistindo <b>${channel.tag}</b> na ${channel.label}. <a href="${channel.href}" target="_blank" rel="noreferrer">Abrir no app</a>`;
+  const same = liveSelected === channel.tag;
+  liveSelected = channel.tag;
+  screen.classList.toggle("is-live", Boolean(channel.onAir));
+  if (!same || !livePlayerReady) {
+    screen.innerHTML = `<iframe src="${channel.embed}" title="Live de ${channel.tag}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+    livePlayerReady = true;
   }
-  grid?.querySelectorAll(".lives-card").forEach((card) => {
+  if (now) {
+    const watching = channel.onAir
+      ? `Ao vivo · ${channel.viewers || 0} assistindo`
+      : `Canal ${channel.label}`;
+    now.innerHTML = `${watching} · <b>${channel.tag}</b>. <a href="${channel.href}" target="_blank" rel="noreferrer">Abrir no app</a>`;
+  }
+  document.getElementById("lives-grid")?.querySelectorAll(".lives-card").forEach((card) => {
     card.classList.toggle("is-on", card.getAttribute("data-tag") === channel.tag);
   });
+};
+
+const paintLivesGrid = () => {
+  const grid = document.getElementById("lives-grid");
+  if (!grid) return;
+  sortLiveChannels();
+  grid.innerHTML = liveChannels
+    .map(
+      (p) => `
+      <button class="lives-card${p.onAir ? " is-live" : ""}${liveSelected === p.tag ? " is-on" : ""}" type="button" data-tag="${p.tag}">
+        <span class="lives-face">
+          <img src="${p.photo || "assets/crest.png"}" alt="" loading="lazy" />
+          ${p.onAir ? `<i class="lives-dot" aria-hidden="true"></i>` : ""}
+        </span>
+        <span>
+          <b>${p.tag}</b>
+          <small>${p.onAir ? `${p.viewers || 0} assistindo` : `${p.label} · ${p.slug}`}</small>
+        </span>
+        ${p.onAir ? `<em class="lives-badge">Ao vivo</em>` : ""}
+      </button>`
+    )
+    .join("");
 };
 
 const paintLives = () => {
@@ -610,19 +646,29 @@ const paintLives = () => {
     grid.innerHTML = "";
     return;
   }
-  grid.innerHTML = liveChannels
-    .map(
-      (p) => `
-      <button class="lives-card" type="button" data-tag="${p.tag}">
-        <img src="${p.photo || "assets/crest.png"}" alt="" loading="lazy" />
-        <span>
-          <b>${p.tag}</b>
-          <small>${p.label} · ${p.slug}</small>
-        </span>
-      </button>`
-    )
-    .join("");
-  paintLivePlayer(liveChannels[0]);
+  paintLivesGrid();
+  const current = liveChannels.find((p) => p.tag === liveSelected);
+  paintLivePlayer(current || liveChannels.find((p) => p.onAir) || liveChannels[0]);
+};
+
+const pullLiveStatus = async () => {
+  const slugs = liveChannels.filter((c) => c.kind === "kick").map((c) => c.slug);
+  if (!slugs.length) return;
+  try {
+    const res = await fetch(`/api/lives?c=${encodeURIComponent(slugs.join(","))}`, { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    const map = data?.live || {};
+    liveChannels.forEach((c) => {
+      const hit = map[String(c.slug).toLowerCase()];
+      c.onAir = Boolean(hit?.live);
+      c.viewers = hit?.viewers;
+      c.title = hit?.title;
+    });
+    paintLives();
+  } catch {
+    /* mantém a grade sem selo */
+  }
 };
 
 document.getElementById("lives-grid")?.addEventListener("click", (event) => {
@@ -633,6 +679,8 @@ document.getElementById("lives-grid")?.addEventListener("click", (event) => {
 });
 
 paintLives();
+pullLiveStatus();
+window.setInterval(pullLiveStatus, 45_000);
 
 const paintAdmFeed = (status) => {
   const chip = document.getElementById("adm-feed-chip");
