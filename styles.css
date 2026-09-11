@@ -1996,6 +1996,14 @@ h2 {
   margin-bottom: 18px;
 }
 
+.lives-stage.is-idle {
+  margin-bottom: 8px;
+}
+
+.lives-stage.is-idle .lives-screen {
+  display: none;
+}
+
 .lives-screen {
   position: relative;
   overflow: hidden;

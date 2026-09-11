@@ -613,7 +613,6 @@ const liveChannels = club.squad.map(liveChannel).filter(Boolean);
 const livePrefer = [club.president, club.vice].filter(Boolean);
 let liveSelected = null;
 let livePlayerReady = false;
-let liveAutoPicked = false;
 
 const sortLiveChannels = () => {
   liveChannels.sort((a, b) => {
@@ -626,12 +625,29 @@ const sortLiveChannels = () => {
   });
 };
 
+const paintLiveIdle = () => {
+  const stage = document.getElementById("lives-stage");
+  const screen = document.getElementById("lives-screen");
+  const now = document.getElementById("lives-now");
+  liveSelected = null;
+  livePlayerReady = false;
+  stage?.classList.add("is-idle");
+  screen?.classList.remove("is-live", "is-twitch", "is-kick");
+  if (screen) screen.innerHTML = "";
+  if (now) now.textContent = "Clica em alguém pra abrir a live.";
+  document.getElementById("lives-grid")?.querySelectorAll(".lives-card").forEach((card) => {
+    card.classList.remove("is-on");
+  });
+};
+
 const paintLivePlayer = (channel) => {
+  const stage = document.getElementById("lives-stage");
   const screen = document.getElementById("lives-screen");
   const now = document.getElementById("lives-now");
   if (!screen || !channel) return;
   const same = liveSelected === channel.tag;
   liveSelected = channel.tag;
+  stage?.classList.remove("is-idle");
   screen.classList.toggle("is-live", Boolean(channel.onAir));
   screen.classList.toggle("is-twitch", channel.kind === "twitch");
   screen.classList.toggle("is-kick", channel.kind !== "twitch");
@@ -674,13 +690,15 @@ const paintLives = () => {
   const screen = document.getElementById("lives-screen");
   if (!grid || !screen) return;
   if (!liveChannels.length) {
+    document.getElementById("lives-stage")?.classList.remove("is-idle");
     screen.innerHTML = `<p class="lives-empty">Nenhuma live cadastrada no elenco ainda.</p>`;
     grid.innerHTML = "";
     return;
   }
   paintLivesGrid();
   const current = liveChannels.find((p) => p.tag === liveSelected);
-  paintLivePlayer(current || liveChannels.find((p) => p.onAir) || liveChannels[0]);
+  if (current) paintLivePlayer(current);
+  else paintLiveIdle();
 };
 
 const pullLiveStatus = async () => {
@@ -703,11 +721,6 @@ const pullLiveStatus = async () => {
       c.title = hit?.title;
     });
     streamersOnAir = liveChannels.filter((c) => c.onAir);
-    if (!liveAutoPicked) {
-      const air = liveChannels.find((c) => c.onAir);
-      if (air) liveSelected = air.tag;
-      liveAutoPicked = true;
-    }
     paintLives();
     paintHeroLive();
     paintLiveNow();
