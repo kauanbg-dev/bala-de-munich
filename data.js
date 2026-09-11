@@ -95,6 +95,7 @@ window.CLUB = {
     { tag: "Patrick11ns", name: "Coach", pos: "—", role: "Coach", rating: "", games: 0, goals: 0, assists: 0, number: 0, live: "https://kick.com/patrick11ns", photo: "assets/players/patrick.jpg" },
     { tag: "Beliene", name: "Meio", pos: "MEI", role: "", rating: "", games: 8, goals: 1, assists: 0, number: 21, live: "https://kick.com/Beliene_r", photo: "assets/players/beliene.jpg?v=4" },
     { tag: "2Tclipes", name: "Ataque", pos: "ATA", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 13, live: "https://kick.com/2t-clipes", photo: "assets/players/2tclipes.jpg?v=1" },
+    { tag: "Dimicontro", name: "Elenco", pos: "MEI", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 16, live: "https://kick.com/dimicontroo", photo: "assets/players/dimicontro.jpg" },
     { tag: "wVini7", name: "Goleiro", pos: "GOL", role: "", rating: "", games: 0, goals: 0, assists: 0, number: 12, live: "", photo: "assets/players/vini-show.jpg" },
   ],
   formation: {
