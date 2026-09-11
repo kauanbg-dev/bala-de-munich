@@ -1581,10 +1581,10 @@ h2 {
 .player-photo {
   width: 100%;
   aspect-ratio: 1 / 1;
-  object-fit: contain;
-  object-position: center;
+  object-fit: cover;
+  object-position: top center;
   display: block;
-  background: #000;
+  background: var(--ink);
   transform: scale(calc(1 + var(--near) * 0.08));
   transition: transform 0.2s ease;
 }
