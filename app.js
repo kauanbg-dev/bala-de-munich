@@ -605,9 +605,7 @@ const paintLivePlayer = (channel) => {
     livePlayerReady = true;
   }
   if (now) {
-    const watching = channel.onAir
-      ? `Ao vivo · ${channel.viewers || 0} assistindo`
-      : `Canal ${channel.label}`;
+    const watching = channel.onAir ? "Ao vivo" : `Canal ${channel.label}`;
     now.innerHTML = `${watching} · <b>${channel.tag}</b>. <a href="${channel.href}" target="_blank" rel="noreferrer">Abrir no app</a>`;
   }
   document.getElementById("lives-grid")?.querySelectorAll(".lives-card").forEach((card) => {
@@ -629,7 +627,7 @@ const paintLivesGrid = () => {
         </span>
         <span>
           <b>${p.tag}</b>
-          <small>${p.onAir ? `${p.viewers || 0} assistindo` : `${p.label} · ${p.slug}`}</small>
+          <small>${p.onAir ? "Ao vivo" : `${p.label} · ${p.slug}`}</small>
         </span>
         ${p.onAir ? `<em class="lives-badge">Ao vivo</em>` : ""}
       </button>`
