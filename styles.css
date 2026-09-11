@@ -87,6 +87,34 @@ code { color: var(--gold); font-size: 0.9em; }
 .btn-ghost { border-color: var(--line); color: var(--paper); }
 .btn-ghost:hover { border-color: rgba(212, 177, 90, 0.55); color: var(--gold); }
 
+.btn-live {
+  gap: 8px;
+  background: #161217;
+  color: var(--paper);
+  border-color: rgba(212, 177, 90, 0.28);
+}
+
+.btn-live i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6b6570;
+}
+
+.btn-live:hover { border-color: rgba(83, 252, 24, 0.45); color: #d8ffc8; }
+
+.btn-live.is-on {
+  border-color: #53fc18;
+  color: #d8ffc8;
+  box-shadow: 0 0 0 1px rgba(83, 252, 24, 0.28);
+}
+
+.btn-live.is-on i {
+  background: #53fc18;
+  box-shadow: 0 0 0 0 rgba(83, 252, 24, 0.7);
+  animation: livePulse 1.6s ease-out infinite;
+}
+
 .btn:disabled {
   cursor: not-allowed;
   opacity: 1;
@@ -1926,7 +1954,10 @@ h2 {
 
 .section-sociais { padding-bottom: 48px; }
 
-.section-lives { padding-bottom: 88px; }
+.section-lives {
+  padding-bottom: 88px;
+  scroll-margin-top: 88px;
+}
 
 .lives-stage {
   margin-bottom: 18px;

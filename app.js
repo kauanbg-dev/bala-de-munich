@@ -674,9 +674,18 @@ const pullLiveStatus = async () => {
       liveAutoPicked = true;
     }
     paintLives();
+    paintHeroLive();
   } catch {
     /* mantém a grade sem selo */
   }
+};
+
+const paintHeroLive = () => {
+  const btn = document.getElementById("hero-live");
+  if (!btn) return;
+  const air = liveChannels.some((c) => c.onAir);
+  btn.classList.toggle("is-on", air);
+  btn.setAttribute("aria-label", air ? "Ir para as lives — alguém ao vivo agora" : "Ir para as lives");
 };
 
 document.getElementById("lives-grid")?.addEventListener("click", (event) => {
@@ -687,6 +696,7 @@ document.getElementById("lives-grid")?.addEventListener("click", (event) => {
 });
 
 paintLives();
+paintHeroLive();
 pullLiveStatus();
 window.setInterval(pullLiveStatus, 45_000);
 
