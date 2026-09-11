@@ -334,19 +334,21 @@ function paintLiveNow() {
 
   band.classList.toggle("is-off", !emCampo && !noAr);
   if (title) {
-    title.textContent = emCampo ? "Bala em campo agora" : noAr ? "Elenco ao vivo" : "Bala ao vivo";
+    title.textContent = noAr ? "Elenco ao vivo" : emCampo ? "Bala em campo agora" : "Bala ao vivo";
   }
   if (more) {
     more.href = noAr ? "/lives" : "#amistosos";
     more.textContent = noAr ? "Ver lives" : "Ver amistosos";
   }
 
-  if (!emCampo && !noAr) {
-    row.innerHTML = liveOffCard(ourCrest);
+  // Quem está em live manda na faixa: é o que o público procura aqui.
+  if (noAr) {
+    row.innerHTML = streamerCards();
     return;
   }
-  if (!emCampo && noAr) {
-    row.innerHTML = streamerCards();
+
+  if (!emCampo) {
+    row.innerHTML = liveOffCard(ourCrest);
     return;
   }
 
@@ -392,6 +394,7 @@ function paintLiveNow() {
 }
 
 window.paintLiveNow = paintLiveNow;
+paintLiveNow();
 
 // O estado da faixa vence sozinho com o relógio, sem depender da Copa mandar
 // dado novo: sem este tique, "há 3 min" ficaria congelado na tela.
@@ -678,6 +681,51 @@ window.paintSquadLive = () => {
     }
   });
 };
+
+const streamerFromSquad = (player) => {
+  try {
+    const url = new URL(player.live, window.location.origin);
+    const host = url.hostname.replace(/^www\./, "");
+    const slug = url.pathname.replace(/^\//, "").split("/")[0];
+    if (!slug) return null;
+    if (host.includes("kick.com")) return { ...player, kind: "kick", slug, label: "Kick" };
+    if (host.includes("twitch.tv")) return { ...player, kind: "twitch", slug, label: "Twitch" };
+  } catch {
+    /* URL vazia ou quebrada */
+  }
+  return null;
+};
+
+const pullStreamers = async () => {
+  const channels = (club.squad || []).map(streamerFromSquad).filter(Boolean);
+  const kick = channels.filter((c) => c.kind === "kick").map((c) => c.slug);
+  const twitch = channels.filter((c) => c.kind === "twitch").map((c) => c.slug);
+  if (!kick.length && !twitch.length) return;
+  try {
+    const q = new URLSearchParams();
+    if (kick.length) q.set("c", kick.join(","));
+    if (twitch.length) q.set("t", twitch.join(","));
+    const res = await fetch(`/api/lives?${q}`, { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    const map = data?.live || {};
+    window.streamersOnAir = channels
+      .map((c) => {
+        const slug = String(c.slug).toLowerCase();
+        const hit = map[`${c.kind}:${slug}`] || map[slug];
+        return hit?.live ? { ...c, onAir: true, title: hit.title } : null;
+      })
+      .filter(Boolean);
+    paintLiveNow();
+    window.paintSquadLive?.();
+    window.paintHeroLive?.();
+  } catch {
+    /* faixa fica no aviso vazio */
+  }
+};
+
+pullStreamers();
+window.setInterval(pullStreamers, 45_000);
 
 const squadGrid = document.getElementById("squad");
 const squadCards = [...squadGrid.querySelectorAll(".player")];
