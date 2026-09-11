@@ -138,7 +138,7 @@ const paintOnAir = () => {
   const air = liveChannels.filter((c) => c.onAir);
   if (n) n.textContent = air.length ? `${air.length} ao vivo` : "Ninguém no ar";
   if (!air.length) {
-    row.innerHTML = `<p class="lives-onair-empty">Quando alguém do elenco abrir live na Kick ou na Twitch, o card acende aqui.</p>`;
+    row.innerHTML = `<p class="lives-onair-empty">Ninguém no ar agora. Clica em alguém do elenco pra assistir.</p>`;
     return;
   }
   row.innerHTML = air
