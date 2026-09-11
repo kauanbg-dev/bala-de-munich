@@ -2922,10 +2922,37 @@ footer p {
   .player .ovr { font-size: 1.2rem; top: 8px; right: 8px; }
   .sociais-grid { grid-template-columns: 1fr; }
   .social-card { min-height: 76px; }
-  .lives-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .lives-card { padding: 8px; gap: 8px; }
+  .lives-onair,
+  .lives-grid { grid-template-columns: 1fr; }
+  .lives-card { padding: 10px 12px; gap: 10px; max-width: 100%; min-width: 0; }
   .lives-card img,
-  .lives-face img { width: 38px; height: 38px; }
+  .lives-face img { width: 42px; height: 42px; }
+  .lives-card b { font-size: 1.05rem; }
+  .lives-screen { border-radius: 12px; width: 100%; }
+  .page-lives .hero {
+    overflow: hidden;
+    padding: 28px 16px 12px;
+  }
+  .page-lives .lives-hero h1 { font-size: 3.4rem; }
+  .page-lives .motto { max-width: none; font-size: 1rem; }
+  .page-lives .section-lives {
+    padding: 20px 16px calc(128px + env(safe-area-inset-bottom, 0px));
+  }
+  .page-lives .crest-wrap { max-width: 100%; }
+  .page-lives .crest-wrap img { width: min(140px, 42vw); }
+  .page-lives .lives-stage:not(.is-idle) {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+  .page-lives .lives-stage:not(.is-idle) .lives-screen {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+  .page-lives .lives-now { padding: 0 16px; }
+  .page-lives .site-creator { display: none; }
   .lives-badge { font-size: 0.46rem; padding: 3px 5px; }
   .feed {
     grid-template-rows: none;
