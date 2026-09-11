@@ -640,7 +640,7 @@ const refreshAdmFeed = () => {
 document.getElementById("squad").innerHTML = club.squad
   .map(
     (p) => `
-    <article class="player${p.photo ? " has-photo" : ""}">
+    <article class="player${p.photo ? " has-photo" : ""}" data-tag="${p.tag}">
       ${p.photo ? `<img class="player-photo" src="${p.photo}" alt="${p.tag}" />` : `<img class="player-photo fallback" src="assets/crest.png" alt="" />`}
       <div class="player-body">
       <div class="num">${p.number === 0 ? "C" : String(p.number).padStart(2, "0")}</div>
@@ -659,6 +659,25 @@ document.getElementById("squad").innerHTML = club.squad
     </article>`
   )
   .join("");
+
+window.paintSquadLive = () => {
+  const air = new Map((window.streamersOnAir || []).map((c) => [c.tag, c]));
+  document.querySelectorAll("#squad .player[data-tag]").forEach((card) => {
+    const hit = air.get(card.getAttribute("data-tag"));
+    card.classList.toggle("is-live", Boolean(hit));
+    card.classList.toggle("is-twitch", hit?.kind === "twitch");
+    card.classList.toggle("is-kick", hit?.kind === "kick");
+    let pill = card.querySelector(".player-live");
+    if (hit && !pill) {
+      pill = document.createElement("span");
+      pill.className = "player-live";
+      pill.textContent = "Ao vivo";
+      card.appendChild(pill);
+    } else if (!hit && pill) {
+      pill.remove();
+    }
+  });
+};
 
 const squadGrid = document.getElementById("squad");
 const squadCards = [...squadGrid.querySelectorAll(".player")];

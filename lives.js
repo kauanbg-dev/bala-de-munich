@@ -78,7 +78,7 @@ const paintLiveIdle = () => {
   screen?.classList.remove("is-live", "is-twitch", "is-kick");
   if (screen) screen.innerHTML = "";
   if (now) now.textContent = "Clica em alguém pra abrir a live.";
-  document.querySelectorAll("#lives-grid .lives-card, #lives-onair .lives-card").forEach((card) => {
+  document.querySelectorAll("#lives-grid .lives-card").forEach((card) => {
     card.classList.remove("is-on");
   });
 };
@@ -103,20 +103,14 @@ const paintLivePlayer = (channel, { scroll = false } = {}) => {
     const watching = channel.onAir ? "Ao vivo" : `Canal ${channel.label}`;
     now.innerHTML = `${watching} · <b>${channel.tag}</b>. <a href="${channel.href}" target="_blank" rel="noreferrer">Abrir no app</a>`;
   }
-  document.querySelectorAll("#lives-grid .lives-card, #lives-onair .lives-card").forEach((card) => {
+  document.querySelectorAll("#lives-grid .lives-card").forEach((card) => {
     const tag = card.getAttribute("data-tag");
     card.classList.toggle("is-on", tag === channel.tag);
   });
   if (scroll) scrollToPlayer();
 };
 
-const paintLivesGrid = () => {
-  const grid = document.getElementById("lives-grid");
-  if (!grid) return;
-  sortLiveChannels();
-  grid.innerHTML = liveChannels
-    .map(
-      (p) => `
+const cardHtml = (p) => `
       <button class="lives-card is-${p.kind}${p.onAir ? " is-live" : ""}${liveSelected === p.tag ? " is-on" : ""}" type="button" data-tag="${p.tag}">
         <span class="lives-face">
           <img src="${p.photo || "assets/crest.png"}" alt="" loading="lazy" />
@@ -126,53 +120,41 @@ const paintLivesGrid = () => {
           <b>${p.tag}</b>
           <small>${p.onAir ? "Ao vivo" : `${p.label} · ${p.slug}`}</small>
         </span>
-      </button>`
-    )
-    .join("");
-};
+      </button>`;
 
-const paintOnAir = () => {
-  const row = document.getElementById("lives-onair");
+const paintLivesGrid = () => {
+  const grid = document.getElementById("lives-grid");
   const n = document.getElementById("lives-onair-n");
-  if (!row) return;
+  if (!grid) return;
+  sortLiveChannels();
   const air = liveChannels.filter((c) => c.onAir);
-  if (n) n.textContent = air.length ? `${air.length} ao vivo` : "Ninguém no ar";
-  if (!air.length) {
-    row.innerHTML = `<p class="lives-onair-empty">Ninguém no ar agora. Clica em alguém do elenco pra assistir.</p>`;
-    return;
-  }
-  row.innerHTML = air
-    .map(
-      (p) => `
-      <button class="lives-card is-${p.kind} is-live${liveSelected === p.tag ? " is-on" : ""}" type="button" data-tag="${p.tag}">
-        <span class="lives-face">
-          <img src="${p.photo || "assets/crest.png"}" alt="" />
-          <i class="lives-dot" aria-hidden="true"></i>
-        </span>
-        <span>
-          <b>${p.tag}</b>
-          <small>Ao vivo · ${p.label}</small>
-        </span>
-      </button>`
-    )
-    .join("");
+  const off = liveChannels.filter((c) => !c.onAir);
+  if (n) n.textContent = air.length ? `${air.length} ao vivo agora` : "Ninguém no ar agora";
+  grid.innerHTML = [
+    ...air.map(cardHtml),
+    air.length && off.length ? `<p class="lives-split">Fora do ar</p>` : "",
+    ...off.map(cardHtml),
+  ].join("");
 };
 
 const paintLives = () => {
   const grid = document.getElementById("lives-grid");
   const screen = document.getElementById("lives-screen");
-  if (!grid || !screen) return;
-  if (!liveChannels.length) {
-    document.getElementById("lives-stage")?.classList.remove("is-idle");
-    screen.innerHTML = `<p class="lives-empty">Nenhuma live cadastrada no elenco ainda.</p>`;
-    grid.innerHTML = "";
-    return;
+  if (grid && screen) {
+    if (!liveChannels.length) {
+      document.getElementById("lives-stage")?.classList.remove("is-idle");
+      screen.innerHTML = `<p class="lives-empty">Nenhuma live cadastrada no elenco ainda.</p>`;
+      grid.innerHTML = "";
+    } else {
+      paintLivesGrid();
+      const current = liveChannels.find((p) => p.tag === liveSelected);
+      if (current) paintLivePlayer(current);
+      else paintLiveIdle();
+    }
   }
-  paintLivesGrid();
-  paintOnAir();
-  const current = liveChannels.find((p) => p.tag === liveSelected);
-  if (current) paintLivePlayer(current);
-  else paintLiveIdle();
+  window.paintHeroLive?.();
+  window.paintLiveNow?.();
+  window.paintSquadLive?.();
 };
 
 const pullLiveStatus = async () => {
@@ -196,8 +178,6 @@ const pullLiveStatus = async () => {
     });
     window.streamersOnAir = liveChannels.filter((c) => c.onAir);
     paintLives();
-    window.paintHeroLive?.();
-    window.paintLiveNow?.();
   } catch {
     /* mantém a grade sem selo */
   }
@@ -228,7 +208,6 @@ const pickFromEvent = (event) => {
 };
 
 document.getElementById("lives-grid")?.addEventListener("click", pickFromEvent);
-document.getElementById("lives-onair")?.addEventListener("click", pickFromEvent);
 document.getElementById("live-band")?.addEventListener("click", (event) => {
   const card = event.target.closest("[data-live-tag]");
   if (!card) return;

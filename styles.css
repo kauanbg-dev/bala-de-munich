@@ -1578,6 +1578,36 @@ h2 {
 
 .player:hover { --near: 1; }
 
+.player.is-live {
+  border-color: #53fc18;
+  box-shadow: 0 0 0 1px rgba(83, 252, 24, 0.35);
+}
+
+.player.is-live.is-twitch {
+  border-color: #9146ff;
+  box-shadow: 0 0 0 1px rgba(145, 70, 255, 0.4);
+}
+
+.player-live {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #53fc18;
+  color: #0b0b0b;
+}
+
+.player.is-twitch .player-live {
+  background: #9146ff;
+  color: #fff;
+}
+
 .player-photo {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -2050,6 +2080,18 @@ h2 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 12px;
+}
+
+.lives-split {
+  grid-column: 1 / -1;
+  margin: 10px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  color: var(--mute);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .lives-card {
