@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=82" />
+  <link rel="stylesheet" href="styles.css?v=83" />
 </head>
 <body>
   <header class="topbar">
@@ -28,6 +28,7 @@
       <a href="#amistosos">Amistosos</a>
       <a href="#feed">Feed</a>
       <a href="#sociais">Sociais</a>
+      <a href="#lives">Lives</a>
     </nav>
     <a class="btn btn-ghost btn-topo" href="#amistosos">Amistosos</a>
     <a class="btn btn-gold" href="#mvp">Votar MVP</a>
@@ -255,7 +256,7 @@
               <small>@balademunich</small>
             </span>
           </a>
-          <a class="social-card is-kick" id="lives" href="https://linkme.bio/balademunich" target="_blank" rel="noreferrer">
+          <a class="social-card is-kick" id="lives-btn" href="#lives">
             <span class="social-logo" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path fill="currentColor" d="M1.333 0h8v5.333H12V2.667h2.667V0h8v8H20v2.667h-2.667v2.666H20V16h2.667v8h-8v-2.667H12v-2.666H9.333V24h-8Z"/></svg>
             </span>
@@ -266,6 +267,18 @@
           </a>
         </div>
       </div>
+    </section>
+
+    <section id="lives" class="section section-lives">
+      <header class="section-head">
+        <h2>Lives</h2>
+        <p>O elenco na Kick. Escolhe quem assistir — a live abre aqui no site.</p>
+      </header>
+      <div class="lives-stage">
+        <div class="lives-screen" id="lives-screen"></div>
+        <p class="lives-now" id="lives-now"></p>
+      </div>
+      <div class="lives-grid" id="lives-grid"></div>
     </section>
   </main>
 
@@ -284,7 +297,7 @@
     </span>
   </a>
 
-  <script src="data.js?v=82"></script>
-  <script src="app.js?v=82"></script>
+  <script src="data.js?v=83"></script>
+  <script src="app.js?v=83"></script>
 </body>
 </html>

@@ -2,7 +2,6 @@ const club = window.CLUB;
 
 document.getElementById("motto").textContent = club.motto;
 document.getElementById("instagram").href = club.instagram;
-document.getElementById("lives").href = club.links;
 document.getElementById("discord").href = club.discord;
 
 const paintCompetition = () => {
@@ -551,6 +550,89 @@ const pullInstaFeed = async () => {
 
 pullInstaFeed();
 window.setInterval(pullInstaFeed, 10 * 60_000);
+
+const liveChannel = (player) => {
+  try {
+    const url = new URL(player.live, window.location.origin);
+    const host = url.hostname.replace(/^www\./, "");
+    const slug = url.pathname.replace(/^\//, "").split("/")[0];
+    if (!slug) return null;
+    if (host.includes("kick.com")) {
+      return { ...player, kind: "kick", slug, href: player.live, label: "Kick", embed: `https://player.kick.com/${encodeURIComponent(slug)}` };
+    }
+    if (host.includes("twitch.tv")) {
+      const parent = encodeURIComponent(window.location.hostname || "localhost");
+      return {
+        ...player,
+        kind: "twitch",
+        slug,
+        href: player.live,
+        label: "Twitch",
+        embed: `https://player.twitch.tv/?channel=${encodeURIComponent(slug)}&parent=${parent}&muted=true`,
+      };
+    }
+  } catch {
+    /* URL quebrada no data.js */
+  }
+  return null;
+};
+
+const liveChannels = club.squad.map(liveChannel).filter(Boolean);
+const livePrefer = [club.president, club.vice].filter(Boolean);
+liveChannels.sort((a, b) => {
+  const rank = (p) => {
+    const i = livePrefer.findIndex((tag) => String(tag).toLowerCase() === String(p.tag).toLowerCase());
+    return i >= 0 ? i : 99;
+  };
+  return rank(a) - rank(b);
+});
+
+const paintLivePlayer = (channel) => {
+  const screen = document.getElementById("lives-screen");
+  const now = document.getElementById("lives-now");
+  const grid = document.getElementById("lives-grid");
+  if (!screen || !channel) return;
+  screen.innerHTML = `<iframe src="${channel.embed}" title="Live de ${channel.tag}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  if (now) {
+    now.innerHTML = `Assistindo <b>${channel.tag}</b> na ${channel.label}. <a href="${channel.href}" target="_blank" rel="noreferrer">Abrir no app</a>`;
+  }
+  grid?.querySelectorAll(".lives-card").forEach((card) => {
+    card.classList.toggle("is-on", card.getAttribute("data-tag") === channel.tag);
+  });
+};
+
+const paintLives = () => {
+  const grid = document.getElementById("lives-grid");
+  const screen = document.getElementById("lives-screen");
+  if (!grid || !screen) return;
+  if (!liveChannels.length) {
+    screen.innerHTML = `<p class="lives-empty">Nenhuma live cadastrada no elenco ainda.</p>`;
+    grid.innerHTML = "";
+    return;
+  }
+  grid.innerHTML = liveChannels
+    .map(
+      (p) => `
+      <button class="lives-card" type="button" data-tag="${p.tag}">
+        <img src="${p.photo || "assets/crest.png"}" alt="" loading="lazy" />
+        <span>
+          <b>${p.tag}</b>
+          <small>${p.label} · ${p.slug}</small>
+        </span>
+      </button>`
+    )
+    .join("");
+  paintLivePlayer(liveChannels[0]);
+};
+
+document.getElementById("lives-grid")?.addEventListener("click", (event) => {
+  const card = event.target.closest(".lives-card");
+  if (!card) return;
+  const channel = liveChannels.find((p) => p.tag === card.getAttribute("data-tag"));
+  if (channel) paintLivePlayer(channel);
+});
+
+paintLives();
 
 const paintAdmFeed = (status) => {
   const chip = document.getElementById("adm-feed-chip");
