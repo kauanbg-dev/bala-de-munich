@@ -629,7 +629,6 @@ const paintLivesGrid = () => {
           <b>${p.tag}</b>
           <small>${p.onAir ? "Ao vivo" : `${p.label} · ${p.slug}`}</small>
         </span>
-        ${p.onAir ? `<em class="lives-badge">Ao vivo</em>` : ""}
       </button>`
     )
     .join("");

@@ -2062,20 +2062,6 @@ h2 {
   animation: livePulse 1.6s ease-out infinite;
 }
 
-.lives-badge {
-  margin-left: auto;
-  flex: 0 0 auto;
-  font-style: normal;
-  font-size: 0.52rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 4px 7px;
-  border-radius: 999px;
-  background: #53fc18;
-  color: #0b0b0b;
-}
-
 .lives-card.is-live {
   border-color: #53fc18;
   background:
