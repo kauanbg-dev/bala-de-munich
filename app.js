@@ -581,6 +581,7 @@ const liveChannels = club.squad.map(liveChannel).filter(Boolean);
 const livePrefer = [club.president, club.vice].filter(Boolean);
 let liveSelected = null;
 let livePlayerReady = false;
+let liveAutoPicked = false;
 
 const sortLiveChannels = () => {
   liveChannels.sort((a, b) => {
@@ -649,19 +650,29 @@ const paintLives = () => {
 };
 
 const pullLiveStatus = async () => {
-  const slugs = liveChannels.filter((c) => c.kind === "kick").map((c) => c.slug);
-  if (!slugs.length) return;
+  const kick = liveChannels.filter((c) => c.kind === "kick").map((c) => c.slug);
+  const twitch = liveChannels.filter((c) => c.kind === "twitch").map((c) => c.slug);
+  if (!kick.length && !twitch.length) return;
   try {
-    const res = await fetch(`/api/lives?c=${encodeURIComponent(slugs.join(","))}`, { cache: "no-store" });
+    const q = new URLSearchParams();
+    if (kick.length) q.set("c", kick.join(","));
+    if (twitch.length) q.set("t", twitch.join(","));
+    const res = await fetch(`/api/lives?${q}`, { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     const map = data?.live || {};
     liveChannels.forEach((c) => {
-      const hit = map[String(c.slug).toLowerCase()];
+      const slug = String(c.slug).toLowerCase();
+      const hit = map[`${c.kind}:${slug}`] || map[slug];
       c.onAir = Boolean(hit?.live);
       c.viewers = hit?.viewers;
       c.title = hit?.title;
     });
+    if (!liveAutoPicked) {
+      const air = liveChannels.find((c) => c.onAir);
+      if (air) liveSelected = air.tag;
+      liveAutoPicked = true;
+    }
     paintLives();
   } catch {
     /* mantém a grade sem selo */

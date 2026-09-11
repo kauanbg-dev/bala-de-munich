@@ -12,9 +12,9 @@ function cleanSlug(raw) {
   return slug;
 }
 
-function slugsFrom(req) {
+function slugsFrom(req, key) {
   const url = new URL(req.url || "/", "http://x");
-  return [...new Set(String(url.searchParams.get("c") || "").split(",").map(cleanSlug).filter(Boolean))].slice(0, MAX);
+  return [...new Set(String(url.searchParams.get(key) || "").split(",").map(cleanSlug).filter(Boolean))].slice(0, MAX);
 }
 
 async function kickStatus(slug) {
@@ -45,21 +45,63 @@ async function kickStatus(slug) {
   }
 }
 
-async function build(slugs) {
-  const rows = await Promise.all(slugs.map(kickStatus));
+async function twitchStatus(slug) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), FETCH_MS);
+  try {
+    // Client-ID público do próprio site da Twitch: dá pra saber se o canal
+    // está no ar sem cadastrar app. Se a Twitch mudar, o card só fica offline.
+    const res = await fetch("https://gql.twitch.tv/gql", {
+      method: "POST",
+      signal: ctrl.signal,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "Client-ID": process.env.TWITCH_CLIENT_ID || "kimne78kx3ncx6brgo4mv6wki5h1ko",
+      },
+      body: JSON.stringify({
+        query: `query($login:String!){user(login:$login){stream{id title}}}`,
+        variables: { login: slug },
+      }),
+    });
+    if (!res.ok) return { slug, live: false };
+    const data = await res.json();
+    const stream = data?.data?.user?.stream;
+    if (!stream) return { slug, live: false };
+    return { slug, live: true, title: String(stream.title || "").slice(0, 80) };
+  } catch {
+    return { slug, live: false };
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+function putLive(map, kind, row) {
+  const slug = String(row.slug || "").toLowerCase();
+  map[`${kind}:${slug}`] = row;
+  if (!map[slug]) map[slug] = row;
+}
+
+async function build(kickSlugs, twitchSlugs) {
+  const rows = await Promise.all([
+    ...kickSlugs.map(kickStatus),
+    ...twitchSlugs.map(twitchStatus),
+  ]);
   const live = {};
-  for (const row of rows) live[row.slug.toLowerCase()] = row;
+  kickSlugs.forEach((slug, i) => putLive(live, "kick", rows[i]));
+  twitchSlugs.forEach((slug, i) => putLive(live, "twitch", rows[kickSlugs.length + i]));
   return { ok: true, atualizadoEm: new Date().toISOString(), live };
 }
 
 export async function getLivesStatus(req) {
-  const slugs = slugsFrom(req).sort();
-  if (!slugs.length) return { ok: true, live: {} };
-  const key = slugs.join(",");
+  const kickSlugs = slugsFrom(req, "c").sort();
+  const twitchSlugs = slugsFrom(req, "t").sort();
+  if (!kickSlugs.length && !twitchSlugs.length) return { ok: true, live: {} };
+  const key = `k:${kickSlugs.join(",")}|t:${twitchSlugs.join(",")}`;
   const now = Date.now();
   if (cache?.key === key && now - cache.at < CACHE_MS) return cache.payload;
   if (inflight?.key === key) return inflight.job;
-  const job = build(slugs)
+  const job = build(kickSlugs, twitchSlugs)
     .then((payload) => {
       cache = { key, payload, at: Date.now() };
       return payload;
