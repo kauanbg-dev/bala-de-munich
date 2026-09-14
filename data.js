@@ -1,7 +1,7 @@
 window.CLUB = {
   name: "Bala de Munich",
   short: "BDM",
-  motto: "Na semifinal. Adversário a definir.",
+  motto: "Semifinal contra Equipe X.",
   knockout: "https://copastreamers.com.br/mata-mata",
   founded: "2026",
   platform: "EA FC 26 · Pro Clubs",
@@ -34,9 +34,9 @@ window.CLUB = {
     record: "9-2-5",
   },
   nextMatch: {
-    opponent: "A definir",
+    opponent: "Equipe X",
     competition: "Semifinal · MD5",
-    date: "A agendar",
+    date: "seg · 14/09 · 18:00",
     venue: "Mata-mata",
   },
   lastMatch: {
@@ -186,7 +186,7 @@ window.CLUB = {
       key: "qf",
       ties: [
         { id: "qf-0", home: "Bala de Munich", away: "Raposo FC", hs: 3, as: 1, date: "ter., 08/09 · 21:00", us: true },
-        { id: "qf-1", home: "Apeludos FC", away: "Equipe X", hs: null, as: null, date: "A agendar" },
+        { id: "qf-1", home: "Apeludos FC", away: "Equipe X", hs: 2, as: 3, date: "qui · 10/09 · 20:00" },
         { id: "qf-2", home: "Cobra Del Toro FC", away: "Narizes FC", hs: 2, as: 3, date: "qua., 09/09 · 20:30" },
         { id: "qf-3", home: "Osempic do Marcelo", away: "Botafofo", hs: 1, as: 3, date: "seg., 07/09 · 22:00" },
       ],
@@ -196,7 +196,7 @@ window.CLUB = {
       n: "02",
       key: "sf",
       ties: [
-        { id: "sf-0", home: "Bala de Munich", away: "A definir", hs: null, as: null, date: "A agendar", us: true },
+        { id: "sf-0", home: "Bala de Munich", away: "Equipe X", hs: null, as: null, date: "seg · 14/09 · 18:00", us: true, iso: "2026-09-14T21:00:00.000Z" },
         { id: "sf-1", home: "Narizes FC", away: "Botafofo", hs: null, as: null, date: "A agendar" },
       ],
     },
@@ -212,7 +212,7 @@ window.CLUB = {
   mvp: {
     id: "semifinal-e2",
     title: "MVP da partida",
-    match: "MVP do jogo contra o Raposo FC",
+    match: "MVP do jogo contra a Equipe X",
     durationHours: 2,
   },
 };

@@ -899,7 +899,8 @@ function mvpMatchLine() {
       : `Votação de MVP. Adversário a definir. Duração da votação: ${hours} horas.`;
   }
   const roundBit = round ? `${round} · ` : "";
-  return `${roundBit}Votação de MVP do jogo contra o ${opponent}. Duração da votação: ${hours} horas.`;
+  const art = /^equipe\b/i.test(opponent) ? "a" : "o";
+  return `${roundBit}Votação de MVP do jogo contra ${art} ${opponent}. Duração da votação: ${hours} horas.`;
 }
 
 function paintMvpCopy() {

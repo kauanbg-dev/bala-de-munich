@@ -63,6 +63,8 @@ Pra tabela ao vivo + votação juntas: `npm start` (precisa do Node).
 
 Tabela, chave, última/próxima série, artilharia e assistências vêm do [copastreamers.com.br](https://copastreamers.com.br). O site consulta `/api/copa` a cada 60s. Elenco, fotos, Instagram, MVP e Sociais continuam em `data.js`.
 
+A semifinal já está no feed da Copa (Bala × Equipe X), mas o horário ainda vem vazio. Enquanto isso o site usa **14/09 às 18h** (Brasília). Quando a Copa preencher `quando`, essa data entra no lugar.
+
 Os amistosos saem da página `/partidas` da Copa, que não tem API: o parser lê o payload do Next embutido no HTML e fica só com os jogos do Bala.
 
 Dois cortes acontecem depois disso:

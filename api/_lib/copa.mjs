@@ -17,6 +17,10 @@ const FRIENDLIES_SINCE = Date.parse(
   process.env.COPA_AMISTOSOS_DESDE || "2026-09-10T15:20:00.000Z"
 );
 const FETCH_MS = 12_000;
+// A Copa já tem Bala x Equipe X na semifinal, mas ainda não publicou o horário.
+// Enquanto `quando` vier vazio, o site usa hoje 14/09 às 18h (Brasília).
+// Quando a API preencher a data, ela manda.
+const SF_BALA_KICKOFF = process.env.COPA_SF_KICKOFF || "2026-09-14T21:00:00.000Z";
 
 const ALIASES = {
   dg: "DG",
@@ -585,10 +589,21 @@ function computeGroupC(partidas) {
   return table;
 }
 
+function fillKnownKickoff(tie) {
+  if (!tie || tie.quando || tie.status === "final") return tie;
+  if (tie.fase !== "semifinal") return tie;
+  const home = nameOf(tie.lado_a);
+  const away = nameOf(tie.lado_b);
+  const ours = isUs(home) || isUs(away);
+  const vsX = home === "Equipe X" || away === "Equipe X";
+  if (!ours || !vsX) return tie;
+  return { ...tie, quando: SF_BALA_KICKOFF };
+}
+
 function bracketFromConfrontos(confrontos) {
   const list = [...(confrontos || [])].sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
   const qf = list.filter((c) => c.fase === "quartas");
-  const sf = list.filter((c) => c.fase === "semifinal");
+  const sf = list.filter((c) => c.fase === "semifinal").map(fillKnownKickoff);
   const ff = list.filter((c) => c.fase === "final");
   if (qf.length < 2) return null;
 
