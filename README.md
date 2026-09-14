@@ -91,27 +91,28 @@ Cache local: `data/copa-cache.json` (gitignored). Na Vercel o cache vai em `/tmp
 
 ## Feed do Instagram
 
-O bloco "Feed" puxa os posts do `@balademunich` sozinho. A fonte principal é o [Feedframer](https://feedframer.com/pricing) (plano **Free**, sem marca d'água, sem limite de requisição). Eles ligam a conta profissional, renovam o token da Meta e servem as fotos num CDN que não expira. Sem chave, ou se a API falhar, a seção fica com as fotos locais do `gallery` no `data.js` — nunca fica vazia.
+O bloco "Feed" puxa os posts do `@balademunich` sozinho. A ordem e os posts novos vêm do perfil público. O [Feedframer](https://feedframer.com/pricing) (plano **Free**, sem marca d'água) entra como CDN estável das fotos que ele já tiver — o grátis só atualiza o Instagram **1× por dia**. Sem as duas fontes, cai no token da Meta (`IG_TOKEN`). Se as três falharem, a seção fica com as fotos locais do `gallery` no `data.js` — nunca fica vazia.
 
-Por que não Elfsight/SnapWidget/LightWidget: o plano grátis deles ou coloca marca d'água, ou **não funciona em site HTTPS** (caso do LightWidget). O Feedframer devolve JSON e o site desenha os cards com o visual do Bala, então não tem logo de terceiro.
+Por que não Elfsight/SnapWidget/LightWidget: o plano grátis deles ou coloca marca d'água, ou **não funciona em site HTTPS** (caso do LightWidget). O site desenha os cards com o visual do Bala, então não tem logo de terceiro.
 
-Como ligar (uma vez):
+Como ligar o Feedframer (opcional, uma vez):
 
 1. Cria conta em [feedframer.com/register](https://feedframer.com/register) e confirma o e-mail.
 2. **Connect Instagram Account** e entra com a `@balademunich` (conta profissional).
 3. **Settings → API Keys** → copia a chave da conta (64 caracteres).
 4. No site: `https://balademunich.vercel.app/?admin#mvp` → entra com o código admin → bloco **Instagram · Feed** (é o retângulo dourado, separado da urna) → cola a chave → **Ligar**.
 
-A chave fica no Redis (o mesmo do MVP), não no GitHub. Dá pra colar `FEEDFRAMER_KEY` na Vercel também; se as duas existirem, a do painel manda. **Voltar pras fotos locais** apaga só a chave do painel.
+A chave fica no Redis (o mesmo do MVP), não no GitHub. Dá pra colar `FEEDFRAMER_KEY` na Vercel também; se as duas existirem, a do painel manda. **Tirar o Feedframer** apaga só a chave do painel — o perfil público continua no ar. **Atualizar agora** zera o cache e busca de novo.
 
-Não cola a chave no chat nem no GitHub. No plano grátis o Feedframer atualiza o acervo **1× por dia** (Premium, US$ 6/mês, atualiza de hora em hora). O site consulta `/api/feed` a cada 10 min, então um post novo pode levar até o ciclo diário deles pra aparecer.
+Não cola a chave no chat nem no GitHub. O site consulta `/api/feed` a cada 3 min. Fotos que ainda não estão no CDN do Feedframer passam por `/api/ig-media`.
 
 Variáveis:
 
 - `FEEDFRAMER_KEY` — chave do Feedframer na Vercel. Opcional se a chave foi colada no painel admin.
-- `IG_TOKEN` — token longo da Meta (reserva). Só entra se o Feedframer falhar.
+- `IG_TOKEN` — token longo da Meta (reserva). Só entra se o Instagram público e o Feedframer falharem.
 - `IG_LIMIT` — quantos posts mostrar (padrão 3; o grátis do Feedframer entrega até 6).
-- `IG_CACHE_MS` — validade do cache em memória (padrão 10 min).
+- `IG_CACHE_MS` — validade do cache em memória do feed misturado (padrão 2 min).
+- `IG_WEB_CACHE_MS` — validade do cache do perfil público (padrão 5 min).
 
 Se usar só `IG_TOKEN`: o token se renova sozinho depois de 30 dias e o novo vai pro Redis (as mesmas `KV_REST_API_URL` / `KV_REST_API_TOKEN` do MVP). As URLs de imagem da Meta são assinadas e expiram em horas, por isso esse cache é curto e só em memória.
 

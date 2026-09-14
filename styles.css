@@ -1199,10 +1199,21 @@ h1 {
   padding: 12px 18px;
 }
 
-.adm-feed .btn-close {
+.adm-feed-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.adm-feed .btn-close,
+.adm-feed-actions .btn {
   width: 100%;
   min-height: 42px;
   border-radius: 10px;
+}
+
+.adm-feed .btn-close {
   background: rgba(212, 177, 90, 0.08);
   border: 1px solid rgba(212, 177, 90, 0.45);
   color: var(--gold);
@@ -3003,6 +3014,7 @@ footer p {
   .mvp-admin-danger .btn { width: 100%; }
   .adm-feed-form div { flex-direction: column; }
   .adm-feed-form .btn { width: 100%; }
+  .adm-feed-actions { grid-template-columns: 1fr; }
   .hero-grid, .match-band, .stat-strip, .results li, .feed, .leaders {
     grid-template-columns: 1fr;
   }

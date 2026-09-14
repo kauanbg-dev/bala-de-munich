@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getCopaLive, startCopaSync } from "../api/_lib/copa.mjs";
 import { handleMvp } from "../api/_lib/mvp.mjs";
-import { handleFeed } from "../api/_lib/insta.mjs";
+import { handleFeed, handleIgMedia } from "../api/_lib/insta.mjs";
 import { getLivesStatus } from "../api/_lib/lives.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -63,6 +63,16 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === "/api/feed") {
       const out = await handleFeed(req);
       sendJson(res, out.json, out.status, out.headers);
+      return;
+    }
+    if (url.pathname === "/api/ig-media") {
+      const out = await handleIgMedia(req);
+      if (out.json) {
+        sendJson(res, out.json, out.status, out.headers);
+        return;
+      }
+      res.writeHead(out.status, out.headers || {});
+      res.end(out.body);
       return;
     }
     if (url.pathname === "/api/lives") {

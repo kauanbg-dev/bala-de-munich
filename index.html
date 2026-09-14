@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=96" />
+  <link rel="stylesheet" href="styles.css?v=97" />
 </head>
 <body>
   <header class="topbar">
@@ -133,7 +133,7 @@
               <span>Instagram · Feed</span>
               <span class="mvp-admin-chip" id="adm-feed-chip">Fotos de piso</span>
             </header>
-            <p class="adm-feed-copy">Isso aqui é o Feed, não a urna. Cola a chave do Feedframer pra os posts reais subirem no site, sem marca d'água. Sem chave, o público continua vendo as três artes locais.</p>
+            <p class="adm-feed-copy">Isso aqui é o Feed, não a urna. O site puxa o @balademunich direto. A chave do Feedframer continua útil pro CDN das fotos antigas. Sem nada, o público vê as artes locais.</p>
             <form class="adm-feed-form" id="adm-feed-form">
               <label for="adm-feed-key">Chave do Feedframer</label>
               <div>
@@ -141,7 +141,10 @@
                 <button class="btn btn-gold" type="submit">Ligar</button>
               </div>
             </form>
-            <button class="btn btn-close" type="button" id="adm-feed-clear">Voltar pras fotos locais</button>
+            <div class="adm-feed-actions">
+              <button class="btn btn-gold" type="button" id="adm-feed-refresh">Atualizar agora</button>
+              <button class="btn btn-close" type="button" id="adm-feed-clear">Tirar o Feedframer</button>
+            </div>
             <p class="mvp-admin-hint" id="adm-feed-hint"></p>
           </section>
         </div>
@@ -289,8 +292,8 @@
     </span>
   </a>
 
-  <script src="data.js?v=99"></script>
-  <script src="app.js?v=97"></script>
+  <script src="data.js?v=100"></script>
+  <script src="app.js?v=98"></script>
   <script src="lives.js?v=96"></script>
 </body>
 </html>

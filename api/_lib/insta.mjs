@@ -3,14 +3,16 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkAdminPin } from "./mvp.mjs";
 
-// Feed do Instagram do Bala. A fonte principal é o Feedframer (plano grátis,
-// sem marca d'água): eles ligam a conta profissional, renovam o token da Meta
-// e hospedam as fotos num CDN que não expira. A chave entra no painel admin
-// (?admin) ou em FEEDFRAMER_KEY na Vercel. A do painel manda.
+// Feed do Instagram do Bala.
 //
-// IG_TOKEN (Business Login da Meta) continua de reserva. As URLs da Meta são
-// assinadas e morrem em horas, então o cache fica só em memória. Se as duas
-// fontes falharem, o site cai no data.js — imagem local de verdade.
+// 1. Perfil público do @balademunich — posts novos no mesmo dia.
+// 2. Feedframer — CDN estável (plano grátis só atualiza 1×/dia).
+// 3. IG_TOKEN da Meta — reserva.
+// 4. data.js — piso local.
+//
+// Quando o Instagram e o Feedframer respondem, o site mistura por shortcode:
+// ordem e posts novos vêm do perfil; foto do Feedframer entra se já existir.
+// Fotos só do Instagram passam por /api/ig-media pra não quebrar hotlink.
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const dataDir =
@@ -18,16 +20,21 @@ const dataDir =
 const keyFile = path.join(dataDir, "insta-key.json");
 const BASE = "https://graph.instagram.com";
 const FRAMER = "https://feedframer.com/api/v1/me";
+const HANDLE = "balademunich";
+const IG_APP_ID = "936619743392459";
 const FIELDS = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp";
-const CACHE_MS = Number(process.env.IG_CACHE_MS) || 10 * 60 * 1000;
+const CACHE_MS = Number(process.env.IG_CACHE_MS) || 2 * 60 * 1000;
+const IG_WEB_MS = Number(process.env.IG_WEB_CACHE_MS) || 5 * 60 * 1000;
 const FETCH_MS = 8_000;
 const LIMIT = Number(process.env.IG_LIMIT) || 3;
+const LOOKAHEAD = Math.max(LIMIT, 12);
 const REFRESH_AFTER_MS = 30 * 24 * 3600 * 1000;
 const TOKEN_KEY = "insta:token";
 const FRAMER_KEY = "insta:framer-key";
 
 let cache = null;
 let inflight = null;
+let igWebCache = { at: 0, posts: [] };
 
 function kvConfig() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
@@ -195,6 +202,7 @@ function toPost(node) {
     caption,
     href: node.permalink,
     video: isVideo(node.media_type),
+    timestamp: node.timestamp || "",
   };
 }
 
@@ -214,13 +222,174 @@ function toFramerPost(node) {
     caption,
     href: node.permalink,
     video,
+    timestamp: node.publishedAt || node.published_at || node.timestamp || "",
   };
 }
 
-async function buildFeedframer(key) {
+function shortcodeOf(href) {
+  const match = String(href || "").match(/\/(?:p|reel|tv)\/([^/?#]+)/i);
+  return match ? match[1] : "";
+}
+
+function queryParam(req, name) {
+  const fromQuery = req?.query?.[name];
+  if (fromQuery) return Array.isArray(fromQuery) ? String(fromQuery[0]) : String(fromQuery);
+  try {
+    return new URL(req.url || "/", "http://x").searchParams.get(name) || "";
+  } catch {
+    return "";
+  }
+}
+
+function allowedImageUrl(raw) {
+  let parsed;
+  try {
+    parsed = new URL(String(raw || ""));
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== "https:") return null;
+  const host = parsed.hostname.toLowerCase();
+  const ok =
+    host === "cdninstagram.com" ||
+    host.endsWith(".cdninstagram.com") ||
+    host === "fbcdn.net" ||
+    host.endsWith(".fbcdn.net");
+  return ok ? parsed.toString() : null;
+}
+
+function proxySrc(src) {
+  const url = String(src || "");
+  if (!url || url.startsWith("/")) return url;
+  return allowedImageUrl(url) ? `/api/ig-media?u=${encodeURIComponent(url)}` : url;
+}
+
+function publicPost(post) {
+  return {
+    src: proxySrc(post.src),
+    alt: post.alt,
+    caption: post.caption,
+    href: post.href,
+    video: Boolean(post.video),
+  };
+}
+
+function mergePosts(igPosts, ffPosts) {
+  const ffBy = new Map();
+  for (const post of ffPosts) {
+    const code = shortcodeOf(post.href);
+    if (code) ffBy.set(code, post);
+  }
+  const seen = new Set();
+  const out = [];
+  for (const post of igPosts) {
+    const code = shortcodeOf(post.href);
+    if (!code || seen.has(code)) continue;
+    seen.add(code);
+    const ff = ffBy.get(code);
+    out.push({
+      ...post,
+      src: ff?.src || post.src,
+      video: ff?.video ?? post.video,
+    });
+  }
+  for (const post of ffPosts) {
+    const code = shortcodeOf(post.href) || post.href;
+    if (!code || seen.has(code)) continue;
+    seen.add(code);
+    out.push(post);
+  }
+  out.sort((a, b) => (Date.parse(b.timestamp) || 0) - (Date.parse(a.timestamp) || 0));
+  return out.map(publicPost);
+}
+
+const IG_HEADERS = {
+  Accept: "application/json",
+  "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+  "User-Agent":
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "X-IG-App-ID": IG_APP_ID,
+  Referer: `https://www.instagram.com/${HANDLE}/`,
+};
+
+async function fetchInstagramWeb() {
+  const urls = [
+    `https://i.instagram.com/api/v1/users/web_profile_info/?username=${HANDLE}`,
+    `https://www.instagram.com/api/v1/users/web_profile_info/?username=${HANDLE}`,
+  ];
+  let lastError = "instagram vazio";
+  for (const url of urls) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), FETCH_MS);
+    try {
+      const res = await fetch(url, { signal: ctrl.signal, headers: IG_HEADERS });
+      if (!res.ok) {
+        lastError = `instagram ${res.status}`;
+        continue;
+      }
+      const data = await res.json().catch(() => null);
+      const edges = data?.data?.user?.edge_owner_to_timeline_media?.edges || [];
+      const posts = [];
+      for (const edge of edges) {
+        const node = edge?.node;
+        if (!node?.shortcode) continue;
+        const src = node.display_url || node.thumbnail_src;
+        if (!src) continue;
+        const caption = firstLine(node.edge_media_to_caption?.edges?.[0]?.node?.text);
+        posts.push({
+          src,
+          alt: caption,
+          caption,
+          href: `https://www.instagram.com/p/${node.shortcode}/`,
+          video: Boolean(node.is_video),
+          timestamp: node.taken_at_timestamp
+            ? new Date(node.taken_at_timestamp * 1000).toISOString()
+            : "",
+        });
+        if (posts.length >= LOOKAHEAD) break;
+      }
+      if (posts.length) return posts;
+      lastError = "instagram vazio";
+    } catch (err) {
+      lastError = err.message || "instagram";
+    } finally {
+      clearTimeout(t);
+    }
+  }
+  throw new Error(lastError);
+}
+
+async function buildInstagramWeb() {
+  const now = Date.now();
+  if (igWebCache.posts.length && now - igWebCache.at < IG_WEB_MS) {
+    return {
+      ok: true,
+      fonte: "instagram",
+      atualizadoEm: new Date(igWebCache.at).toISOString(),
+      posts: igWebCache.posts,
+    };
+  }
+  try {
+    const posts = await fetchInstagramWeb();
+    igWebCache = { at: Date.now(), posts };
+    return { ok: true, fonte: "instagram", atualizadoEm: new Date().toISOString(), posts };
+  } catch (err) {
+    if (igWebCache.posts.length) {
+      return {
+        ok: true,
+        fonte: "instagram",
+        atualizadoEm: new Date(igWebCache.at).toISOString(),
+        posts: igWebCache.posts,
+      };
+    }
+    throw err;
+  }
+}
+
+async function buildFeedframer(key, limit = LOOKAHEAD) {
   const url = new URL(FRAMER);
   url.searchParams.set("api_key", key);
-  url.searchParams.set("page[size]", String(Math.max(LIMIT, 6)));
+  url.searchParams.set("page[size]", String(limit));
   url.searchParams.set("sort", "-published_at");
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), FETCH_MS);
@@ -228,7 +397,7 @@ async function buildFeedframer(key) {
     const res = await fetch(url, { signal: ctrl.signal });
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(graphError(data) || `framer ${res.status}`);
-    const posts = (data?.posts || []).map(toFramerPost).filter(Boolean).slice(0, LIMIT);
+    const posts = (data?.posts || []).map(toFramerPost).filter(Boolean).slice(0, limit);
     if (!posts.length) throw new Error("feed vazio");
     return { ok: true, fonte: "feedframer", atualizadoEm: new Date().toISOString(), posts };
   } finally {
@@ -241,25 +410,55 @@ async function buildMeta() {
   if (!token) throw new Error("sem IG_TOKEN");
   const data = await callGraph("me/media", {
     fields: FIELDS,
-    limit: String(Math.max(LIMIT, 6)),
+    limit: String(LOOKAHEAD),
     access_token: token,
   });
-  const posts = (data?.data || []).map(toPost).filter(Boolean).slice(0, LIMIT);
+  const posts = (data?.data || []).map(toPost).filter(Boolean).slice(0, LIMIT).map(publicPost);
   if (!posts.length) throw new Error("feed vazio");
   return { ok: true, fonte: "meta", atualizadoEm: new Date().toISOString(), posts };
 }
 
 async function build() {
   const errors = [];
+  let ff = { posts: [] };
+  let ig = { posts: [] };
   const framerKey = await currentFramerKey();
+  const jobs = [];
   if (framerKey) {
-    try {
-      return await buildFeedframer(framerKey);
-    } catch (err) {
-      errors.push(err.message);
-      console.error("insta feedframer", err.message);
-    }
+    jobs.push(
+      buildFeedframer(framerKey)
+        .then((out) => {
+          ff = out;
+        })
+        .catch((err) => {
+          errors.push(err.message);
+          console.error("insta feedframer", err.message);
+        })
+    );
   }
+  jobs.push(
+    buildInstagramWeb()
+      .then((out) => {
+        ig = out;
+      })
+      .catch((err) => {
+        errors.push(err.message);
+        console.error("insta web", err.message);
+      })
+  );
+  await Promise.all(jobs);
+
+  const posts = mergePosts(ig.posts || [], ff.posts || []).slice(0, LIMIT);
+  if (posts.length) {
+    const fonte =
+      ig.posts?.length && ff.posts?.length
+        ? "instagram+feedframer"
+        : ig.posts?.length
+          ? "instagram"
+          : "feedframer";
+    return { ok: true, fonte, atualizadoEm: new Date().toISOString(), posts };
+  }
+
   try {
     return await buildMeta();
   } catch (err) {
@@ -291,6 +490,55 @@ export async function getInstaFeed() {
 function bustFeedCache() {
   cache = null;
   inflight = null;
+  igWebCache = { at: 0, posts: [] };
+}
+
+const IG_MEDIA_MAX = 5 * 1024 * 1024;
+
+export async function handleIgMedia(req) {
+  const allowed = allowedImageUrl(queryParam(req, "u"));
+  if (!allowed) {
+    return { status: 400, headers: { "Cache-Control": "no-store" }, json: { error: "url" } };
+  }
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), FETCH_MS);
+  try {
+    const res = await fetch(allowed, {
+      signal: ctrl.signal,
+      headers: {
+        Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        "User-Agent": IG_HEADERS["User-Agent"],
+        Referer: `https://www.instagram.com/${HANDLE}/`,
+      },
+    });
+    if (!res.ok) {
+      return { status: res.status === 404 ? 404 : 502, headers: { "Cache-Control": "no-store" }, json: { error: "media" } };
+    }
+    const length = Number(res.headers.get("content-length") || 0);
+    if (length > IG_MEDIA_MAX) {
+      return { status: 413, headers: { "Cache-Control": "no-store" }, json: { error: "size" } };
+    }
+    const buf = Buffer.from(await res.arrayBuffer());
+    if (buf.length > IG_MEDIA_MAX) {
+      return { status: 413, headers: { "Cache-Control": "no-store" }, json: { error: "size" } };
+    }
+    const type = String(res.headers.get("content-type") || "image/jpeg").split(";")[0];
+    if (!type.startsWith("image/")) {
+      return { status: 502, headers: { "Cache-Control": "no-store" }, json: { error: "type" } };
+    }
+    return {
+      status: 200,
+      headers: {
+        "Content-Type": type,
+        "Cache-Control": "public, max-age=86400, s-maxage=86400, immutable",
+      },
+      body: buf,
+    };
+  } catch {
+    return { status: 502, headers: { "Cache-Control": "no-store" }, json: { error: "media" } };
+  } finally {
+    clearTimeout(t);
+  }
 }
 
 export async function feedAdminStatus() {
@@ -314,7 +562,7 @@ export async function handleFeed(req) {
     return {
       json: await getInstaFeed(),
       status: 200,
-      headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=300" },
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120" },
     };
   }
   if (req.method !== "POST") return { json: { error: "method" }, status: 405 };
@@ -329,6 +577,11 @@ export async function handleFeed(req) {
 
   const action = String(body.action || "");
   if (action === "status") return { json: await feedAdminStatus(), status: 200 };
+
+  if (action === "refresh") {
+    bustFeedCache();
+    return { json: await feedAdminStatus(), status: 200 };
+  }
 
   if (action === "save") {
     const key = String(body.key || "").trim();

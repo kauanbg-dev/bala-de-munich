@@ -68,7 +68,25 @@ window.CLUB = {
     { tag: "Nebacetin", pos: "ZAG", assists: 2, goals: 1, games: 21 },
   ],
   gallery: [
-    { src: "assets/feed/semifinal.jpg", alt: "Estamos na semifinal · 3x1 Raposo FC", caption: "Semifinal" },
+    {
+      src: "assets/feed/dia-de-jogo.jpg?v=1",
+      alt: "Dia de jogo · semifinal",
+      caption: "Dia de jogo",
+      href: "https://www.instagram.com/p/DdRJKdTOqSp/",
+    },
+    {
+      src: "assets/feed/semifinal-chave.jpg?v=1",
+      alt: "Semifinal · Equipe X vs Bala de Munich",
+      caption: "Semifinal",
+      href: "https://www.instagram.com/p/DdPv_t5q9dO/",
+    },
+    {
+      src: "assets/feed/mvp-confronto.jpg?v=1",
+      alt: "MVP do confronto",
+      caption: "MVP",
+      href: "https://www.instagram.com/p/DdFBN2tvgi_/",
+    },
+    { src: "assets/feed/semifinal.jpg", alt: "Estamos na semifinal · 3x1 Raposo FC", caption: "Classificados" },
     { src: "assets/feed/destaque.jpg", alt: "Game Day contra o Raposo FC", caption: "Game Day" },
     {
       src: "assets/feed/quartas.jpg?v=2",

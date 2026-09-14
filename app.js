@@ -540,6 +540,32 @@ const pullCopaLive = async () => {
 pullCopaLive();
 window.setInterval(pullCopaLive, 60_000);
 
+const feedCode = (href) => {
+  const match = String(href || "").match(/\/(?:p|reel|tv)\/([^/?#]+)/i);
+  return match ? match[1] : "";
+};
+
+// Se a API atrasar (Feedframer diário / Instagram 429), os posts novos do
+// data.js continuam na frente até a API trazer o mesmo shortcode.
+const mergeFeedWithGallery = (apiPosts) => {
+  const apiCodes = new Set((apiPosts || []).map((item) => feedCode(item.href)).filter(Boolean));
+  const leading = [];
+  for (const item of club.gallery || []) {
+    const code = feedCode(item.href);
+    if (code && apiCodes.has(code)) break;
+    if (code && !apiCodes.has(code)) leading.push(item);
+    else break;
+  }
+  return [...leading, ...(apiPosts || [])];
+};
+
+const esc = (value) =>
+  String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
 const paintFeedFonte = (fonte) => {
   const el = document.getElementById("feed-fonte");
   if (!el) return;
@@ -550,11 +576,15 @@ const paintFeedFonte = (fonte) => {
   }
   el.hidden = false;
   el.textContent =
-    fonte === "feedframer"
-      ? "Admin · ao vivo pelo Feedframer"
-      : fonte === "meta"
-        ? "Admin · ao vivo pela Meta"
-        : "Admin · fotos de piso (data.js)";
+    fonte === "instagram+feedframer"
+      ? "Admin · Instagram + Feedframer"
+      : fonte === "instagram"
+        ? "Admin · ao vivo pelo Instagram"
+        : fonte === "feedframer"
+          ? "Admin · ao vivo pelo Feedframer"
+          : fonte === "meta"
+            ? "Admin · ao vivo pela Meta"
+            : "Admin · fotos de piso (data.js)";
 };
 
 const paintFeed = (posts, fonte) => {
@@ -564,10 +594,10 @@ const paintFeed = (posts, fonte) => {
     .slice(0, 3)
     .map(
       (item) => `
-    <a class="feed-card" href="${item.href || club.instagram}" target="_blank" rel="noreferrer">
-      <img src="${item.src}" alt="${item.alt}" loading="lazy" />
+    <a class="feed-card" href="${esc(item.href || club.instagram)}" target="_blank" rel="noreferrer">
+      <img src="${esc(item.src)}" alt="${esc(item.alt)}" loading="lazy" referrerpolicy="no-referrer" />
       ${item.video ? `<i class="feed-play" aria-hidden="true"></i>` : ""}
-      <span>${item.caption}</span>
+      <span>${esc(item.caption)}</span>
     </a>`
     )
     .join("");
@@ -582,14 +612,16 @@ const pullInstaFeed = async () => {
     const res = await fetch("/api/feed", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
-    if (data?.ok && Array.isArray(data.posts) && data.posts.length) paintFeed(data.posts, data.fonte || "feedframer");
+    if (data?.ok && Array.isArray(data.posts) && data.posts.length) {
+      paintFeed(mergeFeedWithGallery(data.posts), data.fonte || "feedframer");
+    }
   } catch {
     /* mantém data.js */
   }
 };
 
 pullInstaFeed();
-window.setInterval(pullInstaFeed, 10 * 60_000);
+window.setInterval(pullInstaFeed, 3 * 60_000);
 
 
 const paintAdmFeed = (status) => {
@@ -606,13 +638,22 @@ const paintAdmFeed = (status) => {
       hint.textContent = status.erro;
       hint.classList.add("is-error");
     } else if (live && status.origem === "painel") {
-      hint.textContent = `Ligado pelo painel (${status.mascara}). O público vê os posts reais.`;
+      hint.textContent = `Ligado pelo painel (${status.mascara}). O público vê os posts reais${
+        status.fonte === "instagram" || status.fonte === "instagram+feedframer"
+          ? ", inclusive os que o Feedframer ainda não puxou."
+          : "."
+      }`;
     } else if (live && status.origem === "vercel") {
-      hint.textContent = "Ligado pela variável da Vercel. O painel só troca se você colar outra chave.";
+      hint.textContent =
+        status.fonte === "instagram" || status.fonte === "instagram+feedframer"
+          ? "Ligado pela Vercel. Posts novos entram pelo Instagram, sem esperar o ciclo diário do Feedframer."
+          : "Ligado pela variável da Vercel. O painel só troca se você colar outra chave.";
+    } else if (live) {
+      hint.textContent = "Feed ao vivo pelo Instagram. O público vê os posts novos sem esperar o Feedframer.";
     } else if (status?.stored) {
       hint.textContent = "Chave salva, mas o Feedframer não respondeu. As fotos de piso continuam no ar.";
     } else {
-      hint.textContent = "Sem chave: o Feed mostra as três artes locais. Cria a conta no Feedframer, cola a chave e aperta Ligar.";
+      hint.textContent = "Sem chave do Feedframer: o Feed ainda puxa o Instagram direto. Cola a chave só pra estabilizar as fotos no CDN.";
     }
   }
   if (field && status?.stored) field.placeholder = "chave já salva — cola outra pra trocar";
@@ -1220,8 +1261,18 @@ document.getElementById("adm-feed-form")?.addEventListener("submit", async (even
   }
 });
 
+document.getElementById("adm-feed-refresh")?.addEventListener("click", () => {
+  const hint = document.getElementById("adm-feed-hint");
+  postFeedAdmin("refresh").catch((err) => {
+    if (hint) {
+      hint.classList.add("is-error");
+      hint.textContent = err.message === "pin" ? "Código admin errado." : "Não deu pra atualizar o Feed agora.";
+    }
+  });
+});
+
 document.getElementById("adm-feed-clear")?.addEventListener("click", () => {
-  if (!window.confirm("Voltar o Feed pras três artes locais?")) return;
+  if (!window.confirm("Tirar a chave do Feedframer? O Feed continua puxando o Instagram direto.")) return;
   postFeedAdmin("clear").catch((err) => {
     const hint = document.getElementById("adm-feed-hint");
     if (hint) {
