@@ -28,6 +28,7 @@ const IG_WEB_MS = Number(process.env.IG_WEB_CACHE_MS) || 5 * 60 * 1000;
 const FETCH_MS = 8_000;
 const LIMIT = Number(process.env.IG_LIMIT) || 3;
 const LOOKAHEAD = Math.max(LIMIT, 12);
+const FRAMER_PAGE = 6;
 const REFRESH_AFTER_MS = 30 * 24 * 3600 * 1000;
 const TOKEN_KEY = "insta:token";
 const FRAMER_KEY = "insta:framer-key";
@@ -274,6 +275,16 @@ function publicPost(post) {
   };
 }
 
+function loadSnapshot() {
+  try {
+    const file = path.join(path.dirname(fileURLToPath(import.meta.url)), "ig-snapshot.json");
+    const saved = JSON.parse(fs.readFileSync(file, "utf8"));
+    return Array.isArray(saved?.posts) ? saved.posts : [];
+  } catch {
+    return [];
+  }
+}
+
 function mergePosts(igPosts, ffPosts) {
   const ffBy = new Map();
   for (const post of ffPosts) {
@@ -325,6 +336,7 @@ async function fetchInstagramWeb() {
       const res = await fetch(url, { signal: ctrl.signal, headers: IG_HEADERS });
       if (!res.ok) {
         lastError = `instagram ${res.status}`;
+        if (res.status === 429) break;
         continue;
       }
       const data = await res.json().catch(() => null);
@@ -386,10 +398,10 @@ async function buildInstagramWeb() {
   }
 }
 
-async function buildFeedframer(key, limit = LOOKAHEAD) {
+async function buildFeedframer(key, limit = FRAMER_PAGE) {
   const url = new URL(FRAMER);
   url.searchParams.set("api_key", key);
-  url.searchParams.set("page[size]", String(limit));
+  url.searchParams.set("page[size]", String(Math.min(limit, FRAMER_PAGE)));
   url.searchParams.set("sort", "-published_at");
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), FETCH_MS);
@@ -448,14 +460,19 @@ async function build() {
   );
   await Promise.all(jobs);
 
-  const posts = mergePosts(ig.posts || [], ff.posts || []).slice(0, LIMIT);
+  const igPosts = ig.posts || [];
+  const ffPosts = ff.posts || [];
+  const snapPosts = loadSnapshot();
+  const primary = igPosts.length ? igPosts : snapPosts;
+  const posts = mergePosts(primary, ffPosts).slice(0, LIMIT);
   if (posts.length) {
-    const fonte =
-      ig.posts?.length && ff.posts?.length
+    const fonte = igPosts.length
+      ? ffPosts.length
         ? "instagram+feedframer"
-        : ig.posts?.length
-          ? "instagram"
-          : "feedframer";
+        : "instagram"
+      : ffPosts.length
+        ? "feedframer"
+        : "piso";
     return { ok: true, fonte, atualizadoEm: new Date().toISOString(), posts };
   }
 

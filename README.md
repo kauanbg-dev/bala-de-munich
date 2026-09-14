@@ -110,7 +110,7 @@ Variáveis:
 
 - `FEEDFRAMER_KEY` — chave do Feedframer na Vercel. Opcional se a chave foi colada no painel admin.
 - `IG_TOKEN` — token longo da Meta (reserva). Só entra se o Instagram público e o Feedframer falharem.
-- `IG_LIMIT` — quantos posts mostrar (padrão 3; o grátis do Feedframer entrega até 6).
+- `IG_LIMIT` — quantos posts mostrar (padrão 3). O grátis do Feedframer aceita no máximo 6 por pedido.
 - `IG_CACHE_MS` — validade do cache em memória do feed misturado (padrão 2 min).
 - `IG_WEB_CACHE_MS` — validade do cache do perfil público (padrão 5 min).
 
