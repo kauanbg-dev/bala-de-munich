@@ -2633,6 +2633,17 @@ h2 {
 
 .chave-match.is-done .chave-state { color: var(--paper); }
 
+.chave-match.is-live {
+  border-color: rgba(211, 18, 42, 0.85);
+  box-shadow:
+    inset 4px 0 0 var(--red),
+    0 0 28px -10px rgba(211, 18, 42, 0.7);
+}
+
+.chave-match.is-live .chave-state {
+  color: #ff8f9d;
+}
+
 .chave-side {
   display: flex;
   align-items: center;

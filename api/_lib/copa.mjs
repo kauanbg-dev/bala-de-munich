@@ -21,6 +21,14 @@ const FETCH_MS = 12_000;
 // Enquanto `quando` vier vazio, o site usa hoje 14/09 às 18h (Brasília).
 // Quando a API preencher a data, ela manda.
 const SF_BALA_KICKOFF = process.env.COPA_SF_KICKOFF || "2026-09-14T21:00:00.000Z";
+// A Copa só publica placar quando a série acaba. Hoje o site oficial travou,
+// então o placar parcial entra na mão até eles atualizarem (aí o feed manda).
+const MANUAL_LIVE = {
+  home: "Bala de Munich",
+  away: "Equipe X",
+  hs: 1,
+  as: 0,
+};
 
 const ALIASES = {
   dg: "DG",
@@ -461,8 +469,8 @@ function parseBracket(lines) {
 function balaSeries(bracket) {
   const ties = bracket.flatMap((r) => r.ties.map((t) => ({ ...t, round: r.round })));
   const ours = ties.filter((t) => t.us);
-  const played = ours.filter((t) => t.hs !== null && t.as !== null);
-  const open = ours.find((t) => t.hs === null || t.as === null);
+  const played = ours.filter((t) => !t.live && t.hs !== null && t.as !== null);
+  const open = ours.find((t) => t.live || t.hs === null || t.as === null);
   const last = played.at(-1) || played[0];
   const usHome = last && isUs(last.home);
   const results = played
@@ -503,7 +511,12 @@ function balaSeries(bracket) {
         venue: "Mata-mata",
       };
   let motto = "Na copa. Bala de Munich.";
-  if (open) {
+  if (open?.live) {
+    const us = isUs(open.home) ? open.hs : open.as;
+    const them = isUs(open.home) ? open.as : open.hs;
+    const rival = isUs(open.home) ? open.away : open.home;
+    motto = `${open.round} ao vivo. Bala ${us}–${them} ${rival}.`;
+  } else if (open) {
     motto =
       open.away === "A definir" || open.home === "A definir"
         ? `Na ${open.round.toLowerCase()}. Adversário a definir.`
@@ -598,6 +611,22 @@ function fillKnownKickoff(tie) {
   const vsX = home === "Equipe X" || away === "Equipe X";
   if (!ours || !vsX) return tie;
   return { ...tie, quando: SF_BALA_KICKOFF };
+}
+
+function applyManualLive(parsed) {
+  if (!parsed?.bracket) return parsed;
+  for (const round of parsed.bracket) {
+    for (const tie of round.ties || []) {
+      if (tie.home !== MANUAL_LIVE.home || tie.away !== MANUAL_LIVE.away) continue;
+      if (!tie.us) continue;
+      if (tie.hs != null && tie.as != null) continue;
+      tie.hs = MANUAL_LIVE.hs;
+      tie.as = MANUAL_LIVE.as;
+      tie.live = true;
+      tie.date = `Ao vivo · ${MANUAL_LIVE.hs}–${MANUAL_LIVE.as}`;
+    }
+  }
+  return parsed;
 }
 
 function bracketFromConfrontos(confrontos) {
@@ -812,6 +841,7 @@ async function buildLive() {
   ]);
   const groupTable = computeGroupC(e2.partidas);
   const parsedBracket = bracketFromConfrontos(e2.confrontos);
+  if (parsedBracket) applyManualLive(parsedBracket);
   const series = parsedBracket ? balaSeries(parsedBracket.bracket) : {};
   const us = groupTable?.find((row) => row.us);
   const stats = withGroupPos(

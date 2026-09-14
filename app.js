@@ -57,20 +57,22 @@ const paintCompetition = () => {
   };
 
   const chaveCard = (round) => (t) => {
-    const played = t.hs !== null && t.as !== null;
+    const live = Boolean(t.live);
+    const played = !live && t.hs !== null && t.as !== null;
+    const showScore = live || played;
     const homeWin = played && t.hs > t.as;
     const awayWin = played && t.as > t.hs;
     return `
-      <article class="chave-match${t.us ? " is-us" : ""}${t.final ? " is-final" : ""}${played ? " is-done" : ""}" id="${t.id}">
+      <article class="chave-match${t.us ? " is-us" : ""}${t.final ? " is-final" : ""}${played ? " is-done" : ""}${live ? " is-live" : ""}" id="${t.id}">
       <header class="chave-top">
         <span class="chave-round">
           ${t.final ? `<i class="chave-cup" aria-hidden="true"></i>` : ""}
           ${round.round}
         </span>
-        <span class="chave-state">${played ? "Encerrada" : "A disputar"}</span>
+        <span class="chave-state">${live ? "Ao vivo" : played ? "Encerrada" : "A disputar"}</span>
       </header>
-      ${chaveSide(t.home, played ? t.hs : "–", homeWin, played)}
-      ${chaveSide(t.away, played ? t.as : "–", awayWin, played)}
+      ${chaveSide(t.home, showScore ? t.hs : "–", homeWin, played)}
+      ${chaveSide(t.away, showScore ? t.as : "–", awayWin, played)}
       <footer class="chave-foot">
         <span>${t.date}</span>
         ${t.us ? `<span class="chave-flag">Bala</span>` : ""}
@@ -78,7 +80,7 @@ const paintCompetition = () => {
     </article>`;
   };
 
-  const doneCount = club.bracket.flatMap((r) => r.ties).filter((t) => t.hs !== null).length;
+  const doneCount = club.bracket.flatMap((r) => r.ties).filter((t) => t.hs !== null && !t.live).length;
   const openCount = club.bracket.flatMap((r) => r.ties).length - doneCount;
   const legend = document.getElementById("chave-legend");
   if (legend) legend.innerHTML = `<span class="is-done">${doneCount} encerradas</span><span>${openCount} a disputar</span>`;
@@ -271,11 +273,13 @@ function liveOficial(now) {
   return (club.bracket || [])
     .flatMap((round) => (round.ties || []).map((t) => ({ ...t, round: round.round })))
     .filter((t) => {
-      if (!t.us || !t.iso || t.hs != null || t.as != null) return false;
+      if (!t.us) return false;
+      if (t.live) return true;
+      if (!t.iso || t.hs != null || t.as != null) return false;
       const at = Date.parse(t.iso);
       return Number.isFinite(at) && now >= at && now - at <= LIVE_OFICIAL_MS;
     })
-    .map((t) => ({ ...t, at: Date.parse(t.iso) }));
+    .map((t) => ({ ...t, at: Date.parse(t.iso) || now }));
 }
 
 function liveOffCard(ourCrest) {
@@ -334,15 +338,14 @@ function paintLiveNow() {
 
   band.classList.toggle("is-off", !emCampo && !noAr);
   if (title) {
-    title.textContent = noAr ? "Elenco ao vivo" : emCampo ? "Bala em campo agora" : "Bala ao vivo";
+    title.textContent = emCampo ? "Bala em campo agora" : noAr ? "Elenco ao vivo" : "Bala ao vivo";
   }
   if (more) {
-    more.href = noAr ? "/lives" : "#amistosos";
-    more.textContent = noAr ? "Ver lives" : "Ver amistosos";
+    more.href = emCampo ? "#mata-mata" : noAr ? "/lives" : "#amistosos";
+    more.textContent = emCampo ? "Ver chave" : noAr ? "Ver lives" : "Ver amistosos";
   }
 
-  // Quem está em live manda na faixa: é o que o público procura aqui.
-  if (noAr) {
+  if (!emCampo && noAr) {
     row.innerHTML = streamerCards();
     return;
   }
@@ -362,17 +365,21 @@ function paintLiveNow() {
     // Série oficial em andamento não tem placar parcial em lugar nenhum, então
     // o card mostra que está rolando e a que horas começou, sem inventar número.
     ...oficial.map((t) => {
-      const rival = t.us && t.home === "Bala de Munich" ? t.away : t.home;
+      const usHome = t.home === "Bala de Munich";
+      const rival = usHome ? t.away : t.home;
+      const us = usHome ? t.hs : t.as;
+      const them = usHome ? t.as : t.hs;
+      const hasScore = us != null && them != null;
       return `
       <article class="live-card is-on">
-        <span class="live-when">${t.round} · começou ${agoLabel(now - t.at)}</span>
-        <div class="live-teams is-open">
+        <span class="live-when">${t.round} · ${hasScore ? "ao vivo" : `começou ${agoLabel(now - t.at)}`}</span>
+        <div class="live-teams${hasScore ? "" : " is-open"}">
           ${crestOf(ourCrest)}
-          <b>·</b><i>vs</i><b>·</b>
+          <b>${hasScore ? us : "·"}</b><i>${hasScore ? "–" : "vs"}</i><b>${hasScore ? them : "·"}</b>
           ${crestOf(club.clubs?.[rival]?.crest)}
         </div>
         <span class="live-vs">vs ${rival}</span>
-        <span class="live-tag">Em andamento</span>
+        <span class="live-tag">Ao vivo</span>
       </article>`;
     }),
     ...sessao.map(
