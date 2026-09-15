@@ -25,6 +25,8 @@ export const allow = [
   "Jmdeck",
   "Beliene",
   "2Tclipes",
+  "Dimicontro",
+  "Blaade",
 ];
 export const pollId = process.env.MVP_POLL_ID || "semifinal-e2";
 export const durationHours = 2;
@@ -39,7 +41,7 @@ function emptyStore() {
 }
 
 function emptyPoll() {
-  return { ballots: {}, startedAt: null, endsAt: null, paused: false, remainingMs: 0 };
+  return { ballots: {}, startedAt: null, endsAt: null, paused: false, remainingMs: 0, out: [] };
 }
 
 function kvConfig() {
@@ -113,9 +115,32 @@ async function saveVotes(store) {
   fs.writeFileSync(votesFile, JSON.stringify(store), "utf8");
 }
 
-function totalsFrom(ballots) {
+function normalizeOut(poll) {
+  const raw = Array.isArray(poll?.out) ? poll.out : [];
+  const seen = new Set();
+  const out = [];
+  for (const tag of raw) {
+    const name = String(tag || "");
+    if (!allow.includes(name) || seen.has(name)) continue;
+    seen.add(name);
+    out.push(name);
+  }
+  poll.out = out;
+  return out;
+}
+
+function stripOutBallots(poll) {
+  const blocked = new Set(normalizeOut(poll));
+  for (const [voter, player] of Object.entries(poll.ballots || {})) {
+    if (blocked.has(player)) delete poll.ballots[voter];
+  }
+}
+
+function totalsFrom(ballots, blocked = []) {
+  const skip = new Set(blocked);
   const totals = {};
   for (const vote of Object.values(ballots || {})) {
+    if (skip.has(vote)) continue;
     totals[vote] = (totals[vote] || 0) + 1;
   }
   return totals;
@@ -157,8 +182,10 @@ function getWindow(poll) {
 }
 
 function mvpPayload(poll, voter) {
-  const mine = poll.ballots?.[voter] || null;
-  const totals = totalsFrom(poll.ballots);
+  const out = normalizeOut(poll);
+  const mineRaw = poll.ballots?.[voter] || null;
+  const mine = out.includes(mineRaw) ? null : mineRaw;
+  const totals = totalsFrom(poll.ballots, out);
   const total = Object.values(totals).reduce((a, n) => a + n, 0);
   const win = getWindow(poll);
   return {
@@ -172,6 +199,7 @@ function mvpPayload(poll, voter) {
     durationHours: win.durationHours,
     total,
     totals,
+    out,
     voted: Boolean(mine),
     mine,
   };
@@ -217,6 +245,7 @@ function ensurePoll(store) {
   if (!("endsAt" in poll)) poll.endsAt = null;
   if (!("paused" in poll)) poll.paused = false;
   if (!("remainingMs" in poll)) poll.remainingMs = 0;
+  if (!Array.isArray(poll.out)) poll.out = [];
   return poll;
 }
 
@@ -244,7 +273,7 @@ export async function handleMvp(req) {
   }
 
   const action = String(body.action || "");
-  const adminActions = ["auth", "start", "pause", "resume", "close", "reset"];
+  const adminActions = ["auth", "start", "pause", "resume", "close", "reset", "out"];
   if (adminActions.includes(action)) {
     if (String(body.pin || "") !== startPin) return result({ error: "pin" }, 403, headers);
     // "auth" só confere o código, não toca no banco: dá pra entrar mesmo com ele fora do ar.
@@ -279,6 +308,14 @@ export async function handleMvp(req) {
       store.polls[pollId] = emptyPoll();
       await saveVotes(store);
       return result(mvpPayload(store.polls[pollId], voter), 200, headers);
+    } else if (action === "out") {
+      const player = String(body.player || "");
+      if (!allow.includes(player)) return result({ error: "invalid" }, 400, headers);
+      const blocked = new Set(normalizeOut(poll));
+      if (body.on === false || body.on === "false" || body.on === 0) blocked.delete(player);
+      else blocked.add(player);
+      poll.out = [...blocked];
+      stripOutBallots(poll);
     }
     store.polls[pollId] = poll;
     await saveVotes(store);
@@ -300,7 +337,9 @@ export async function handleMvp(req) {
   }
 
   const player = String(body.player || "");
-  if (!allow.includes(player)) return result({ error: "invalid" }, 400, headers);
+  if (!allow.includes(player) || normalizeOut(poll).includes(player)) {
+    return result({ error: "invalid" }, 400, headers);
+  }
   poll.ballots[voter] = player;
   store.polls[pollId] = poll;
   await saveVotes(store);

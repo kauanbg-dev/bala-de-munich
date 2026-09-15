@@ -1235,6 +1235,51 @@ h1 {
 
 .mvp-admin-hint:empty { display: none; }
 
+.mvp-out {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(212, 177, 90, 0.35);
+}
+
+.mvp-out-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mvp-out-chip {
+  border: 1px solid rgba(244, 234, 214, 0.22);
+  border-radius: 999px;
+  padding: 7px 12px 6px;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  cursor: pointer;
+  color: var(--paper);
+  background: rgba(244, 234, 214, 0.06);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.mvp-out-chip:hover {
+  border-color: rgba(212, 177, 90, 0.7);
+  background: rgba(212, 177, 90, 0.12);
+}
+
+.mvp-out-chip.is-on {
+  color: #fff;
+  background: rgba(211, 18, 42, 0.88);
+  border-color: var(--red);
+}
+
+.mvp-out-chip.is-on:hover {
+  background: var(--red);
+  filter: brightness(1.06);
+}
+
 .adm-split {
   margin: 0;
   font-size: 0.58rem;
@@ -1358,6 +1403,26 @@ h1 {
 
 .mvp-status:empty { display: none; }
 
+.mvp-legend {
+  margin: 0 0 16px;
+  text-align: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.mvp-legend::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 2px;
+  background: rgba(244, 234, 214, 0.28);
+  vertical-align: 1px;
+}
+
 .mvp-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
@@ -1381,6 +1446,23 @@ h1 {
   transform: translateY(-3px);
   border-color: rgba(212, 177, 90, 0.5);
   box-shadow: 0 20px 38px -24px rgba(0, 0, 0, 0.95);
+}
+
+.mvp-card.is-out {
+  opacity: 0.62;
+  filter: grayscale(0.72);
+  border-color: rgba(244, 234, 214, 0.12);
+}
+
+.mvp-card.is-out:hover {
+  transform: none;
+  border-color: rgba(244, 234, 214, 0.12);
+  box-shadow: none;
+}
+
+.mvp-card.is-out button:disabled {
+  background: rgba(244, 234, 214, 0.05);
+  color: rgba(244, 234, 214, 0.38);
 }
 
 .mvp-card.is-mine { border-color: var(--gold); }
@@ -1628,6 +1710,12 @@ h1 {
 .mvp-badge.is-lead {
   background: var(--red);
   color: #fff;
+}
+
+.mvp-badge.is-out {
+  background: rgba(244, 234, 214, 0.14);
+  color: rgba(244, 234, 214, 0.78);
+  animation: none;
 }
 
 @keyframes mvp-win-glow {

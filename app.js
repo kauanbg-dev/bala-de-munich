@@ -953,6 +953,7 @@ let mvpState = {
   degraded: false,
   remainingMs: 0,
   endsAt: null,
+  out: [],
 };
 const mvpAdmin = document.getElementById("mvp-admin");
 const mvpAdminOps = document.getElementById("mvp-admin-ops");
@@ -963,12 +964,16 @@ let mvpTimer = null;
 
 const pad2 = (n) => String(n).padStart(2, "0");
 
+const mvpVotesOf = (tag) => Number(mvpState.totals[tag]) || 0;
+
 const mvpPct = (tag) => {
   if (!mvpState.total) return 0;
-  return Math.round((100 * (Number(mvpState.totals[tag]) || 0)) / mvpState.total);
+  return Math.round((100 * mvpVotesOf(tag)) / mvpState.total);
 };
 
-const mvpVotesOf = (tag) => Number(mvpState.totals[tag]) || 0;
+const mvpOut = () => new Set(mvpState.out || []);
+
+const mvpIsOut = (tag) => mvpOut().has(tag);
 
 const mvpRatingOf = (player) => {
   const n = Number(String(player?.rating || "").trim().replace(",", "."));
@@ -1043,17 +1048,21 @@ const renderMvp = () => {
     chip.textContent = state.text;
     chip.className = `mvp-admin-chip${state.cls ? ` ${state.cls}` : ""}`;
   }
-  const ranked = mvpState.started
-    ? [...mvpCandidates].sort((a, b) => {
-        const voteDiff = mvpVotesOf(b.tag) - mvpVotesOf(a.tag);
-        if (voteDiff) return voteDiff;
-        const rateDiff = mvpRatingOf(b) - mvpRatingOf(a);
-        if (rateDiff) return rateDiff;
-        return String(a.tag).localeCompare(String(b.tag), "pt-BR");
-      })
-    : [...mvpCandidates];
-  const topVotes = mvpVotesOf(ranked[0]?.tag);
-  const uniqueLead = mvpState.started && topVotes > 0 ? ranked[0] : null;
+  const outSet = mvpOut();
+  const ranked = [...mvpCandidates].sort((a, b) => {
+    const aOut = outSet.has(a.tag);
+    const bOut = outSet.has(b.tag);
+    if (aOut !== bOut) return aOut ? 1 : -1;
+    if (!mvpState.started) return 0;
+    const voteDiff = mvpVotesOf(b.tag) - mvpVotesOf(a.tag);
+    if (voteDiff) return voteDiff;
+    const rateDiff = mvpRatingOf(b) - mvpRatingOf(a);
+    if (rateDiff) return rateDiff;
+    return String(a.tag).localeCompare(String(b.tag), "pt-BR");
+  });
+  const eligible = ranked.filter((p) => !outSet.has(p.tag));
+  const topVotes = mvpVotesOf(eligible[0]?.tag);
+  const uniqueLead = mvpState.started && topVotes > 0 ? eligible[0] : null;
   const votingOver = mvpState.started && !mvpState.open && !mvpState.paused;
   const plural = mvpState.total === 1 ? "voto" : "votos";
   if (!mvpState.started) {
@@ -1093,54 +1102,70 @@ const renderMvp = () => {
     if (!mvpAdminPin) {
       adminHint.textContent = "";
     } else if (!mvpState.started) {
-      adminHint.textContent = `Urna fechada. "Iniciar 2h" abre a votação pra galera.`;
+      adminHint.textContent = `Urna fechada. "Iniciar 2h" abre a votação pra galera. Marca embaixo quem não jogou.`;
     } else {
       const lead = uniqueLead ? ` · líder ${uniqueLead.tag}` : "";
       adminHint.textContent = `${mvpState.total} ${plural} contabilizados${lead}. O público só vê a porcentagem.`;
     }
   }
   grid.className = `mvp-grid${mvpState.started ? "" : " is-idle"}`;
+  const legend = document.getElementById("mvp-legend");
+  if (legend) legend.hidden = outSet.size === 0;
+  const outList = document.getElementById("mvp-out-list");
+  if (outList && mvpAdminPin) {
+    outList.innerHTML = mvpCandidates
+      .map((p) => {
+        const on = outSet.has(p.tag);
+        return `<button type="button" class="mvp-out-chip${on ? " is-on" : ""}" data-out="${p.tag}" aria-pressed="${on}">${p.tag}</button>`;
+      })
+      .join("");
+  }
   grid.innerHTML = ranked
     .map((p, i) => {
+      const out = outSet.has(p.tag);
       const n = mvpVotesOf(p.tag);
       const pct = mvpPct(p.tag);
       const photo = p.photo || "assets/crest.png";
       const mine = mvpState.mine === p.tag;
       const lead = uniqueLead && uniqueLead.tag === p.tag;
       const winner = lead && votingOver;
-      const badge = winner
-        ? `<span class="mvp-badge">Vencedor da votação</span>`
-        : lead
-          ? `<span class="mvp-badge is-lead">Na frente</span>`
-          : "";
-      const score = mvpState.started
+      const badge = out
+        ? `<span class="mvp-badge is-out">Jogador não jogou</span>`
+        : winner
+          ? `<span class="mvp-badge">Vencedor da votação</span>`
+          : lead
+            ? `<span class="mvp-badge is-lead">Na frente</span>`
+            : "";
+      const score = mvpState.started && !out
         ? `<div class="mvp-score">
               <strong>${pct}<i>%</i></strong>
               ${showCounts ? `<span>${n} ${n === 1 ? "voto" : "votos"}</span>` : ""}
             </div>
             <span class="mvp-bar" aria-hidden="true"><i style="width:${pct}%"></i></span>`
         : "";
-      const label = mine
-        ? mvpState.open
-          ? "Tirar meu voto"
-          : "Seu voto"
-        : !mvpState.started
-          ? "Aguardando"
-          : mvpState.paused
-            ? "Pausada"
-            : mvpState.open
-              ? "Votar"
-              : "Encerrada";
+      const label = out
+        ? "Não jogou"
+        : mine
+          ? mvpState.open
+            ? "Tirar meu voto"
+            : "Seu voto"
+          : !mvpState.started
+            ? "Aguardando"
+            : mvpState.paused
+              ? "Pausada"
+              : mvpState.open
+                ? "Votar"
+                : "Encerrada";
       return `
-        <article class="mvp-card${mine ? " is-mine" : ""}${lead ? " is-lead" : ""}${winner ? " is-winner" : ""}">
-          <span class="mvp-rank">${mvpState.started ? `${i + 1}º` : p.number ? `#${p.number}` : "—"}</span>
+        <article class="mvp-card${mine ? " is-mine" : ""}${lead ? " is-lead" : ""}${winner ? " is-winner" : ""}${out ? " is-out" : ""}">
+          <span class="mvp-rank">${out ? "—" : mvpState.started ? `${eligible.findIndex((x) => x.tag === p.tag) + 1}º` : p.number ? `#${p.number}` : "—"}</span>
           <span class="mvp-face"><img src="${photo}" alt="" loading="lazy" class="${p.photo ? "" : "fallback"}" /></span>
           <div class="mvp-body">
             ${badge}
             <b>${p.tag}</b>
-            <small>${p.pos}</small>
+            <small>${out ? "Jogador não jogou" : p.pos}</small>
             ${score}
-            <button type="button" class="${mine && mvpState.open ? "is-undo" : ""}" data-mvp="${p.tag}" data-action="${mine && mvpState.open ? "unvote" : "vote"}" ${locked ? "disabled" : ""}>${label}</button>
+            <button type="button" class="${mine && mvpState.open && !out ? "is-undo" : ""}" data-mvp="${p.tag}" data-action="${mine && mvpState.open && !out ? "unvote" : "vote"}" ${locked || out ? "disabled" : ""}>${label}</button>
           </div>
         </article>`;
     })
@@ -1156,6 +1181,7 @@ const applyMvpData = (data) => {
   mvpState.degraded = Boolean(data.degraded);
   mvpState.remainingMs = Number(data.remainingMs) || 0;
   mvpState.endsAt = data.endsAt || null;
+  mvpState.out = Array.isArray(data.out) ? data.out : [];
   if ("voted" in data) {
     mvpState.voted = Boolean(data.voted);
     mvpState.mine = data.mine || null;
@@ -1211,7 +1237,7 @@ const setMvpAdminError = (message) => {
   hint.classList.toggle("is-error", Boolean(message));
 };
 
-const postMvpAdmin = async (action) => {
+const postMvpAdmin = async (action, extra = {}) => {
   let res;
   let data;
   try {
@@ -1219,7 +1245,7 @@ const postMvpAdmin = async (action) => {
       method: "POST",
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ poll: mvpPoll.id, action, pin: mvpAdminPin }),
+      body: JSON.stringify({ poll: mvpPoll.id, action, pin: mvpAdminPin, ...extra }),
     });
     data = await res.json().catch(() => ({}));
   } catch {
@@ -1263,6 +1289,14 @@ document.getElementById("mvp-close")?.addEventListener("click", () => {
 document.getElementById("mvp-reset")?.addEventListener("click", () => {
   if (!window.confirm("Recomeçar do zero? Apaga todos os votos e volta a urna pro começo.")) return;
   postMvpAdmin("reset").catch(() => {});
+});
+
+document.getElementById("mvp-out")?.addEventListener("click", (event) => {
+  const btn = event.target.closest("[data-out]");
+  if (!btn || !mvpAdminPin) return;
+  const tag = btn.getAttribute("data-out");
+  const on = !btn.classList.contains("is-on");
+  postMvpAdmin("out", { player: tag, on }).catch(() => {});
 });
 
 document.getElementById("adm-feed-form")?.addEventListener("submit", async (event) => {
@@ -1310,6 +1344,7 @@ document.getElementById("mvp-grid")?.addEventListener("click", async (event) => 
   const btn = event.target.closest("button[data-mvp]");
   if (!btn || !mvpState.open) return;
   const tag = btn.getAttribute("data-mvp");
+  if (mvpIsOut(tag)) return;
   const undo = btn.getAttribute("data-action") === "unvote";
   if (undo && !window.confirm(`Tirar seu voto em ${tag}? Depois dá pra votar de novo.`)) return;
   btn.disabled = true;
