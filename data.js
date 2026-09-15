@@ -80,15 +80,6 @@ window.CLUB = {
       caption: "Pack de memes",
       href: "https://www.instagram.com/p/DdSoyFrjaG3/",
       contain: true,
-      slides: [
-        "assets/feed/pack-memes-1.jpg?v=1",
-        "assets/feed/pack-memes-2.jpg?v=1",
-        "assets/feed/pack-memes-3.jpg?v=1",
-        "assets/feed/pack-memes-4.jpg?v=1",
-        "assets/feed/pack-memes-5.jpg?v=1",
-        "assets/feed/pack-memes-6.jpg?v=1",
-        "assets/feed/pack-memes-7.jpg?v=1",
-      ],
     },
     {
       src: "assets/feed/estamos-na-final.jpg?v=1",

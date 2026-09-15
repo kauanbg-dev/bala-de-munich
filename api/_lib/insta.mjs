@@ -266,7 +266,6 @@ function proxySrc(src) {
 }
 
 function publicPost(post) {
-  const slides = Array.isArray(post.slides) ? post.slides.map(proxySrc).filter(Boolean) : [];
   return {
     src: proxySrc(post.src),
     alt: post.alt,
@@ -274,7 +273,6 @@ function publicPost(post) {
     href: post.href,
     video: Boolean(post.video),
     contain: Boolean(post.contain),
-    slides: slides.length > 1 ? slides : undefined,
   };
 }
 

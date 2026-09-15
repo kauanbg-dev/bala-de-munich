@@ -558,12 +558,10 @@ const feedLocalByCode = () => {
 const withGalleryMeta = (item) => {
   const local = feedLocalByCode().get(feedCode(item.href));
   if (!local) return item;
-  const slides = local.slides?.length > 1 ? local.slides : item.slides;
   return {
     ...item,
     contain: item.contain || local.contain,
-    slides,
-    src: slides?.[0] || item.src || local.src,
+    src: item.src || local.src,
   };
 };
 
@@ -612,58 +610,21 @@ const feedContain = (item) => {
   return feedCode(item?.href) === "DdSoyFrjaG3";
 };
 
-const slidesOf = (item) => {
-  const slides = (item.slides || []).filter(Boolean);
-  if (slides.length > 1) return slides;
-  return item.src ? [item.src] : [];
-};
-
-let feedSlideTimers = [];
-
-const startFeedSlideshows = () => {
-  feedSlideTimers.forEach((id) => window.clearInterval(id));
-  feedSlideTimers = [];
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  document.querySelectorAll(".feed-card.is-slideshow .feed-slides").forEach((box) => {
-    const frames = [...box.querySelectorAll("img")];
-    if (frames.length < 2) return;
-    let i = 0;
-    const tick = () => {
-      frames[i].classList.remove("is-on");
-      i = (i + 1) % frames.length;
-      frames[i].classList.add("is-on");
-    };
-    feedSlideTimers.push(window.setInterval(tick, 2600));
-  });
-};
-
 const paintFeed = (posts, fonte) => {
   const grid = document.getElementById("feed-grid");
   if (!grid) return;
   grid.innerHTML = posts
     .slice(0, 3)
-    .map((item) => {
-      const slides = slidesOf(item);
-      const slideshow = slides.length > 1;
-      const contain = feedContain(item) || slideshow;
-      const media = slideshow
-        ? `<div class="feed-slides">${slides
-            .map(
-              (src, i) =>
-                `<img src="${esc(src)}" alt="${esc(item.alt)}" loading="${i ? "lazy" : "eager"}" referrerpolicy="no-referrer"${i === 0 ? ' class="is-on"' : ""} />`
-            )
-            .join("")}</div>`
-        : `<img src="${esc(item.src)}" alt="${esc(item.alt)}" loading="lazy" referrerpolicy="no-referrer" />`;
-      return `
-    <a class="feed-card${contain ? " is-contain" : ""}${slideshow ? " is-slideshow" : ""}" href="${esc(item.href || club.instagram)}" target="_blank" rel="noreferrer">
-      ${media}
-      ${item.video && !slideshow ? `<i class="feed-play" aria-hidden="true"></i>` : ""}
+    .map(
+      (item) => `
+    <a class="feed-card${feedContain(item) ? " is-contain" : ""}" href="${esc(item.href || club.instagram)}" target="_blank" rel="noreferrer">
+      <img src="${esc(item.src)}" alt="${esc(item.alt)}" loading="lazy" referrerpolicy="no-referrer" />
+      ${item.video ? `<i class="feed-play" aria-hidden="true"></i>` : ""}
       <span>${esc(item.caption)}</span>
-    </a>`;
-    })
+    </a>`
+    )
     .join("");
   paintFeedFonte(fonte);
-  startFeedSlideshows();
 };
 
 paintFeed(club.gallery, "piso");
