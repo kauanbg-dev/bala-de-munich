@@ -69,6 +69,24 @@ window.CLUB = {
   ],
   gallery: [
     {
+      src: "assets/feed/grande-final.jpg?v=1",
+      alt: "Estamos na grande final",
+      caption: "Grande final",
+      href: "https://www.instagram.com/p/DdSj4pBtELy/",
+    },
+    {
+      src: "assets/feed/pack-memes.jpg?v=1",
+      alt: "Pack de memes do Bala",
+      caption: "Pack de memes",
+      href: "https://www.instagram.com/p/DdSoyFrjaG3/",
+    },
+    {
+      src: "assets/feed/estamos-na-final.jpg?v=1",
+      alt: "Bala de Munich está na final",
+      caption: "Estamos na final",
+      href: "https://www.instagram.com/p/DdSj3V6tK7J/",
+    },
+    {
       src: "assets/feed/dia-de-jogo.jpg?v=1",
       alt: "Dia de jogo · semifinal",
       caption: "Dia de jogo",
