@@ -59,7 +59,7 @@ O script usa a primeira porta livre entre 8765 e 8769. Abre o endereço que apar
 
 Pra tabela ao vivo + votação juntas: `npm start` (precisa do Node).
 
-Na primeira visita da sessão, a home abre com o escudo, fogos e **Estamos na final**. Dá pra pular. Recarregar a aba não mostra de novo; pra ver outra vez, abre `/?intro=1`. Quem pede menos movimento no sistema pula a intro. `/lives` entra direto.
+Na primeira visita da sessão, a home abre com o confronto definido: Bala de Munich vs Botafofo. Dá pra pular. Recarregar a aba não mostra de novo; pra ver outra vez, abre `/?intro=1`. Quem pede menos movimento no sistema pula a intro. `/lives` entra direto.
 
 ## Sync ao vivo (Copa Streamers)
 
