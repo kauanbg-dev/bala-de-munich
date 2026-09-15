@@ -3343,3 +3343,177 @@ footer p {
   .ami-strip dd { font-size: 1.5rem; }
   .ami-grid { grid-template-columns: 1fr; }
 }
+
+/* —— intro da grande final —— */
+.final-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(900px 480px at 50% 38%, rgba(211, 18, 42, 0.28), transparent 62%),
+    radial-gradient(700px 420px at 50% 100%, rgba(212, 177, 90, 0.12), transparent 55%),
+    #07070a;
+  color: var(--paper);
+  overflow: hidden;
+}
+
+.final-intro.is-leaving {
+  pointer-events: none;
+  animation: final-intro-out 0.85s ease forwards;
+}
+
+.final-intro-fx {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.final-intro-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 35%, rgba(7, 7, 10, 0.55) 100%),
+    linear-gradient(180deg, rgba(7, 7, 10, 0.35) 0%, transparent 22%, transparent 78%, rgba(7, 7, 10, 0.7) 100%);
+}
+
+.final-intro-stage {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 24px 20px 88px;
+  max-width: 92vw;
+}
+
+.final-intro-kicker {
+  font-family: var(--font-serif);
+  font-size: 0.72rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0;
+  animation: final-intro-rise 0.7s 0.25s ease forwards;
+}
+
+.final-intro-crest {
+  position: relative;
+  width: min(42vw, 220px);
+  height: min(42vw, 220px);
+  margin: 6px 0 4px;
+  opacity: 0;
+  animation: final-intro-crest 1.15s 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.final-intro-crest img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.55));
+}
+
+.final-intro-glow {
+  position: absolute;
+  inset: -28%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(212, 177, 90, 0.55) 0%, rgba(211, 18, 42, 0.28) 38%, transparent 68%);
+  animation: final-intro-pulse 2.2s 0.9s ease-in-out infinite;
+}
+
+.final-intro-stage h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 9vw, 5.6rem);
+  letter-spacing: 0.08em;
+  line-height: 0.92;
+  text-transform: uppercase;
+  text-shadow: 0 0 28px rgba(212, 177, 90, 0.35);
+  opacity: 0;
+  animation: final-intro-rise 0.8s 1.05s ease forwards;
+}
+
+.final-intro-sub {
+  font-size: clamp(0.82rem, 2.4vw, 1.05rem);
+  color: var(--mute);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: final-intro-rise 0.7s 1.45s ease forwards;
+}
+
+.final-intro-sub i {
+  font-style: normal;
+  color: var(--gold);
+  padding: 0 0.35em;
+}
+
+.final-intro-skip {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 4;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(7, 7, 10, 0.55);
+  color: var(--paper);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  opacity: 0;
+  animation: final-intro-rise 0.5s 1.8s ease forwards;
+}
+
+.final-intro-skip:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+@keyframes final-intro-crest {
+  0% { opacity: 0; transform: scale(0.55) translateY(18px); }
+  70% { opacity: 1; transform: scale(1.06) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes final-intro-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes final-intro-pulse {
+  0%, 100% { opacity: 0.72; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+
+@keyframes final-intro-out {
+  to { opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  .final-intro-skip { left: 18px; right: 18px; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .final-intro-kicker,
+  .final-intro-crest,
+  .final-intro-glow,
+  .final-intro-stage h1,
+  .final-intro-sub,
+  .final-intro-skip,
+  .final-intro.is-leaving {
+    animation: none;
+    opacity: 1;
+  }
+}

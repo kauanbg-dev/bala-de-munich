@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="intro-pending">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,9 +9,43 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=98" />
+  <link rel="stylesheet" href="styles.css?v=99" />
+  <style>
+    html.intro-pending, html.intro-pending body { overflow: hidden; height: 100%; }
+    .final-intro { position: fixed; inset: 0; z-index: 9999; background: #07070a; }
+    html:not(.intro-pending) .final-intro { display: none; }
+  </style>
+  <script>
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search);
+        if (q.get("intro") === "1") return;
+        if (sessionStorage.getItem("bala_final_intro") === "1") {
+          document.documentElement.classList.remove("intro-pending");
+        }
+      } catch (e) {}
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        var q2 = new URLSearchParams(location.search);
+        if (q2.get("intro") !== "1") document.documentElement.classList.remove("intro-pending");
+      }
+    })();
+  </script>
 </head>
 <body>
+  <div id="final-intro" class="final-intro" role="dialog" aria-modal="true" aria-labelledby="final-intro-title">
+    <canvas class="final-intro-fx" aria-hidden="true"></canvas>
+    <div class="final-intro-vignette" aria-hidden="true"></div>
+    <div class="final-intro-stage">
+      <p class="final-intro-kicker">Super Copa dos Streamers</p>
+      <div class="final-intro-crest">
+        <span class="final-intro-glow" aria-hidden="true"></span>
+        <img src="assets/crest.png" alt="Escudo Bala de Munich" width="220" height="220" />
+      </div>
+      <h1 id="final-intro-title">Estamos na final</h1>
+      <p class="final-intro-sub">Grande final · Bala de Munich <i>vs</i> Botafofo</p>
+    </div>
+    <button type="button" class="final-intro-skip">Pular intro</button>
+  </div>
   <header class="topbar">
     <a class="brand" href="#topo">
       <img class="brand-crest" src="assets/crest.png" alt="" width="40" height="40" />
@@ -292,6 +326,7 @@
     </span>
   </a>
 
+  <script src="intro.js?v=1"></script>
   <script src="data.js?v=107"></script>
   <script src="app.js?v=101"></script>
   <script src="lives.js?v=96"></script>
