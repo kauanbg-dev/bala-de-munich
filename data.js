@@ -118,7 +118,7 @@ window.CLUB = {
   ],
   squad: [
     { tag: "tteuw", name: "Presidente", pos: "MEI", role: "Presidente", rating: "6,9", games: 21, goals: 1, assists: 4, number: 11, live: "https://kick.com/tteuw", photo: "assets/players/tteuw.jpg" },
-    { tag: "Brkk", name: "Vice", pos: "MEI", role: "Rei das assistências", rating: "", games: 20, goals: 3, assists: 12, number: 10, live: "https://kick.com/brkk", photo: "assets/players/brkk.jpg" },
+    { tag: "Brkk", name: "Vice", pos: "MEI", role: "Rei das assistências", rating: "7,0", games: 20, goals: 3, assists: 12, number: 10, live: "https://kick.com/brkk", photo: "assets/players/brkk.jpg" },
     { tag: "Jmdeck", name: "Elenco", pos: "MEI", role: "Elenco", rating: "", games: 0, goals: 0, assists: 0, number: 7, live: "https://www.twitch.tv/jmdeck", photo: "assets/players/jmdeck.jpg" },
     { tag: "DG", name: "Artilheiro", pos: "ATA", role: "Artilheiro da edição", rating: "7,4", games: 20, goals: 19, assists: 3, number: 9, live: "https://kick.com/dgziniwnl", photo: "assets/players/dg.jpg" },
     { tag: "Davasco", name: "Ataque", pos: "ATA", role: "Atacante", rating: "7,1", games: 18, goals: 11, assists: 3, number: 8, live: "https://kick.com/davasco26", photo: "assets/players/davasco.jpg" },
