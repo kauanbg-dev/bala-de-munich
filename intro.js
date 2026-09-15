@@ -78,7 +78,7 @@
   const pick = (list) => list[(Math.random() * list.length) | 0];
 
   const explode = (x, y, color, big) => {
-    const count = big ? 72 : 42;
+    const count = big ? 96 : 56;
     for (let i = 0; i < count; i += 1) {
       const angle = (Math.PI * 2 * i) / count + rand(-0.12, 0.12);
       const speed = rand(big ? 1.4 : 0.9, big ? 7.2 : 4.8);
@@ -123,14 +123,24 @@
     });
   };
 
+  const burstNearCrest = (big) => {
+    explode(
+      w * 0.5 + rand(-w * 0.34, w * 0.34),
+      h * 0.34 + rand(-h * 0.08, h * 0.2),
+      pick(palettes),
+      Boolean(big)
+    );
+  };
+
   const tick = (now) => {
     if (!running) return;
     const dt = Math.min(0.033, (now - last) / 1000 || 0.016);
     last = now;
 
     if (now > spawnAt) {
-      launch(Math.random() < 0.28);
-      spawnAt = now + rand(220, 480);
+      if (Math.random() < 0.55) launch(Math.random() < 0.35);
+      burstNearCrest(Math.random() < 0.4);
+      spawnAt = now + rand(140, 320);
     }
 
     ctx.clearRect(0, 0, w, h);
@@ -179,7 +189,7 @@
       ctx.fill();
     }
 
-    if (sparks.length > 900) sparks.splice(0, sparks.length - 900);
+    if (sparks.length > 1400) sparks.splice(0, sparks.length - 1400);
     ctx.globalCompositeOperation = "source-over";
     raf = window.requestAnimationFrame(tick);
   };
@@ -202,9 +212,15 @@
   resize();
   window.addEventListener("resize", resize);
   last = performance.now();
-  spawnAt = last + 280;
+  spawnAt = last + 180;
   launch(true);
-  window.setTimeout(() => launch(true), 420);
+  launch(true);
+  burstNearCrest(true);
+  window.setTimeout(() => {
+    launch(true);
+    burstNearCrest(true);
+  }, 280);
+  window.setTimeout(() => burstNearCrest(true), 520);
   raf = window.requestAnimationFrame(tick);
   window.setTimeout(() => dismiss(false), reduced ? 1600 : 6800);
 })();
