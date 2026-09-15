@@ -27,7 +27,7 @@ const MANUAL_LIVE = {
   home: "Bala de Munich",
   away: "Equipe X",
   hs: 2,
-  as: 0,
+  as: 1,
 };
 
 const ALIASES = {
