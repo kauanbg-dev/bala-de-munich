@@ -21,14 +21,15 @@ const FETCH_MS = 12_000;
 // Enquanto `quando` vier vazio, o site usa hoje 14/09 às 18h (Brasília).
 // Quando a API preencher a data, ela manda.
 const SF_BALA_KICKOFF = process.env.COPA_SF_KICKOFF || "2026-09-14T21:00:00.000Z";
-// A Copa ainda não fechou a semifinal (continua 2–1 ao vivo) nem subiu o Bala
-// pra final. Enquanto isso o site usa o resultado real: 3–1 e Bala na final.
-// Quando o feed oficial fechar a série, ele manda.
-const MANUAL_RESULT = {
+// A Copa ainda não fechou as semis (S1 2–1 ao vivo, S2 vazia) nem montou a
+// final. O site usa o resultado real até o feed oficial atualizar.
+const MANUAL_SF = [
+  { home: "Bala de Munich", away: "Equipe X", hs: 3, as: 1 },
+  { home: "Narizes FC", away: "Botafofo", hs: 2, as: 3 },
+];
+const MANUAL_FINAL = {
   home: "Bala de Munich",
-  away: "Equipe X",
-  hs: 3,
-  as: 1,
+  away: "Botafofo",
 };
 
 const ALIASES = {
@@ -623,29 +624,25 @@ function applyManualResult(parsed) {
   if (!parsed?.bracket) return parsed;
   for (const round of parsed.bracket) {
     for (const tie of round.ties || []) {
-      if (round.key === "sf" && tie.home === MANUAL_RESULT.home && tie.away === MANUAL_RESULT.away && tie.us) {
-        // Copa já encerrou a série: não briga com o placar oficial.
-        if (tie.hs != null && tie.as != null && !tie.live) continue;
-        tie.hs = MANUAL_RESULT.hs;
-        tie.as = MANUAL_RESULT.as;
+      const manual = MANUAL_SF.find((m) => round.key === "sf" && tie.home === m.home && tie.away === m.away);
+      if (manual && !(tie.hs != null && tie.as != null && !tie.live)) {
+        tie.hs = manual.hs;
+        tie.as = manual.as;
         tie.live = false;
-        if (!tie.date || String(tie.date).startsWith("Ao vivo")) {
-          tie.date = formatQuando(tie.iso || SF_BALA_KICKOFF);
+        if (!tie.date || String(tie.date).startsWith("Ao vivo") || tie.date === "A agendar") {
+          tie.date = tie.iso ? formatQuando(tie.iso) : "Encerrada";
         }
       }
       if (round.key === "ff") {
-        const homeEmpty = !tie.home || tie.home === "A definir";
-        const awayEmpty = !tie.away || tie.away === "A definir";
-        if (isUs(tie.home) || isUs(tie.away)) continue;
-        if (homeEmpty && awayEmpty) {
-          tie.home = TEAM_NAME;
-          tie.us = true;
-        } else if (homeEmpty) {
-          tie.home = TEAM_NAME;
-          tie.us = true;
-        } else if (awayEmpty) {
-          tie.away = TEAM_NAME;
-          tie.us = true;
+        const copaNamed =
+          tie.home &&
+          tie.home !== "A definir" &&
+          tie.away &&
+          tie.away !== "A definir";
+        if (!copaNamed) {
+          tie.home = MANUAL_FINAL.home;
+          tie.away = MANUAL_FINAL.away;
+          tie.us = isUs(tie.home) || isUs(tie.away);
         }
         if (tie.date && /00:00$/.test(String(tie.date))) {
           tie.date = String(tie.date).replace(/\s*·\s*00:00$/, " · horário a definir");

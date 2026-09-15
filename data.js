@@ -1,7 +1,7 @@
 window.CLUB = {
   name: "Bala de Munich",
   short: "BDM",
-  motto: "Estamos na final.",
+  motto: "Grande final contra Botafofo.",
   knockout: "https://copastreamers.com.br/mata-mata",
   founded: "2026",
   platform: "EA FC 26 · Pro Clubs",
@@ -34,7 +34,7 @@ window.CLUB = {
     record: "9-2-5",
   },
   nextMatch: {
-    opponent: "A definir",
+    opponent: "Botafofo",
     competition: "Grande final · MD5",
     date: "qua · 16/09 · horário a definir",
     venue: "Mata-mata",
@@ -198,7 +198,7 @@ window.CLUB = {
       key: "sf",
       ties: [
         { id: "sf-0", home: "Bala de Munich", away: "Equipe X", hs: 3, as: 1, date: "seg · 14/09 · 20:00", us: true, iso: "2026-09-14T23:00:00+00:00" },
-        { id: "sf-1", home: "Narizes FC", away: "Botafofo", hs: null, as: null, date: "A agendar" },
+        { id: "sf-1", home: "Narizes FC", away: "Botafofo", hs: 2, as: 3, date: "Encerrada" },
       ],
     },
     {
@@ -206,14 +206,14 @@ window.CLUB = {
       n: "03",
       key: "ff",
       ties: [
-        { id: "ff-0", home: "Bala de Munich", away: "A definir", hs: null, as: null, date: "qua · 16/09 · horário a definir", us: true, final: true },
+        { id: "ff-0", home: "Bala de Munich", away: "Botafofo", hs: null, as: null, date: "qua · 16/09 · horário a definir", us: true, final: true },
       ],
     },
   ],
   mvp: {
     id: "semifinal-e2",
     title: "MVP da partida",
-    match: "MVP do jogo contra a Equipe X",
+    match: "MVP do jogo contra o Botafofo",
     durationHours: 2,
   },
 };
