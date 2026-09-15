@@ -721,8 +721,38 @@ h1 {
   object-fit: contain;
 }
 
-.feed-card.is-contain:hover img {
+.feed-slides {
+  position: absolute;
+  inset: 0;
+}
+
+.feed-slides img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
   transform: none;
+  transition: opacity 0.55s ease;
+}
+
+.feed-card.is-slideshow:hover img {
+  transform: none;
+}
+
+.feed-slides img.is-on {
+  opacity: 1;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feed-card img,
+  .feed-slides img {
+    transition: none;
+    transform: none;
+  }
+  .feed-card:hover img { transform: none; }
 }
 
 .feed-card span {
