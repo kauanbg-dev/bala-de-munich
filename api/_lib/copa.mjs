@@ -26,7 +26,7 @@ const SF_BALA_KICKOFF = process.env.COPA_SF_KICKOFF || "2026-09-14T21:00:00.000Z
 const MANUAL_LIVE = {
   home: "Bala de Munich",
   away: "Equipe X",
-  hs: 1,
+  hs: 2,
   as: 0,
 };
 

@@ -65,7 +65,7 @@ Tabela, chave, última/próxima série, artilharia e assistências vêm do [copa
 
 A semifinal já está no feed da Copa (Bala × Equipe X), mas o horário ainda vem vazio. Enquanto isso o site usa **14/09 às 18h** (Brasília). Quando a Copa preencher `quando`, essa data entra no lugar.
 
-A Copa não manda placar no meio da série. Se o site oficial travar, o placar parcial entra na mão em `MANUAL_LIVE` (`api/_lib/copa.mjs`) — hoje **1–0 Bala**, ao vivo. Quando a série fechar no feed oficial, o placar da Copa manda.
+A Copa não manda placar no meio da série. Se o site oficial travar, o placar parcial entra na mão em `MANUAL_LIVE` (`api/_lib/copa.mjs`) — hoje **2–0 Bala**, ao vivo. Quando a série fechar no feed oficial, o placar da Copa manda.
 
 Os amistosos saem da página `/partidas` da Copa, que não tem API: o parser lê o payload do Next embutido no HTML e fica só com os jogos do Bala.
 

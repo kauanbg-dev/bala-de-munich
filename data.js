@@ -1,7 +1,7 @@
 window.CLUB = {
   name: "Bala de Munich",
   short: "BDM",
-  motto: "Semifinal ao vivo. Bala 1–0 Equipe X.",
+  motto: "Semifinal ao vivo. Bala 2–0 Equipe X.",
   knockout: "https://copastreamers.com.br/mata-mata",
   founded: "2026",
   platform: "EA FC 26 · Pro Clubs",
@@ -36,7 +36,7 @@ window.CLUB = {
   nextMatch: {
     opponent: "Equipe X",
     competition: "Semifinal · MD5",
-    date: "Ao vivo · 1–0",
+    date: "Ao vivo · 2–0",
     venue: "Mata-mata",
   },
   lastMatch: {
@@ -196,7 +196,7 @@ window.CLUB = {
       n: "02",
       key: "sf",
       ties: [
-        { id: "sf-0", home: "Bala de Munich", away: "Equipe X", hs: 1, as: 0, live: true, date: "Ao vivo · 1–0", us: true, iso: "2026-09-14T21:00:00.000Z" },
+        { id: "sf-0", home: "Bala de Munich", away: "Equipe X", hs: 2, as: 0, live: true, date: "Ao vivo · 2–0", us: true, iso: "2026-09-14T21:00:00.000Z" },
         { id: "sf-1", home: "Narizes FC", away: "Botafofo", hs: null, as: null, date: "A agendar" },
       ],
     },
