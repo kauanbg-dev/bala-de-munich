@@ -1102,21 +1102,27 @@ const renderMvp = () => {
     if (!mvpAdminPin) {
       adminHint.textContent = "";
     } else if (!mvpState.started) {
-      adminHint.textContent = `Urna fechada. "Iniciar 2h" abre a votação pra galera. Marca embaixo quem não jogou.`;
+      adminHint.textContent = `Urna fechada. Marca em cima quem jogou e depois toca em "Iniciar 2h".`;
     } else {
       const lead = uniqueLead ? ` · líder ${uniqueLead.tag}` : "";
-      adminHint.textContent = `${mvpState.total} ${plural} contabilizados${lead}. O público só vê a porcentagem.`;
+      adminHint.textContent = `${mvpState.total} ${plural} contabilizados${lead}. O público só vota em quem você marcou.`;
     }
   }
   grid.className = `mvp-grid${mvpState.started ? "" : " is-idle"}`;
   const legend = document.getElementById("mvp-legend");
   if (legend) legend.hidden = outSet.size === 0;
+  const playedN = mvpCandidates.filter((p) => !outSet.has(p.tag)).length;
+  const outN = mvpCandidates.length - playedN;
+  const outCount = document.getElementById("mvp-out-count");
+  if (outCount && mvpAdminPin) {
+    outCount.textContent = `${playedN} no voto · ${outN} de fora. Dourado = jogou.`;
+  }
   const outList = document.getElementById("mvp-out-list");
   if (outList && mvpAdminPin) {
     outList.innerHTML = mvpCandidates
       .map((p) => {
-        const on = outSet.has(p.tag);
-        return `<button type="button" class="mvp-out-chip${on ? " is-on" : ""}" data-out="${p.tag}" aria-pressed="${on}">${p.tag}</button>`;
+        const played = !outSet.has(p.tag);
+        return `<button type="button" class="mvp-out-chip${played ? " is-on" : ""}" data-out="${p.tag}" aria-pressed="${played}">${p.tag}</button>`;
       })
       .join("");
   }
@@ -1165,6 +1171,7 @@ const renderMvp = () => {
             <b>${p.tag}</b>
             <small>${out ? "Jogador não jogou" : p.pos}</small>
             ${score}
+            ${mvpAdminPin ? `<button type="button" class="mvp-play${out ? "" : " is-on"}" data-out="${p.tag}">${out ? "Marcar que jogou" : "Tirou do jogo"}</button>` : ""}
             <button type="button" class="${mine && mvpState.open && !out ? "is-undo" : ""}" data-mvp="${p.tag}" data-action="${mine && mvpState.open && !out ? "unvote" : "vote"}" ${locked || out ? "disabled" : ""}>${label}</button>
           </div>
         </article>`;
@@ -1291,12 +1298,23 @@ document.getElementById("mvp-reset")?.addEventListener("click", () => {
   postMvpAdmin("reset").catch(() => {});
 });
 
+const toggleMvpPlayed = (tag) => {
+  if (!tag || !mvpAdminPin) return;
+  postMvpAdmin("out", { player: tag, on: !mvpIsOut(tag) }).catch(() => {});
+};
+
 document.getElementById("mvp-out")?.addEventListener("click", (event) => {
   const btn = event.target.closest("[data-out]");
-  if (!btn || !mvpAdminPin) return;
-  const tag = btn.getAttribute("data-out");
-  const on = !btn.classList.contains("is-on");
-  postMvpAdmin("out", { player: tag, on }).catch(() => {});
+  if (!btn) return;
+  toggleMvpPlayed(btn.getAttribute("data-out"));
+});
+
+document.getElementById("mvp-played-all")?.addEventListener("click", () => {
+  postMvpAdmin("out", { all: true, on: false }).catch(() => {});
+});
+
+document.getElementById("mvp-played-none")?.addEventListener("click", () => {
+  postMvpAdmin("out", { all: true, on: true }).catch(() => {});
 });
 
 document.getElementById("adm-feed-form")?.addEventListener("submit", async (event) => {
@@ -1341,6 +1359,11 @@ document.getElementById("adm-feed-clear")?.addEventListener("click", () => {
 });
 
 document.getElementById("mvp-grid")?.addEventListener("click", async (event) => {
+  const playBtn = event.target.closest("button[data-out]");
+  if (playBtn) {
+    toggleMvpPlayed(playBtn.getAttribute("data-out"));
+    return;
+  }
   const btn = event.target.closest("button[data-mvp]");
   if (!btn || !mvpState.open) return;
   const tag = btn.getAttribute("data-mvp");

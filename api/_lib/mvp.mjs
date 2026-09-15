@@ -309,12 +309,17 @@ export async function handleMvp(req) {
       await saveVotes(store);
       return result(mvpPayload(store.polls[pollId], voter), 200, headers);
     } else if (action === "out") {
-      const player = String(body.player || "");
-      if (!allow.includes(player)) return result({ error: "invalid" }, 400, headers);
-      const blocked = new Set(normalizeOut(poll));
-      if (body.on === false || body.on === "false" || body.on === 0) blocked.delete(player);
-      else blocked.add(player);
-      poll.out = [...blocked];
+      const off = body.on === false || body.on === "false" || body.on === 0;
+      if (body.all === true || body.all === "true") {
+        poll.out = off ? [] : [...new Set(allow)];
+      } else {
+        const player = String(body.player || "");
+        if (!allow.includes(player)) return result({ error: "invalid" }, 400, headers);
+        const blocked = new Set(normalizeOut(poll));
+        if (off) blocked.delete(player);
+        else blocked.add(player);
+        poll.out = [...blocked];
+      }
       stripOutBallots(poll);
     }
     store.polls[pollId] = poll;

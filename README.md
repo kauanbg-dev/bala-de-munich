@@ -126,7 +126,7 @@ Se usar só `IG_TOKEN`: o token se renova sozinho depois de 30 dias e o novo vai
 - Admin: `/?admin#mvp`
 - Código: `866283` (ou o `MVP_ADMIN_PIN` definido no host, que tem prioridade)
 - **Iniciar 2h** abre a urna. **Pausar** / **Retomar** congelam o relógio. **Encerrar** fecha na hora e mantém os votos. **Recomeçar do 0** apaga tudo.
-- No admin, **Quem não jogou** marca o elenco que ficou de fora. O público vê a legenda **Jogador não jogou** e não consegue votar nesses nomes. Votos já dados neles saem da urna.
+- No admin, **Quem jogou** escolhe o elenco da partida (ou **Todos jogaram** / **Ninguém jogou**). Só quem está dourado entra na urna. O público vê **Jogador não jogou** nos outros e não consegue votar neles. Votos já dados nesses nomes saem da urna.
 - Em casa os votos ficam em `data/votes.json` — **não** vão pro GitHub
 - Na Vercel os votos ficam no Redis/KV. Sem banco, só no `/tmp` e somem no cold start
 - Um voto por IP. Atualizar a página não libera outro voto. Com a urna aberta ainda dá pra trocar de jogador (clicando em outro) ou tirar o voto — continua um voto só naquele IP. Depois de **Encerrar** o voto trava.
