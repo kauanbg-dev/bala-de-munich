@@ -79,6 +79,7 @@ window.CLUB = {
       alt: "Pack de memes do Bala",
       caption: "Pack de memes",
       href: "https://www.instagram.com/p/DdSoyFrjaG3/",
+      contain: true,
     },
     {
       src: "assets/feed/estamos-na-final.jpg?v=1",

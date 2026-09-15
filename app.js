@@ -586,6 +586,11 @@ const paintFeedFonte = (fonte) => {
             : "Admin · fotos de piso (data.js)";
 };
 
+const feedContain = (item) => {
+  if (item?.contain) return true;
+  return feedCode(item?.href) === "DdSoyFrjaG3";
+};
+
 const paintFeed = (posts, fonte) => {
   const grid = document.getElementById("feed-grid");
   if (!grid) return;
@@ -593,7 +598,7 @@ const paintFeed = (posts, fonte) => {
     .slice(0, 3)
     .map(
       (item) => `
-    <a class="feed-card" href="${esc(item.href || club.instagram)}" target="_blank" rel="noreferrer">
+    <a class="feed-card${feedContain(item) ? " is-contain" : ""}" href="${esc(item.href || club.instagram)}" target="_blank" rel="noreferrer">
       <img src="${esc(item.src)}" alt="${esc(item.alt)}" loading="lazy" referrerpolicy="no-referrer" />
       ${item.video ? `<i class="feed-play" aria-hidden="true"></i>` : ""}
       <span>${esc(item.caption)}</span>

@@ -713,6 +713,18 @@ h1 {
 
 .feed-card:hover img { transform: scale(1.04); }
 
+.feed-card.is-contain {
+  background: #fff;
+}
+
+.feed-card.is-contain img {
+  object-fit: contain;
+}
+
+.feed-card.is-contain:hover img {
+  transform: none;
+}
+
 .feed-card span {
   position: absolute;
   left: 12px;
