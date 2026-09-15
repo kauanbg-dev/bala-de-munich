@@ -21,12 +21,13 @@ const FETCH_MS = 12_000;
 // Enquanto `quando` vier vazio, o site usa hoje 14/09 às 18h (Brasília).
 // Quando a API preencher a data, ela manda.
 const SF_BALA_KICKOFF = process.env.COPA_SF_KICKOFF || "2026-09-14T21:00:00.000Z";
-// A Copa só publica placar quando a série acaba. Hoje o site oficial travou,
-// então o placar parcial entra na mão até eles atualizarem (aí o feed manda).
-const MANUAL_LIVE = {
+// A Copa ainda não fechou a semifinal (continua 2–1 ao vivo) nem subiu o Bala
+// pra final. Enquanto isso o site usa o resultado real: 3–1 e Bala na final.
+// Quando o feed oficial fechar a série, ele manda.
+const MANUAL_RESULT = {
   home: "Bala de Munich",
   away: "Equipe X",
-  hs: 2,
+  hs: 3,
   as: 1,
 };
 
@@ -517,10 +518,15 @@ function balaSeries(bracket) {
     const rival = isUs(open.home) ? open.away : open.home;
     motto = `${open.round} ao vivo. Bala ${us}–${them} ${rival}.`;
   } else if (open) {
-    motto =
-      open.away === "A definir" || open.home === "A definir"
-        ? `Na ${open.round.toLowerCase()}. Adversário a definir.`
-        : `${open.round} contra ${isUs(open.home) ? open.away : open.home}.`;
+    const rival = isUs(open.home) ? open.away : open.home;
+    const tbd = rival === "A definir";
+    if ((isUs(open.home) || isUs(open.away)) && tbd && /final/i.test(open.round)) {
+      motto = "Estamos na final.";
+    } else if (tbd) {
+      motto = `Na ${open.round.toLowerCase()}. Adversário a definir.`;
+    } else {
+      motto = `${open.round} contra ${rival}.`;
+    }
   } else if (last) {
     motto = `Última série ${lastMatch.score} vs ${lastMatch.opponent}.`;
   }
@@ -613,17 +619,38 @@ function fillKnownKickoff(tie) {
   return { ...tie, quando: SF_BALA_KICKOFF };
 }
 
-function applyManualLive(parsed) {
+function applyManualResult(parsed) {
   if (!parsed?.bracket) return parsed;
   for (const round of parsed.bracket) {
     for (const tie of round.ties || []) {
-      if (tie.home !== MANUAL_LIVE.home || tie.away !== MANUAL_LIVE.away) continue;
-      if (!tie.us) continue;
-      if (tie.hs != null && tie.as != null) continue;
-      tie.hs = MANUAL_LIVE.hs;
-      tie.as = MANUAL_LIVE.as;
-      tie.live = true;
-      tie.date = `Ao vivo · ${MANUAL_LIVE.hs}–${MANUAL_LIVE.as}`;
+      if (round.key === "sf" && tie.home === MANUAL_RESULT.home && tie.away === MANUAL_RESULT.away && tie.us) {
+        // Copa já encerrou a série: não briga com o placar oficial.
+        if (tie.hs != null && tie.as != null && !tie.live) continue;
+        tie.hs = MANUAL_RESULT.hs;
+        tie.as = MANUAL_RESULT.as;
+        tie.live = false;
+        if (!tie.date || String(tie.date).startsWith("Ao vivo")) {
+          tie.date = formatQuando(tie.iso || SF_BALA_KICKOFF);
+        }
+      }
+      if (round.key === "ff") {
+        const homeEmpty = !tie.home || tie.home === "A definir";
+        const awayEmpty = !tie.away || tie.away === "A definir";
+        if (isUs(tie.home) || isUs(tie.away)) continue;
+        if (homeEmpty && awayEmpty) {
+          tie.home = TEAM_NAME;
+          tie.us = true;
+        } else if (homeEmpty) {
+          tie.home = TEAM_NAME;
+          tie.us = true;
+        } else if (awayEmpty) {
+          tie.away = TEAM_NAME;
+          tie.us = true;
+        }
+        if (tie.date && /00:00$/.test(String(tie.date))) {
+          tie.date = String(tie.date).replace(/\s*·\s*00:00$/, " · horário a definir");
+        }
+      }
     }
   }
   return parsed;
@@ -841,7 +868,7 @@ async function buildLive() {
   ]);
   const groupTable = computeGroupC(e2.partidas);
   const parsedBracket = bracketFromConfrontos(e2.confrontos);
-  if (parsedBracket) applyManualLive(parsedBracket);
+  if (parsedBracket) applyManualResult(parsedBracket);
   const series = parsedBracket ? balaSeries(parsedBracket.bracket) : {};
   const us = groupTable?.find((row) => row.us);
   const stats = withGroupPos(

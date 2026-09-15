@@ -1,7 +1,7 @@
 window.CLUB = {
   name: "Bala de Munich",
   short: "BDM",
-  motto: "Semifinal ao vivo. Bala 2–1 Equipe X.",
+  motto: "Estamos na final.",
   knockout: "https://copastreamers.com.br/mata-mata",
   founded: "2026",
   platform: "EA FC 26 · Pro Clubs",
@@ -34,16 +34,16 @@ window.CLUB = {
     record: "9-2-5",
   },
   nextMatch: {
-    opponent: "Equipe X",
-    competition: "Semifinal · MD5",
-    date: "Ao vivo · 2–1",
+    opponent: "A definir",
+    competition: "Grande final · MD5",
+    date: "qua · 16/09 · horário a definir",
     venue: "Mata-mata",
   },
   lastMatch: {
-    opponent: "Raposo FC",
+    opponent: "Equipe X",
     score: "3–1",
     result: "W",
-    note: "Quartas · ter 08/09 · 21:00",
+    note: "Semifinal · seg · 14/09 · 20:00",
   },
   groupTable: [
     { pos: 1, team: "Equipe X", j: 4, pts: 9, v: 3, d: 1, gp: 27, gc: 15, sg: 12, us: false },
@@ -134,6 +134,7 @@ window.CLUB = {
     ],
   },
   results: [
+    { date: "Semifinal", opponent: "Equipe X", score: "3–1", result: "W", note: "MD5 · 14/09 20:00" },
     { date: "Quartas", opponent: "Raposo FC", score: "3–1", result: "W", note: "MD5 · 08/09 21:00" },
     { date: "Grupo C", opponent: "RadiANTAS FC", score: "3–1", result: "W", note: "Série" },
     { date: "Grupo C", opponent: "Equipe X", score: "2–3", result: "L", note: "Série" },
@@ -196,7 +197,7 @@ window.CLUB = {
       n: "02",
       key: "sf",
       ties: [
-        { id: "sf-0", home: "Bala de Munich", away: "Equipe X", hs: 2, as: 1, live: true, date: "Ao vivo · 2–1", us: true, iso: "2026-09-14T21:00:00.000Z" },
+        { id: "sf-0", home: "Bala de Munich", away: "Equipe X", hs: 3, as: 1, date: "seg · 14/09 · 20:00", us: true, iso: "2026-09-14T23:00:00+00:00" },
         { id: "sf-1", home: "Narizes FC", away: "Botafofo", hs: null, as: null, date: "A agendar" },
       ],
     },
@@ -205,7 +206,7 @@ window.CLUB = {
       n: "03",
       key: "ff",
       ties: [
-        { id: "ff-0", home: "A definir", away: "A definir", hs: null, as: null, date: "qua., 16/09 · horário a definir", final: true },
+        { id: "ff-0", home: "Bala de Munich", away: "A definir", hs: null, as: null, date: "qua · 16/09 · horário a definir", us: true, final: true },
       ],
     },
   ],
