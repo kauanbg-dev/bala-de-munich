@@ -128,8 +128,7 @@ Se usar só `IG_TOKEN`: o token se renova sozinho depois de 30 dias e o novo vai
 - **Iniciar 2h** abre a urna. **Pausar** / **Retomar** congelam o relógio. **Encerrar** fecha na hora e mantém os votos. **Recomeçar do 0** apaga tudo.
 - Em casa os votos ficam em `data/votes.json` — **não** vão pro GitHub
 - Na Vercel os votos ficam no Redis/KV. Sem banco, só no `/tmp` e somem no cold start
-- Um voto por navegador, urna de 2 horas depois de **Iniciar**
-- Com a urna aberta dá pra trocar de jogador (clicando em outro) ou tirar o voto. Trocar não infla o total. Depois de **Encerrar** o voto trava, senão daria pra sacar voto do vencedor depois do resultado.
+- Um voto por IP. Atualizar a página não libera outro voto. Com a urna aberta ainda dá pra trocar de jogador (clicando em outro) ou tirar o voto — continua um voto só naquele IP. Depois de **Encerrar** o voto trava.
 - Se o Redis não responder, a API devolve `503` e **recusa gravar**. Escrever um estado vazio por cima apagaria a urna inteira, então nesse caso ninguém vota até o banco voltar — e nenhum voto se perde.
 - O público só vê a porcentagem. A contagem de votos aparece só pra quem está logado no admin.
 

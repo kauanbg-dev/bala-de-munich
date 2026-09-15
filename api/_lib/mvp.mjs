@@ -177,18 +177,26 @@ function mvpPayload(poll, voter) {
   };
 }
 
-function readCookie(req, name) {
-  const header = req.headers.cookie || "";
-  for (const part of header.split(";")) {
-    const [k, ...rest] = part.trim().split("=");
-    if (k === name) return rest.join("=");
-  }
-  return null;
+function clientIp(req) {
+  const forwarded = String(req.headers["x-forwarded-for"] || "")
+    .split(",")
+    .map((part) => part.trim())
+    .find(Boolean);
+  const raw =
+    forwarded ||
+    req.headers["x-real-ip"] ||
+    req.headers["x-vercel-forwarded-for"] ||
+    req.socket?.remoteAddress ||
+    req.connection?.remoteAddress ||
+    "";
+  return String(raw)
+    .replace(/^::ffff:/i, "")
+    .trim();
 }
 
-function voterCookie(id) {
-  const secure = process.env.VERCEL ? "; Secure" : "";
-  return `mvp_vid=${id}; Path=/; HttpOnly; Max-Age=31536000; SameSite=Lax${secure}`;
+function voterFromReq(req) {
+  const ip = clientIp(req) || "0.0.0.0";
+  return crypto.createHash("sha256").update(`mvp:${pollId}:${ip}`).digest("hex");
 }
 
 async function readBody(req) {
@@ -217,12 +225,8 @@ function result(json, status = 200, headers = {}) {
 }
 
 export async function handleMvp(req) {
-  let voter = readCookie(req, "mvp_vid");
+  const voter = voterFromReq(req);
   const headers = {};
-  if (!voter) {
-    voter = crypto.randomBytes(16).toString("hex");
-    headers["Set-Cookie"] = voterCookie(voter);
-  }
 
   const { store, degraded } = await readVotes();
   const poll = ensurePoll(store);
