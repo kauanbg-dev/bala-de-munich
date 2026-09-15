@@ -283,20 +283,12 @@ function liveOficial(now) {
 }
 
 function liveOffCard(ourCrest) {
-  const next = club.nextMatch || {};
-  // A data já vem com "·" dentro dela, então aqui a vírgula evita a fileira de
-  // pontinhos ("Semifinal · MD5 · qua 16/09 · 21:00").
-  const quando = [next.competition, next.date].filter((v) => v && v !== "A agendar").join(", ");
-  const rival = next.opponent && next.opponent !== "A definir" ? next.opponent : null;
-  // Sem adversário definido sobra só o nome da fase ("Semifinal · MD5"), que não
-  // conta nada que a pessoa já não veja na chave. Nesse caso não escreve nada.
-  const proximo = rival ? ` A próxima é contra o ${rival}${quando ? ` — ${quando}` : ""}.` : "";
   return `
       <div class="live-off">
         <img src="${ourCrest}" alt="" loading="lazy" />
         <div>
           <b>Ninguém em campo agora.</b>
-          <span>Quando o Bala entrar em partida, o placar sobe aqui sozinho, amistoso ou Copa.${proximo}</span>
+          <span>Quando o Bala entrar em partida, o placar sobe aqui sozinho, amistoso ou Copa.</span>
         </div>
       </div>`;
 }
