@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=102" />
+  <link rel="stylesheet" href="styles.css?v=103" />
 </head>
 <body class="page-lives">
   <header class="topbar">
@@ -17,16 +17,17 @@
       <img class="brand-crest" src="assets/crest.png" alt="" width="40" height="40" />
       <span>Bala de Munich</span>
     </a>
-    <nav id="site-nav">
+    <nav id="site-nav" class="site-nav">
       <a href="/">Site</a>
       <a href="/#elenco">Elenco</a>
       <a href="/#mvp">MVP</a>
       <a href="/#amistosos">Amistosos</a>
       <a href="/lives" aria-current="page">Lives</a>
     </nav>
-    <a class="btn btn-ghost btn-topo" href="/">Voltar ao site</a>
     <a class="btn btn-gold" href="/#mvp">Votar MVP</a>
-    <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
   <main id="topo">
@@ -81,6 +82,6 @@
   </a>
 
   <script src="data.js?v=112"></script>
-  <script src="lives.js?v=96"></script>
+  <script src="lives.js?v=97"></script>
 </body>
 </html>

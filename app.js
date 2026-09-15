@@ -1383,17 +1383,42 @@ mvpTimer = window.setInterval(tickMvp, 1000);
 const siteNav = document.getElementById("site-nav");
 const navToggle = document.querySelector(".nav-toggle");
 if (siteNav && navToggle) {
+  const closeNav = () => {
+    siteNav.classList.remove("is-open");
+    navToggle.setAttribute("aria-expanded", "false");
+  };
   navToggle.addEventListener("click", () => {
     const open = siteNav.classList.toggle("is-open");
     navToggle.setAttribute("aria-expanded", String(open));
   });
   siteNav.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      siteNav.classList.remove("is-open");
-      navToggle.setAttribute("aria-expanded", "false");
-    });
+    link.addEventListener("click", closeNav);
+  });
+  document.addEventListener("click", (event) => {
+    if (!siteNav.classList.contains("is-open")) return;
+    if (siteNav.contains(event.target) || navToggle.contains(event.target)) return;
+    closeNav();
   });
 }
+
+const navSectionLinks = [...(siteNav?.querySelectorAll('a[href^="#"]') || [])];
+const syncSiteNav = () => {
+  if (!navSectionLinks.length) return;
+  const fromTop = window.scrollY + 96;
+  let current = "";
+  navSectionLinks.forEach((link) => {
+    const id = link.getAttribute("href")?.slice(1);
+    const section = id ? document.getElementById(id) : null;
+    if (section && section.offsetTop <= fromTop) current = id;
+  });
+  if (window.scrollY < 80) current = "";
+  navSectionLinks.forEach((link) => {
+    link.classList.toggle("is-active", link.getAttribute("href") === `#${current}`);
+  });
+};
+syncSiteNav();
+window.addEventListener("scroll", syncSiteNav, { passive: true });
+window.addEventListener("resize", syncSiteNav);
 
 const creatorBtn = document.querySelector(".site-creator");
 const siteFooter = document.querySelector("footer");

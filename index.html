@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=102" />
+  <link rel="stylesheet" href="styles.css?v=103" />
   <style>
     html.intro-pending, html.intro-pending body { overflow: hidden; height: 100%; }
     .final-intro { position: fixed; inset: 0; z-index: 9999; background: #07070a; }
@@ -51,7 +51,7 @@
       <img class="brand-crest" src="assets/crest.png" alt="" width="40" height="40" />
       <span>Bala de Munich</span>
     </a>
-    <nav id="site-nav">
+    <nav id="site-nav" class="site-nav">
       <a href="#mata-mata">Confrontos</a>
       <a href="#mvp">MVP</a>
       <a href="#tabela">Tabela</a>
@@ -64,9 +64,10 @@
       <a href="#sociais">Sociais</a>
       <a href="/lives">Lives</a>
     </nav>
-    <a class="btn btn-ghost btn-topo" href="#amistosos">Amistosos</a>
     <a class="btn btn-gold" href="#mvp">Votar MVP</a>
-    <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
   <main id="topo">
@@ -328,7 +329,7 @@
 
   <script src="intro.js?v=2"></script>
   <script src="data.js?v=112"></script>
-  <script src="app.js?v=103"></script>
+  <script src="app.js?v=104"></script>
   <script src="lives.js?v=96"></script>
 </body>
 </html>
