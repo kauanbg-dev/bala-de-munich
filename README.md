@@ -2,7 +2,7 @@
 
 Site do time de Pro Clubs no EA FC 26. Elenco, chave da Super Copa dos Streamers, stats e votação de MVP.
 
-A página em si é estática (`index.html`). Tabela ao vivo e urna de MVP usam as rotas `/api/copa` e `/api/mvp`. As lives do elenco (Kick e Twitch) têm um site irmão em `/lives` — mesma cara do Bala, player só abre quando clica. Em casa isso sobe com `npm start`. Na Vercel essas rotas viram funções serverless (já no repo).
+O site é estático, com uma página por aba (`/`, `/confrontos`, `/mvp`, `/tabela`, `/stats`, `/elenco`, `/tatica`, `/jogos`, `/amistosos`, `/feed`, `/sociais`). Tabela ao vivo e urna de MVP usam as rotas `/api/copa` e `/api/mvp`. As lives do elenco (Kick e Twitch) ficam em `/lives` — mesma cara do Bala, player só abre quando clica. Links antigos com hash (`/#mvp`) redirecionam sozinhos. Em casa isso sobe com `npm start`. Na Vercel essas rotas viram funções serverless (já no repo).
 
 ## Colocar no ar (Vercel)
 
@@ -28,8 +28,8 @@ git push origin main
 Depois de no ar:
 
 - Site: a URL da Vercel
-- Votar: `https://SUA-URL/#mvp`
-- Admin (iniciar/pausar): `https://SUA-URL/?admin#mvp` · código `866283` (ou o `MVP_ADMIN_PIN` que você definir)
+- Votar: `https://SUA-URL/mvp`
+- Admin (iniciar/pausar): `https://SUA-URL/mvp?admin` · use o `MVP_ADMIN_PIN` da Vercel
 
 Cada push no GitHub (`master`) publica de novo. Copa e MVP já funcionam nessa URL; não precisa do Render.
 
@@ -122,9 +122,9 @@ Se usar só `IG_TOKEN`: o token se renova sozinho depois de 30 dias e o novo vai
 
 ## Votação de MVP
 
-- Público: `/#mvp`
-- Admin: `/?admin#mvp`
-- Código: `866283` (ou o `MVP_ADMIN_PIN` definido no host, que tem prioridade)
+- Público: `/mvp`
+- Admin: `/mvp?admin` (o atalho `/?admin` ainda redireciona)
+- Código: o `MVP_ADMIN_PIN` do host. Sem a variável, vale o padrão do código.
 - **Iniciar 2h** abre a urna. **Pausar** / **Retomar** congelam o relógio. **Encerrar** fecha na hora e mantém os votos. **Recomeçar do 0** apaga tudo.
 - No admin, **Placar da final** liga o MD5 ao vivo e soma o resultado. O público vê na faixa da home e na chave.
 - No admin, **Quem jogou** escolhe o elenco da partida (ou **Todos jogaram** / **Ninguém jogou**). Só quem está dourado entra na urna. O público vê **Jogador não jogou** nos outros e não consegue votar neles. Votos já dados nesses nomes saem da urna.
@@ -136,4 +136,4 @@ Se usar só `IG_TOKEN`: o token se renova sozinho depois de 30 dias e o novo vai
 
 ## Como editar
 
-O que o sync não cobre (elenco, fotos, feed, tática, MVP) fica em `data.js`. Depois de editar CSS/JS, sobe o `?v=` no `index.html`.
+O que o sync não cobre (elenco, fotos, feed, tática, MVP) fica em `data.js`. Depois de editar CSS/JS, sobe o `?v=` nos HTMLs.

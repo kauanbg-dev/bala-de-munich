@@ -295,6 +295,11 @@ while ($listener.IsListening) {
       Handle-Mvp $ctx
     } else {
       if ($path -eq "/") { $path = "/index.html" }
+      elseif ($path.Length -gt 1 -and $path.EndsWith("/")) { $path = $path.TrimEnd("/") }
+      if ($path -ne "/index.html" -and $path -notmatch '\.[^/]+$') {
+        $pretty = Join-Path $root (($path.TrimStart("/") + ".html").Replace("/", "\"))
+        if (Test-Path $pretty -PathType Leaf) { $path = "$path.html" }
+      }
       $file = Join-Path $root ($path.TrimStart("/").Replace("/", "\"))
       if (Test-Path $file -PathType Leaf) {
         $ext = [IO.Path]::GetExtension($file).ToLower()

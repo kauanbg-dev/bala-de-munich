@@ -36,10 +36,11 @@ code { color: var(--gold); font-size: 0.9em; }
   top: 0;
   z-index: 20;
   display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 10px 22px;
-  background: rgba(7, 7, 10, 0.78);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  background: rgba(7, 7, 10, 0.92);
   backdrop-filter: blur(18px) saturate(1.2);
   border-bottom: 1px solid var(--line);
   box-shadow: 0 12px 40px -28px rgba(0, 0, 0, 0.9);
@@ -54,6 +55,13 @@ code { color: var(--gold); font-size: 0.9em; }
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(212, 177, 90, 0.55), transparent);
   pointer-events: none;
+}
+
+.topbar-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 11px 28px 10px;
 }
 
 .brand {
@@ -79,20 +87,22 @@ code { color: var(--gold); font-size: 0.9em; }
 
 .site-nav {
   display: flex;
-  align-items: center;
-  gap: 2px;
-  margin-left: auto;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0;
+  margin: 0;
   min-width: 0;
-  flex: 0 1 auto;
-  max-width: min(780px, 100%);
-  padding: 4px;
+  width: 100%;
+  max-width: none;
+  padding: 0 12px;
   overflow-x: auto;
   scrollbar-width: none;
   color: var(--mute);
-  border: 1px solid rgba(212, 177, 90, 0.16);
-  border-radius: 999px;
-  background: rgba(17, 14, 18, 0.72);
-  box-shadow: inset 0 1px 0 rgba(244, 234, 214, 0.06);
+  border: none;
+  border-top: 1px solid rgba(212, 177, 90, 0.14);
+  border-radius: 0;
+  background: rgba(10, 8, 12, 0.55);
+  box-shadow: none;
 }
 
 .site-nav::-webkit-scrollbar { display: none; }
@@ -100,27 +110,54 @@ code { color: var(--gold); font-size: 0.9em; }
 .site-nav a {
   position: relative;
   flex: 0 0 auto;
-  padding: 7px 11px;
-  border-radius: 999px;
+  padding: 12px 14px 13px;
+  border-radius: 0;
   color: var(--mute);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.09em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: nowrap;
-  transition: color 0.18s ease, background 0.18s ease;
+  transition: color 0.18s ease;
+}
+
+.site-nav a::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
 .site-nav a:hover {
   color: var(--paper);
-  background: rgba(244, 234, 214, 0.06);
+  background: transparent;
+}
+
+.site-nav a:hover::after {
+  transform: scaleX(0.42);
+  opacity: 0.45;
 }
 
 .site-nav a.is-active,
 .site-nav a[aria-current="page"] {
-  color: #1a1308;
-  background: var(--gold);
-  box-shadow: 0 8px 18px -12px rgba(212, 177, 90, 0.9);
+  color: var(--gold);
+  background: transparent;
+}
+
+.site-nav a.is-active::after,
+.site-nav a[aria-current="page"]::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.topbar .btn-gold[aria-current="page"] {
+  filter: brightness(1.04);
 }
 
 .topbar-actions {
@@ -128,6 +165,7 @@ code { color: var(--gold); font-size: 0.9em; }
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .topbar .btn-gold,
@@ -2008,6 +2046,10 @@ h1 {
   padding: 64px 28px;
 }
 
+.page-inner .section {
+  padding-top: 48px;
+}
+
 .section-head {
   display: flex;
   flex-direction: column;
@@ -3423,12 +3465,13 @@ footer p {
   text-wrap: pretty;
 }
 
-@media (max-width: 1140px) {
+@media (max-width: 1020px) {
   .nav-toggle { display: inline-flex; }
+  .topbar-bar { padding: 10px 16px; }
   .site-nav {
     display: none;
     position: absolute;
-    top: calc(100% + 8px);
+    top: 100%;
     left: 12px;
     right: 12px;
     max-width: none;
@@ -3441,6 +3484,7 @@ footer p {
     padding: 10px;
     overflow: visible;
     border-radius: 18px;
+    border: 1px solid var(--line);
     background: #100d12;
     backdrop-filter: none;
     box-shadow: 0 28px 60px -24px rgba(0, 0, 0, 0.9);
@@ -3451,6 +3495,13 @@ footer p {
     padding: 12px 14px;
     font-size: 0.82rem;
     border-radius: 12px;
+    box-shadow: none;
+  }
+  .site-nav a::after { display: none; }
+  .site-nav a[aria-current="page"] {
+    color: #1a1308;
+    background: var(--gold);
+    box-shadow: none;
   }
   .topbar .btn-lives,
   .topbar .btn-gold {

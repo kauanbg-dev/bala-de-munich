@@ -9,27 +9,36 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=111" />
+  <link rel="stylesheet" href="styles.css?v=112" />
 </head>
-<body class="page-lives">
+<body class="page-lives" data-page="lives">
   <header class="topbar">
-    <a class="brand" href="/">
-      <img class="brand-crest" src="assets/crest.png" alt="" width="40" height="40" />
-      <span>Bala de Munich</span>
-    </a>
-    <nav id="site-nav" class="site-nav">
-      <a href="/">Site</a>
-      <a href="/#elenco">Elenco</a>
-      <a href="/#mvp">MVP</a>
-      <a href="/#amistosos">Amistosos</a>
-    </nav>
-    <div class="topbar-actions">
-      <a class="btn btn-ghost btn-lives" href="/lives" aria-current="page">Lives</a>
-      <a class="btn btn-gold" href="/#mvp">Votar MVP</a>
+    <div class="topbar-bar">
+      <a class="brand" href="/">
+        <img class="brand-crest" src="assets/crest.png" alt="" width="40" height="40" />
+        <span>Bala de Munich</span>
+      </a>
+      <div class="topbar-actions">
+        <a class="btn btn-ghost btn-lives" href="/lives">Lives</a>
+        <a class="btn btn-gold" href="/mvp">Votar MVP</a>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-    <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
-      <span></span><span></span><span></span>
-    </button>
+    <nav id="site-nav" class="site-nav" aria-label="Seções do site">
+      <a href="/" data-nav="inicio">Início</a>
+      <a href="/confrontos" data-nav="confrontos">Confrontos</a>
+      <a href="/mvp" data-nav="mvp">MVP</a>
+      <a href="/tabela" data-nav="tabela">Tabela</a>
+      <a href="/stats" data-nav="stats">Stats</a>
+      <a href="/elenco" data-nav="elenco">Elenco</a>
+      <a href="/tatica" data-nav="tatica">Tática</a>
+      <a href="/jogos" data-nav="jogos">Jogos</a>
+      <a href="/amistosos" data-nav="amistosos">Amistosos</a>
+      <a href="/feed" data-nav="feed">Feed</a>
+      <a href="/sociais" data-nav="sociais">Sociais</a>
+    </nav>
   </header>
 
   <main id="topo">
@@ -83,7 +92,8 @@
     </span>
   </a>
 
+  <script src="site.js?v=1"></script>
   <script src="data.js?v=114"></script>
-  <script src="lives.js?v=97"></script>
+  <script src="lives.js?v=98"></script>
 </body>
 </html>

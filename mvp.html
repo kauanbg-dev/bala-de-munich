@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Votação MVP — Bala de Munich</title>
+  <meta name="description" content="Vote no MVP do Bala de Munich na grande final contra o Botafofo." />
+  <link rel="icon" href="assets/crest.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=112" />
+  
+</head>
+<body class="page-inner" data-page="mvp">
+  <header class="topbar">
+    <div class="topbar-bar">
+      <a class="brand" href="/">
+        <img class="brand-crest" src="assets/crest.png" alt="" width="40" height="40" />
+        <span>Bala de Munich</span>
+      </a>
+      <div class="topbar-actions">
+        <a class="btn btn-ghost btn-lives" href="/lives">Lives</a>
+        <a class="btn btn-gold" href="/mvp">Votar MVP</a>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <nav id="site-nav" class="site-nav" aria-label="Seções do site">
+      <a href="/" data-nav="inicio">Início</a>
+      <a href="/confrontos" data-nav="confrontos">Confrontos</a>
+      <a href="/mvp" data-nav="mvp">MVP</a>
+      <a href="/tabela" data-nav="tabela">Tabela</a>
+      <a href="/stats" data-nav="stats">Stats</a>
+      <a href="/elenco" data-nav="elenco">Elenco</a>
+      <a href="/tatica" data-nav="tatica">Tática</a>
+      <a href="/jogos" data-nav="jogos">Jogos</a>
+      <a href="/amistosos" data-nav="amistosos">Amistosos</a>
+      <a href="/feed" data-nav="feed">Feed</a>
+      <a href="/sociais" data-nav="sociais">Sociais</a>
+    </nav>
+  </header>
+  <main id="topo">
+<section id="mvp" class="section">
+      <header class="section-head">
+        <h2>Votação · MVP</h2>
+        <p id="mvp-copy">Grande final · Votação de MVP do jogo contra o Botafofo. Duração da votação: 2 horas.</p>
+      </header>
+      <div class="mvp-stage" id="mvp-stage">
+        <span class="mvp-live" id="mvp-live"><i aria-hidden="true"></i>Urna fechada</span>
+        <p class="mvp-clock" id="mvp-clock"></p>
+        <span class="mvp-clock-label" id="mvp-clock-label">duração da votação</span>
+        <div class="mvp-progress" aria-hidden="true"><i id="mvp-progress"></i></div>
+        <p class="mvp-status" id="mvp-status" role="status" aria-live="polite"></p>
+      </div>
+      <aside class="mvp-admin" id="mvp-admin" hidden>
+        <header class="mvp-admin-head">
+          <span class="mvp-admin-title">Painel do chefe</span>
+          <span class="mvp-admin-chip" id="mvp-admin-chip">Não iniciada</span>
+        </header>
+        <form class="mvp-admin-login" id="mvp-admin-login">
+          <label for="mvp-pin">Código admin</label>
+          <div>
+            <input id="mvp-pin" type="password" name="pin" placeholder="••••••" autocomplete="off" />
+            <button class="btn btn-gold" type="submit">Entrar</button>
+          </div>
+        </form>
+        <div class="mvp-admin-ops" id="mvp-admin-ops" hidden>
+          <section class="adm-placar" id="adm-placar">
+            <p class="adm-split">Placar da final</p>
+            <p class="adm-feed-copy">Quando o MD5 começar, marca <b>Ao vivo</b> e soma o placar. O público vê na faixa da home e na chave.</p>
+            <div class="adm-placar-board">
+              <div class="adm-placar-side">
+                <span>Bala</span>
+                <div class="adm-placar-step">
+                  <button type="button" data-placar="us" data-dir="-1" aria-label="Menos gol Bala">−</button>
+                  <strong id="adm-placar-us">0</strong>
+                  <button type="button" data-placar="us" data-dir="1" aria-label="Mais gol Bala">+</button>
+                </div>
+              </div>
+              <span class="adm-placar-vs">vs</span>
+              <div class="adm-placar-side">
+                <span>Botafofo</span>
+                <div class="adm-placar-step">
+                  <button type="button" data-placar="them" data-dir="-1" aria-label="Menos gol Botafofo">−</button>
+                  <strong id="adm-placar-them">0</strong>
+                  <button type="button" data-placar="them" data-dir="1" aria-label="Mais gol Botafofo">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="adm-placar-actions">
+              <button type="button" class="btn btn-gold" id="adm-placar-live">Ao vivo</button>
+              <button type="button" class="btn btn-close" id="adm-placar-end">Encerrar</button>
+              <button type="button" class="btn btn-reset" id="adm-placar-clear">Limpar</button>
+            </div>
+            <p class="mvp-admin-hint" id="adm-placar-hint"></p>
+          </section>
+          <section class="mvp-out" id="mvp-out">
+            <p class="adm-split">Quem jogou</p>
+            <p class="adm-feed-copy">Liga quem entrou em campo. Só esses nomes entram na urna. O resto aparece pro público como “Jogador não jogou”.</p>
+            <p class="mvp-out-count" id="mvp-out-count"></p>
+            <div class="mvp-out-bulk">
+              <button type="button" class="btn btn-gold" id="mvp-played-all">Todos jogaram</button>
+              <button type="button" class="btn btn-close" id="mvp-played-none">Ninguém jogou</button>
+            </div>
+            <div class="mvp-out-list" id="mvp-out-list"></div>
+          </section>
+          <p class="adm-split">Urna de MVP</p>
+          <div class="mvp-admin-row">
+            <button type="button" class="btn btn-gold" id="mvp-start">Iniciar 2h</button>
+            <button type="button" class="btn btn-pause" id="mvp-pause">Pausar</button>
+            <button type="button" class="btn btn-red" id="mvp-resume">Retomar</button>
+            <button type="button" class="btn btn-close" id="mvp-close">Encerrar</button>
+          </div>
+          <div class="mvp-admin-danger">
+            <button type="button" class="btn btn-reset" id="mvp-reset">Recomeçar do 0</button>
+            <small>Apaga todos os votos.</small>
+          </div>
+        </div>
+        <p class="mvp-admin-hint" id="mvp-admin-hint"></p>
+      </aside>
+      <p class="mvp-legend" id="mvp-legend" hidden>Jogador não jogou — fora da votação desta partida.</p>
+      <div class="mvp-grid" id="mvp-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <img class="brand-crest" src="assets/crest.png" alt="" width="28" height="28" />
+    <p>Bala de Munich · dados oficiais em <a href="https://copastreamers.com.br/times/tteuw-brkk" target="_blank" rel="noreferrer">copastreamers.com.br</a></p>
+  </footer>
+  
+  <a class="site-creator" href="https://www.instagram.com/bgkauan_/" target="_blank" rel="noreferrer" aria-label="Instagram de Budokai, @bgkauan_">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path fill="currentColor" d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11.2 1.3a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2zM12 8.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2zm0 2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z"/>
+    </svg>
+    <span>
+      <strong>Budokai</strong>
+      <small>@bgkauan_</small>
+    </span>
+  </a>
+
+  <script src="site.js?v=1"></script>
+  <script src="data.js?v=114"></script>
+  <script src="app.js?v=110"></script>
+
+</body>
+</html>

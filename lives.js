@@ -221,27 +221,6 @@ document.getElementById("live-band")?.addEventListener("click", (event) => {
   /* no site principal o card já aponta pra /lives?watch= */
 });
 
-const siteNav = document.getElementById("site-nav");
-const navToggle = document.querySelector(".nav-toggle");
-if (siteNav && navToggle && document.body.classList.contains("page-lives")) {
-  const closeNav = () => {
-    siteNav.classList.remove("is-open");
-    navToggle.setAttribute("aria-expanded", "false");
-  };
-  navToggle.addEventListener("click", () => {
-    const open = siteNav.classList.toggle("is-open");
-    navToggle.setAttribute("aria-expanded", String(open));
-  });
-  siteNav.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", closeNav);
-  });
-  document.addEventListener("click", (event) => {
-    if (!siteNav.classList.contains("is-open")) return;
-    if (siteNav.contains(event.target) || navToggle.contains(event.target)) return;
-    closeNav();
-  });
-}
-
 paintLives();
 paintHeroLive();
 openFromWatch();

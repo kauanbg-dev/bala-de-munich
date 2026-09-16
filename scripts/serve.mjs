@@ -47,7 +47,14 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
     let pathname = url.pathname;
-    if (pathname === "/lives" || pathname === "/lives/") pathname = "/lives.html";
+    if (pathname.length > 1 && pathname.endsWith("/")) pathname = pathname.slice(0, -1);
+    if (!path.extname(pathname)) {
+      const pretty = pathname === "/" ? "/index.html" : `${pathname}.html`;
+      const prettyFile = safeFile(pretty);
+      if (prettyFile && fs.existsSync(prettyFile) && fs.statSync(prettyFile).isFile()) {
+        pathname = pretty;
+      }
+    }
     if (url.pathname === "/healthz") {
       sendJson(res, { ok: true });
       return;

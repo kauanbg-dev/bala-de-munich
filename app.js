@@ -1,8 +1,11 @@
 const club = window.CLUB;
 
-document.getElementById("motto").textContent = club.motto;
-document.getElementById("instagram").href = club.instagram;
-document.getElementById("discord").href = club.discord;
+const mottoEl = document.getElementById("motto");
+if (mottoEl) mottoEl.textContent = club.motto;
+const instaEl = document.getElementById("instagram");
+if (instaEl) instaEl.href = club.instagram;
+const discordEl = document.getElementById("discord");
+if (discordEl) discordEl.href = club.discord;
 
 let placarState = { live: false, done: false, us: 0, them: 0 };
 
@@ -92,16 +95,20 @@ const paintFinalDay = () => {
 const paintCompetition = () => {
   applyPlacarToClub();
   const s = club.stats;
-  document.getElementById("stat-strip").innerHTML = [
-    ["Grupo C", `${s.groupPos}`],
-    ["Pontos", s.points],
-    ["Séries", `${s.seriesWins}–${s.seriesLosses}`],
-    ["Gols (grupos)", `${s.goalsFor} / ${s.goalsAgainst}`],
-  ]
-    .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`)
-    .join("");
+  const strip = document.getElementById("stat-strip");
+  if (strip) {
+    strip.innerHTML = [
+      ["Grupo C", `${s.groupPos}`],
+      ["Pontos", s.points],
+      ["Séries", `${s.seriesWins}–${s.seriesLosses}`],
+      ["Gols (grupos)", `${s.goalsFor} / ${s.goalsAgainst}`],
+    ]
+      .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`)
+      .join("");
+  }
 
-  document.getElementById("motto").textContent = club.motto;
+  const motto = document.getElementById("motto");
+  if (motto) motto.textContent = club.motto;
 
   const clubMeta = (name) => club.clubs[name] || { owner: "–", tbd: true };
 
@@ -113,17 +120,23 @@ const paintCompetition = () => {
     return `<span class="team-mark${t.tbd ? " is-tbd" : ""}">${crest}<span>${name}${extra}</span></span>`;
   };
 
-  document.getElementById("last-match").innerHTML = `
+  const last = document.getElementById("last-match");
+  if (last) {
+    last.innerHTML = `
     <span>Última série</span>
     <strong>${club.lastMatch.score}</strong>
     <p>vs ${teamMark(club.lastMatch.opponent)}${club.lastMatch.note ? ` · ${club.lastMatch.note}` : ""}</p>
   `;
+  }
 
-  document.getElementById("next-match").innerHTML = `
+  const next = document.getElementById("next-match");
+  if (next) {
+    next.innerHTML = `
     <span>${/hoje|ao vivo/i.test(club.nextMatch.date) || /16\/09/.test(club.nextMatch.date) ? (placarState.live ? "Ao vivo" : "Hoje") : "Próximo jogo"} · ${club.nextMatch.venue}</span>
     <strong>vs ${teamMark(club.nextMatch.opponent)}</strong>
     <p>${club.nextMatch.competition} · ${club.nextMatch.date}</p>
   `;
+  }
   paintFinalDay();
   paintMvpCopy();
 
@@ -173,7 +186,9 @@ const paintCompetition = () => {
   const legend = document.getElementById("chave-legend");
   if (legend) legend.innerHTML = `<span class="is-done">${doneCount} encerradas</span><span>${openCount} a disputar</span>`;
 
-  document.getElementById("bracket").innerHTML = `
+  const bracket = document.getElementById("bracket");
+  if (bracket) {
+    bracket.innerHTML = `
   <svg class="chave-wires" aria-hidden="true"></svg>
   <div class="chave-cols">
     ${club.bracket
@@ -185,10 +200,13 @@ const paintCompetition = () => {
       .join("")}
   </div>`;
 
-  drawChaveWires();
-  document.querySelectorAll("#bracket img").forEach((img) => img.addEventListener("load", drawChaveWires, { once: true }));
+    drawChaveWires();
+    document.querySelectorAll("#bracket img").forEach((img) => img.addEventListener("load", drawChaveWires, { once: true }));
+  }
 
-  document.getElementById("standings").innerHTML = club.groupTable
+  const standings = document.getElementById("standings");
+  if (standings) {
+    standings.innerHTML = club.groupTable
     .map(
       (row) => `
     <tr class="${row.us ? "us" : ""}">
@@ -204,16 +222,25 @@ const paintCompetition = () => {
     </tr>`
     )
     .join("");
+  }
 
-  document.getElementById("scorers").innerHTML = club.scorers
+  const scorers = document.getElementById("scorers");
+  if (scorers) {
+    scorers.innerHTML = club.scorers
     .map((p) => `<li><b>${p.tag}</b> <span>${p.pos}</span> <strong>${p.goals}</strong></li>`)
     .join("");
+  }
 
-  document.getElementById("assists").innerHTML = club.assists
+  const assists = document.getElementById("assists");
+  if (assists) {
+    assists.innerHTML = club.assists
     .map((p) => `<li><b>${p.tag}</b> <span>${p.pos}</span> <strong>${p.assists}</strong></li>`)
     .join("");
+  }
 
-  document.getElementById("results").innerHTML = club.results
+  const results = document.getElementById("results");
+  if (results) {
+    results.innerHTML = club.results
     .map(
       (r) => `
     <li>
@@ -224,6 +251,7 @@ const paintCompetition = () => {
     </li>`
     )
     .join("");
+  }
 
   paintFriendlies(clubMeta);
   paintLiveNow();
@@ -425,7 +453,7 @@ function paintLiveNow() {
     title.textContent = emCampo ? "Bala em campo agora" : noAr ? "Elenco ao vivo" : "Bala ao vivo";
   }
   if (more) {
-    more.href = emCampo ? "#mata-mata" : noAr ? "/lives" : "#amistosos";
+    more.href = emCampo ? "/confrontos" : noAr ? "/lives" : "/amistosos";
     more.textContent = emCampo ? "Ver chave" : noAr ? "Ver lives" : "Ver amistosos";
   }
 
@@ -783,7 +811,9 @@ const pullInstaFeed = async () => {
 pullInstaFeed();
 window.setInterval(pullInstaFeed, 3 * 60_000);
 
-document.getElementById("squad").innerHTML = club.squad
+const squadEl = document.getElementById("squad");
+if (squadEl) {
+  squadEl.innerHTML = club.squad
   .map(
     (p) => `
     <article class="player${p.photo ? " has-photo" : ""}" data-tag="${p.tag}">
@@ -805,6 +835,7 @@ document.getElementById("squad").innerHTML = club.squad
     </article>`
   )
   .join("");
+}
 
 window.paintSquadLive = () => {
   const air = new Map((window.streamersOnAir || []).map((c) => [c.tag, c]));
@@ -964,7 +995,8 @@ const pitchBench = benchPlayers.length
   </aside>`
   : "";
 
-document.getElementById("pitch").innerHTML = pitchMarkings + pitchSlots + pitchBench;
+const pitchEl = document.getElementById("pitch");
+if (pitchEl) pitchEl.innerHTML = pitchMarkings + pitchSlots + pitchBench;
 
 const mvpPoll = club.mvp;
 const mvpKey = `mvp-vote:${mvpPoll.id}`;
@@ -1498,46 +1530,6 @@ document.getElementById("mvp-grid")?.addEventListener("click", async (event) => 
 
 refreshMvp();
 mvpTimer = window.setInterval(tickMvp, 1000);
-
-const siteNav = document.getElementById("site-nav");
-const navToggle = document.querySelector(".nav-toggle");
-if (siteNav && navToggle) {
-  const closeNav = () => {
-    siteNav.classList.remove("is-open");
-    navToggle.setAttribute("aria-expanded", "false");
-  };
-  navToggle.addEventListener("click", () => {
-    const open = siteNav.classList.toggle("is-open");
-    navToggle.setAttribute("aria-expanded", String(open));
-  });
-  siteNav.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", closeNav);
-  });
-  document.addEventListener("click", (event) => {
-    if (!siteNav.classList.contains("is-open")) return;
-    if (siteNav.contains(event.target) || navToggle.contains(event.target)) return;
-    closeNav();
-  });
-}
-
-const navSectionLinks = [...(siteNav?.querySelectorAll('a[href^="#"]') || [])];
-const syncSiteNav = () => {
-  if (!navSectionLinks.length) return;
-  const fromTop = window.scrollY + 96;
-  let current = "";
-  navSectionLinks.forEach((link) => {
-    const id = link.getAttribute("href")?.slice(1);
-    const section = id ? document.getElementById(id) : null;
-    if (section && section.offsetTop <= fromTop) current = id;
-  });
-  if (window.scrollY < 80) current = "";
-  navSectionLinks.forEach((link) => {
-    link.classList.toggle("is-active", link.getAttribute("href") === `#${current}`);
-  });
-};
-syncSiteNav();
-window.addEventListener("scroll", syncSiteNav, { passive: true });
-window.addEventListener("resize", syncSiteNav);
 
 const creatorBtn = document.querySelector(".site-creator");
 const siteFooter = document.querySelector("footer");

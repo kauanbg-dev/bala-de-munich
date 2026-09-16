@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=111" />
+  <link rel="stylesheet" href="styles.css?v=112" />
   <style>
     html.intro-pending, html.intro-pending body { overflow: hidden; height: 100%; }
     .final-intro { position: fixed; inset: 0; z-index: 9999; background: #07070a; }
@@ -31,7 +31,7 @@
     })();
   </script>
 </head>
-<body>
+<body data-page="inicio">
   <div id="final-intro" class="final-intro" role="dialog" aria-modal="true" aria-labelledby="final-intro-title">
     <canvas class="final-intro-fx" aria-hidden="true"></canvas>
     <div class="final-intro-vignette" aria-hidden="true"></div>
@@ -59,29 +59,32 @@
     <button type="button" class="final-intro-skip">Pular intro</button>
   </div>
   <header class="topbar">
-    <a class="brand" href="#topo">
-      <img class="brand-crest" src="assets/crest.png" alt="" width="40" height="40" />
-      <span>Bala de Munich</span>
-    </a>
-    <nav id="site-nav" class="site-nav">
-      <a href="#mata-mata">Confrontos</a>
-      <a href="#mvp">MVP</a>
-      <a href="#tabela">Tabela</a>
-      <a href="#stats">Stats</a>
-      <a href="#elenco">Elenco</a>
-      <a href="#tatica">Tática</a>
-      <a href="#resultados">Jogos</a>
-      <a href="#amistosos">Amistosos</a>
-      <a href="#feed">Feed</a>
-      <a href="#sociais">Sociais</a>
-    </nav>
-    <div class="topbar-actions">
-      <a class="btn btn-ghost btn-lives" href="/lives">Lives</a>
-      <a class="btn btn-gold" href="#mvp">Votar MVP</a>
+    <div class="topbar-bar">
+      <a class="brand" href="/">
+        <img class="brand-crest" src="assets/crest.png" alt="" width="40" height="40" />
+        <span>Bala de Munich</span>
+      </a>
+      <div class="topbar-actions">
+        <a class="btn btn-ghost btn-lives" href="/lives">Lives</a>
+        <a class="btn btn-gold" href="/mvp">Votar MVP</a>
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-    <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
-      <span></span><span></span><span></span>
-    </button>
+    <nav id="site-nav" class="site-nav" aria-label="Seções do site">
+      <a href="/" data-nav="inicio">Início</a>
+      <a href="/confrontos" data-nav="confrontos">Confrontos</a>
+      <a href="/mvp" data-nav="mvp">MVP</a>
+      <a href="/tabela" data-nav="tabela">Tabela</a>
+      <a href="/stats" data-nav="stats">Stats</a>
+      <a href="/elenco" data-nav="elenco">Elenco</a>
+      <a href="/tatica" data-nav="tatica">Tática</a>
+      <a href="/jogos" data-nav="jogos">Jogos</a>
+      <a href="/amistosos" data-nav="amistosos">Amistosos</a>
+      <a href="/feed" data-nav="feed">Feed</a>
+      <a href="/sociais" data-nav="sociais">Sociais</a>
+    </nav>
   </header>
 
   <main id="topo">
@@ -92,8 +95,8 @@
           <h1>Bala de<br />Munich</h1>
           <p class="motto" id="motto"></p>
           <div class="hero-actions">
-            <a class="btn btn-red" href="#elenco">Ver o elenco</a>
-            <a class="btn btn-ghost" href="#mvp">Votar MVP</a>
+            <a class="btn btn-red" href="/elenco">Ver o elenco</a>
+            <a class="btn btn-ghost" href="/mvp">Votar MVP</a>
             <a class="btn btn-live" id="hero-live" href="/lives">
               <i aria-hidden="true"></i>
               Live
@@ -104,7 +107,7 @@
           <header class="live-head">
             <span class="live-dot" aria-hidden="true"></span>
             <h2 id="live-title">Bala ao vivo</h2>
-            <a id="live-more" href="#amistosos">Ver amistosos</a>
+            <a id="live-more" href="/amistosos">Ver amistosos</a>
           </header>
           <div class="live-row" id="live-row"></div>
         </section>
@@ -142,7 +145,7 @@
       <h2>Grande final</h2>
       <p class="final-day-meta">MD5 · Super Copa dos Streamers · <span id="final-day-when">horário a definir</span></p>
       <div class="final-day-actions">
-        <a class="btn btn-red" href="#mata-mata">Ver a chave</a>
+        <a class="btn btn-red" href="/confrontos">Ver a chave</a>
         <a class="btn btn-ghost" href="/lives">Acompanhar lives</a>
       </div>
     </section>
@@ -150,226 +153,6 @@
     <section class="match-band">
       <article class="match-card last" id="last-match"></article>
       <article class="match-card next" id="next-match"></article>
-    </section>
-
-    <section id="mata-mata" class="section section-chave">
-      <header class="section-head chave-head">
-        <div>
-          <h2>Confrontos · mata-mata</h2>
-          <p>Chave do Bala, placar ao vivo da Super Copa dos Streamers. MD5, sem segunda chance. Fonte: <a href="https://copastreamers.com.br/mata-mata" target="_blank" rel="noreferrer">copastreamers.com.br</a>.</p>
-        </div>
-        <p class="chave-legend" id="chave-legend"></p>
-      </header>
-      <p class="chave-hint">Arraste para acompanhar a chave →</p>
-      <div class="chave-scroll">
-        <div class="chave-stage" id="bracket"></div>
-      </div>
-      <p class="copa-live-stamp" id="copa-live-stamp" hidden></p>
-    </section>
-
-    <section id="mvp" class="section">
-      <header class="section-head">
-        <h2>Votação · MVP</h2>
-        <p id="mvp-copy">Grande final · Votação de MVP do jogo contra o Botafofo. Duração da votação: 2 horas.</p>
-      </header>
-      <div class="mvp-stage" id="mvp-stage">
-        <span class="mvp-live" id="mvp-live"><i aria-hidden="true"></i>Urna fechada</span>
-        <p class="mvp-clock" id="mvp-clock"></p>
-        <span class="mvp-clock-label" id="mvp-clock-label">duração da votação</span>
-        <div class="mvp-progress" aria-hidden="true"><i id="mvp-progress"></i></div>
-        <p class="mvp-status" id="mvp-status" role="status" aria-live="polite"></p>
-      </div>
-      <aside class="mvp-admin" id="mvp-admin" hidden>
-        <header class="mvp-admin-head">
-          <span class="mvp-admin-title">Painel do chefe</span>
-          <span class="mvp-admin-chip" id="mvp-admin-chip">Não iniciada</span>
-        </header>
-        <form class="mvp-admin-login" id="mvp-admin-login">
-          <label for="mvp-pin">Código admin</label>
-          <div>
-            <input id="mvp-pin" type="password" name="pin" placeholder="••••••" autocomplete="off" />
-            <button class="btn btn-gold" type="submit">Entrar</button>
-          </div>
-        </form>
-        <div class="mvp-admin-ops" id="mvp-admin-ops" hidden>
-          <section class="adm-placar" id="adm-placar">
-            <p class="adm-split">Placar da final</p>
-            <p class="adm-feed-copy">Quando o MD5 começar, marca <b>Ao vivo</b> e soma o placar. O público vê na faixa da home e na chave.</p>
-            <div class="adm-placar-board">
-              <div class="adm-placar-side">
-                <span>Bala</span>
-                <div class="adm-placar-step">
-                  <button type="button" data-placar="us" data-dir="-1" aria-label="Menos gol Bala">−</button>
-                  <strong id="adm-placar-us">0</strong>
-                  <button type="button" data-placar="us" data-dir="1" aria-label="Mais gol Bala">+</button>
-                </div>
-              </div>
-              <span class="adm-placar-vs">vs</span>
-              <div class="adm-placar-side">
-                <span>Botafofo</span>
-                <div class="adm-placar-step">
-                  <button type="button" data-placar="them" data-dir="-1" aria-label="Menos gol Botafofo">−</button>
-                  <strong id="adm-placar-them">0</strong>
-                  <button type="button" data-placar="them" data-dir="1" aria-label="Mais gol Botafofo">+</button>
-                </div>
-              </div>
-            </div>
-            <div class="adm-placar-actions">
-              <button type="button" class="btn btn-gold" id="adm-placar-live">Ao vivo</button>
-              <button type="button" class="btn btn-close" id="adm-placar-end">Encerrar</button>
-              <button type="button" class="btn btn-reset" id="adm-placar-clear">Limpar</button>
-            </div>
-            <p class="mvp-admin-hint" id="adm-placar-hint"></p>
-          </section>
-          <section class="mvp-out" id="mvp-out">
-            <p class="adm-split">Quem jogou</p>
-            <p class="adm-feed-copy">Liga quem entrou em campo. Só esses nomes entram na urna. O resto aparece pro público como “Jogador não jogou”.</p>
-            <p class="mvp-out-count" id="mvp-out-count"></p>
-            <div class="mvp-out-bulk">
-              <button type="button" class="btn btn-gold" id="mvp-played-all">Todos jogaram</button>
-              <button type="button" class="btn btn-close" id="mvp-played-none">Ninguém jogou</button>
-            </div>
-            <div class="mvp-out-list" id="mvp-out-list"></div>
-          </section>
-          <p class="adm-split">Urna de MVP</p>
-          <div class="mvp-admin-row">
-            <button type="button" class="btn btn-gold" id="mvp-start">Iniciar 2h</button>
-            <button type="button" class="btn btn-pause" id="mvp-pause">Pausar</button>
-            <button type="button" class="btn btn-red" id="mvp-resume">Retomar</button>
-            <button type="button" class="btn btn-close" id="mvp-close">Encerrar</button>
-          </div>
-          <div class="mvp-admin-danger">
-            <button type="button" class="btn btn-reset" id="mvp-reset">Recomeçar do 0</button>
-            <small>Apaga todos os votos.</small>
-          </div>
-        </div>
-        <p class="mvp-admin-hint" id="mvp-admin-hint"></p>
-      </aside>
-      <p class="mvp-legend" id="mvp-legend" hidden>Jogador não jogou — fora da votação desta partida.</p>
-      <div class="mvp-grid" id="mvp-grid"></div>
-    </section>
-
-    <section id="tabela" class="section">
-      <header class="section-head">
-        <h2>Grupo C</h2>
-        <p>Classificação oficial. Turno único em MD5 — dois primeiros no mata-mata.</p>
-      </header>
-      <div class="table-wrap">
-        <table class="standings">
-          <thead>
-            <tr>
-              <th>Pos</th>
-              <th>Time</th>
-              <th>J</th>
-              <th>PTS</th>
-              <th>V</th>
-              <th>D</th>
-              <th>GP</th>
-              <th>GC</th>
-              <th>SG</th>
-            </tr>
-          </thead>
-          <tbody id="standings"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section id="stats" class="section">
-      <header class="section-head">
-        <h2>Artilharia e garçom</h2>
-        <p>Números do Bala na Edição, direto do Copa Streamers.</p>
-      </header>
-      <div class="leaders">
-        <article>
-          <h3>Gols</h3>
-          <ol id="scorers"></ol>
-        </article>
-        <article>
-          <h3>Assistências</h3>
-          <ol id="assists"></ol>
-        </article>
-      </div>
-    </section>
-
-    <section id="elenco" class="section">
-      <header class="section-head">
-        <h2>Elenco</h2>
-        <p>Conheça nosso time</p>
-      </header>
-      <div class="squad-grid" id="squad"></div>
-    </section>
-
-    <section id="tatica" class="section section-pitch">
-      <header class="section-head">
-        <h2>Tática</h2>
-      </header>
-      <div class="pitch" id="pitch" aria-label="Formação no campo"></div>
-    </section>
-
-    <section id="resultados" class="section">
-      <header class="section-head">
-        <h2>Séries</h2>
-        <p>Placar de cada série MD5 do Bala. Fonte: Copa Streamers.</p>
-      </header>
-      <ul class="results" id="results"></ul>
-    </section>
-
-    <section id="amistosos" class="section">
-      <header class="section-head">
-        <h2>Amistosos</h2>
-        <p>Os jogos do Bala fora da Copa, puxados ao vivo do acervo da Super Copa dos Streamers. Não contam para a classificação.</p>
-      </header>
-      <dl class="ami-strip" id="ami-strip"></dl>
-      <div class="ami-grid" id="ami-grid"></div>
-      <button class="ami-more" type="button" id="ami-more" hidden></button>
-    </section>
-
-    <section id="feed" class="section">
-      <header class="section-head">
-        <h2>Do Instagram</h2>
-        <p>Últimas artes do <a href="https://www.instagram.com/balademunich/" target="_blank" rel="noreferrer">@balademunich</a>.</p>
-        <p class="feed-fonte" id="feed-fonte" hidden></p>
-      </header>
-      <div class="feed" id="feed-grid"></div>
-      <p class="feed-credit">Artes do Bala: <a href="https://www.instagram.com/santoz.design/" target="_blank" rel="noreferrer">@santoz.design</a></p>
-    </section>
-
-    <section id="sociais" class="section section-sociais">
-      <header class="section-head">
-        <h2>Sociais</h2>
-        <p>Discord, Instagram e as lives na Kick e na Twitch.</p>
-      </header>
-      <div class="sociais-panel">
-        <div class="sociais-grid">
-          <a class="social-card is-discord" id="discord" href="https://discord.gg/S9AfyBHSVr" target="_blank" rel="noreferrer">
-            <span class="social-logo" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.37-.44.86-.61 1.25a18.27 18.27 0 0 0-5.48 0 12.6 12.6 0 0 0-.62-1.25.08.08 0 0 0-.08-.04 19.74 19.74 0 0 0-4.89 1.52.07.07 0 0 0-.03.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.06 19.9 19.9 0 0 0 5.99 3.03.08.08 0 0 0 .09-.03c.36-.7.77-1.36 1.22-1.99a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.89.08.08 0 0 1-.01-.13c.12-.1.25-.2.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01c.12.1.25.2.37.29a.08.08 0 0 1 0 .13 12.3 12.3 0 0 1-1.87.89.08.08 0 0 0-.04.11c.46.63.87 1.29 1.23 1.99a.08.08 0 0 0 .08.03 19.84 19.84 0 0 0 6-3.03.08.08 0 0 0 .03-.06c.5-5.18-.84-9.67-3.55-13.66a.06.06 0 0 0-.03-.03zM8.02 15.33c-1.18 0-2.16-1.09-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.33-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.15-1.09-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.33-.95 2.42-2.16 2.42z"/></svg>
-            </span>
-            <span class="social-copy">
-              <b>Discord</b>
-              <small>Comunidade do Bala</small>
-            </span>
-          </a>
-          <a class="social-card is-instagram" id="instagram" href="https://www.instagram.com/balademunich/" target="_blank" rel="noreferrer">
-            <span class="social-logo" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11.2 1.3a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2zM12 8.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2zm0 2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z"/></svg>
-            </span>
-            <span class="social-copy">
-              <b>Instagram</b>
-              <small>@balademunich</small>
-            </span>
-          </a>
-          <a class="social-card is-kick" id="lives-btn" href="/lives">
-            <span class="social-logo" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M1.333 0h8v5.333H12V2.667h2.667V0h8v8H20v2.667h-2.667v2.666H20V16h2.667v8h-8v-2.667H12v-2.666H9.333V24h-8Z"/></svg>
-            </span>
-            <span class="social-copy">
-              <b>Lives</b>
-              <small>Ao vivo na Kick e na Twitch</small>
-            </span>
-          </a>
-        </div>
-      </div>
     </section>
   </main>
 
@@ -380,7 +163,7 @@
 
   <a class="site-creator" href="https://www.instagram.com/bgkauan_/" target="_blank" rel="noreferrer" aria-label="Instagram de Budokai, @bgkauan_">
     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-      <path fill="currentColor" d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11.2 1.3a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2zM12 8.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2zm0 2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z"/>
+      <path fill="currentColor" d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11.2 1.3a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2zM12 8.2A3.8 3.8 0 1 1 8.2 12 3.8 3.8 0 0 1 12 8.2zm0 2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z"/>
     </svg>
     <span>
       <strong>Budokai</strong>
@@ -388,9 +171,10 @@
     </span>
   </a>
 
+  <script src="site.js?v=1"></script>
   <script src="intro.js?v=4"></script>
   <script src="data.js?v=114"></script>
-  <script src="app.js?v=109"></script>
-  <script src="lives.js?v=96"></script>
+  <script src="app.js?v=110"></script>
+  <script src="lives.js?v=98"></script>
 </body>
 </html>
