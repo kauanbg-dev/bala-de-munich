@@ -31,7 +31,14 @@
 
   const page = document.body.getAttribute("data-page") || "";
   document.querySelectorAll("[data-nav]").forEach((link) => {
-    if (link.getAttribute("data-nav") === page) link.setAttribute("aria-current", "page");
+    if (link.getAttribute("data-nav") === page) {
+      link.setAttribute("aria-current", "page");
+      try {
+        link.scrollIntoView({ inline: "center", block: "nearest", behavior: "instant" });
+      } catch {
+        link.scrollIntoView({ inline: "center", block: "nearest" });
+      }
+    }
   });
   if (page === "lives") {
     document.querySelector(".btn-lives")?.setAttribute("aria-current", "page");
@@ -43,6 +50,7 @@
   const siteNav = document.getElementById("site-nav");
   const navToggle = document.querySelector(".nav-toggle");
   if (!siteNav || !navToggle) return;
+  if (window.matchMedia("(max-width: 1020px)").matches) return;
   const closeNav = () => {
     siteNav.classList.remove("is-open");
     navToggle.setAttribute("aria-expanded", "false");
