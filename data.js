@@ -69,6 +69,12 @@ window.CLUB = {
   ],
   gallery: [
     {
+      src: "assets/feed/e-final-e-hoje.jpg?v=1",
+      alt: "É final. É hoje · Bala de Munich vs Botafofo",
+      caption: "É final. É hoje",
+      href: "https://www.instagram.com/p/DdWTpcFR4vc/",
+    },
+    {
       src: "assets/feed/grande-final.jpg?v=1",
       alt: "Estamos na grande final",
       caption: "Grande final",
