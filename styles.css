@@ -251,7 +251,7 @@ code { color: var(--gold); font-size: 0.9em; }
 }
 
 .hero {
-  padding: 56px 28px 32px;
+  padding: 28px 28px 32px;
   max-width: 1120px;
   margin: 0 auto;
 }
@@ -469,7 +469,7 @@ h1 {
 .final-day {
   position: relative;
   max-width: 1120px;
-  margin: 8px auto 28px;
+  margin: 18px auto 8px;
   padding: 36px 28px 32px;
   text-align: center;
   overflow: hidden;
@@ -3548,7 +3548,7 @@ footer p {
   .stat-strip div { padding: 10px 10px; }
   .stat-strip dt { font-size: 0.58rem; }
   .stat-strip dd { font-size: 1.25rem; }
-  .final-day { margin: 6px 12px 12px; padding: 16px 12px 14px; }
+  .final-day { margin: 8px 12px 8px; padding: 16px 12px 14px; }
   .final-day-kicker { margin-bottom: 10px; font-size: 0.62rem; }
   .final-day-side { gap: 4px; }
   .final-day-side img { width: 52px; height: 52px; }
