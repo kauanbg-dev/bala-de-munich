@@ -104,15 +104,15 @@ Como ligar o Feedframer (opcional, uma vez):
 1. Cria conta em [feedframer.com/register](https://feedframer.com/register) e confirma o e-mail.
 2. **Connect Instagram Account** e entra com a `@balademunich` (conta profissional).
 3. **Settings → API Keys** → copia a chave da conta (64 caracteres).
-4. No site: `https://balademunich.vercel.app/?admin#mvp` → entra com o código admin → bloco **Instagram · Feed** (é o retângulo dourado, separado da urna) → cola a chave → **Ligar**.
+4. Cola em `FEEDFRAMER_KEY` nas variáveis da Vercel.
 
-A chave fica no Redis (o mesmo do MVP), não no GitHub. Dá pra colar `FEEDFRAMER_KEY` na Vercel também; se as duas existirem, a do painel manda. **Tirar o Feedframer** apaga só a chave do painel — o perfil público continua no ar. **Atualizar agora** zera o cache e busca de novo.
+A chave fica na Vercel, não no GitHub. Sem ela o site ainda tenta o Instagram público e, se falhar, as fotos locais.
 
 Não cola a chave no chat nem no GitHub. O site consulta `/api/feed` a cada 3 min. Fotos que ainda não estão no CDN do Feedframer passam por `/api/ig-media`.
 
 Variáveis:
 
-- `FEEDFRAMER_KEY` — chave do Feedframer na Vercel. Opcional se a chave foi colada no painel admin.
+- `FEEDFRAMER_KEY` — chave do Feedframer na Vercel.
 - `IG_TOKEN` — token longo da Meta (reserva). Só entra se o Instagram público e o Feedframer falharem.
 - `IG_LIMIT` — quantos posts mostrar (padrão 3). O grátis do Feedframer aceita no máximo 6 por pedido.
 - `IG_CACHE_MS` — validade do cache em memória do feed misturado (padrão 2 min).
@@ -126,6 +126,7 @@ Se usar só `IG_TOKEN`: o token se renova sozinho depois de 30 dias e o novo vai
 - Admin: `/?admin#mvp`
 - Código: `866283` (ou o `MVP_ADMIN_PIN` definido no host, que tem prioridade)
 - **Iniciar 2h** abre a urna. **Pausar** / **Retomar** congelam o relógio. **Encerrar** fecha na hora e mantém os votos. **Recomeçar do 0** apaga tudo.
+- No admin, **Placar da final** liga o MD5 ao vivo e soma o resultado. O público vê na faixa da home e na chave.
 - No admin, **Quem jogou** escolhe o elenco da partida (ou **Todos jogaram** / **Ninguém jogou**). Só quem está dourado entra na urna. O público vê **Jogador não jogou** nos outros e não consegue votar neles. Votos já dados nesses nomes saem da urna.
 - Em casa os votos ficam em `data/votes.json` — **não** vão pro GitHub
 - Na Vercel os votos ficam no Redis/KV. Sem banco, só no `/tmp` e somem no cold start

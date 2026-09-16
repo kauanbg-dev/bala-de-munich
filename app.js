@@ -4,7 +4,93 @@ document.getElementById("motto").textContent = club.motto;
 document.getElementById("instagram").href = club.instagram;
 document.getElementById("discord").href = club.discord;
 
+let placarState = { live: false, done: false, us: 0, them: 0 };
+
+const isBalaName = (name) => /bala de munich/i.test(String(name || ""));
+
+const finalTieOf = () => {
+  const round = (club.bracket || []).find((row) => /grande final/i.test(row.round));
+  return round?.ties?.find((tie) => tie.us) || round?.ties?.[0] || null;
+};
+
+const applyPlacarToClub = () => {
+  if (!placarState.live && !placarState.done) return;
+  const tie = overlayFinalTie(finalTieOf());
+  if (!tie) return;
+  const rival = isBalaName(tie.home) ? tie.away : tie.home;
+  if (placarState.live) {
+    club.motto = `Grande final ao vivo. Bala ${placarState.us}–${placarState.them} ${rival}.`;
+    club.nextMatch = {
+      opponent: rival,
+      competition: "Grande final · MD5",
+      date: `ao vivo · ${placarState.us}–${placarState.them}`,
+      venue: "Mata-mata",
+    };
+  } else {
+    club.motto = `Final ${placarState.us}–${placarState.them} contra o ${rival}.`;
+  }
+};
+
+const overlayFinalTie = (tie) => {
+  if (!tie || !(tie.final || tie.id === "ff-0")) return tie;
+  if (!placarState.live && !placarState.done) return tie;
+  const balaHome = isBalaName(tie.home);
+  return {
+    ...tie,
+    hs: balaHome ? placarState.us : placarState.them,
+    as: balaHome ? placarState.them : placarState.us,
+    live: Boolean(placarState.live),
+    date: placarState.live ? "Ao vivo" : "Encerrada",
+  };
+};
+
+const paintFinalDay = () => {
+  const el = document.getElementById("final-day");
+  if (!el) return;
+  const tie = finalTieOf();
+  let us = null;
+  let them = null;
+  let live = false;
+  let done = false;
+  if (placarState.live || placarState.done) {
+    us = placarState.us;
+    them = placarState.them;
+    live = Boolean(placarState.live);
+    done = Boolean(placarState.done);
+  } else if (tie && tie.hs != null && tie.as != null) {
+    const balaHome = isBalaName(tie.home);
+    us = balaHome ? tie.hs : tie.as;
+    them = balaHome ? tie.as : tie.hs;
+    live = Boolean(tie.live);
+    done = !live;
+  }
+  const hasScore = us != null;
+  el.hidden = false;
+  el.classList.toggle("is-live", live);
+  el.classList.toggle("is-done", done && hasScore);
+  const kicker = document.getElementById("final-day-kicker");
+  if (kicker) kicker.textContent = live ? "Ao vivo" : done && hasScore ? "Série encerrada" : "Hoje · 16/09";
+  const vs = document.getElementById("final-day-vs");
+  const board = document.getElementById("final-day-board");
+  const usEl = document.getElementById("final-day-us");
+  const themEl = document.getElementById("final-day-them");
+  if (usEl) usEl.textContent = String(us ?? 0);
+  if (themEl) themEl.textContent = String(them ?? 0);
+  if (board) board.hidden = !hasScore;
+  if (vs) vs.hidden = hasScore;
+  const when = document.getElementById("final-day-when");
+  if (when) {
+    if (live) when.textContent = "placar da série";
+    else if (done && hasScore) when.textContent = `${us}–${them}`;
+    else if (club.nextMatch?.date) {
+      const raw = String(club.nextMatch.date);
+      when.textContent = raw.includes("·") ? raw.split("·").pop().trim() : raw;
+    }
+  }
+};
+
 const paintCompetition = () => {
+  applyPlacarToClub();
   const s = club.stats;
   document.getElementById("stat-strip").innerHTML = [
     ["Grupo C", `${s.groupPos}`],
@@ -34,22 +120,11 @@ const paintCompetition = () => {
   `;
 
   document.getElementById("next-match").innerHTML = `
-    <span>${/hoje/i.test(club.nextMatch.date) || /16\/09/.test(club.nextMatch.date) ? "Hoje" : "Próximo jogo"} · ${club.nextMatch.venue}</span>
+    <span>${/hoje|ao vivo/i.test(club.nextMatch.date) || /16\/09/.test(club.nextMatch.date) ? (placarState.live ? "Ao vivo" : "Hoje") : "Próximo jogo"} · ${club.nextMatch.venue}</span>
     <strong>vs ${teamMark(club.nextMatch.opponent)}</strong>
     <p>${club.nextMatch.competition} · ${club.nextMatch.date}</p>
   `;
-  const finalDay = document.getElementById("final-day");
-  if (finalDay) {
-    const finalRound = (club.bracket || []).find((round) => /grande final/i.test(round.round));
-    const finalTie = finalRound?.ties?.find((tie) => tie.us) || finalRound?.ties?.[0];
-    const done = finalTie && !finalTie.live && finalTie.hs != null && finalTie.as != null;
-    finalDay.hidden = Boolean(done);
-    const when = document.getElementById("final-day-when");
-    if (when && club.nextMatch?.date) {
-      const raw = String(club.nextMatch.date);
-      when.textContent = raw.includes("·") ? raw.split("·").pop().trim() : raw;
-    }
-  }
+  paintFinalDay();
   paintMvpCopy();
 
   const chaveSide = (name, score, win, played) => {
@@ -68,7 +143,8 @@ const paintCompetition = () => {
     </div>`;
   };
 
-  const chaveCard = (round) => (t) => {
+  const chaveCard = (round) => (raw) => {
+    const t = overlayFinalTie(raw);
     const live = Boolean(t.live);
     const played = !live && t.hs !== null && t.as !== null;
     const showScore = live || played;
@@ -285,13 +361,17 @@ function liveOficial(now) {
   return (club.bracket || [])
     .flatMap((round) => (round.ties || []).map((t) => ({ ...t, round: round.round })))
     .filter((t) => {
-      if (!t.us) return false;
-      if (t.live) return true;
-      if (!t.iso || t.hs != null || t.as != null) return false;
-      const at = Date.parse(t.iso);
+      const view = overlayFinalTie(t);
+      if (!view.us) return false;
+      if (view.live) return true;
+      if (!view.iso || view.hs != null || view.as != null) return false;
+      const at = Date.parse(view.iso);
       return Number.isFinite(at) && now >= at && now - at <= LIVE_OFICIAL_MS;
     })
-    .map((t) => ({ ...t, at: Date.parse(t.iso) || now }));
+    .map((t) => {
+      const view = overlayFinalTie(t);
+      return { ...view, at: Date.parse(view.iso) || now };
+    });
 }
 
 function liveOffCard(ourCrest) {
@@ -551,6 +631,51 @@ const pullCopaLive = async () => {
 pullCopaLive();
 window.setInterval(pullCopaLive, 60_000);
 
+const applyPlacarData = (data) => {
+  if (!data || data.error) return;
+  placarState = {
+    live: Boolean(data.live),
+    done: Boolean(data.done),
+    us: Number(data.us) || 0,
+    them: Number(data.them) || 0,
+  };
+};
+
+const paintAdmPlacar = () => {
+  const us = document.getElementById("adm-placar-us");
+  const them = document.getElementById("adm-placar-them");
+  const hint = document.getElementById("adm-placar-hint");
+  const liveBtn = document.getElementById("adm-placar-live");
+  const endBtn = document.getElementById("adm-placar-end");
+  if (us) us.textContent = String(placarState.us);
+  if (them) them.textContent = String(placarState.them);
+  if (liveBtn) liveBtn.disabled = Boolean(placarState.live);
+  if (endBtn) endBtn.disabled = !placarState.live;
+  if (hint && mvpAdminPin) {
+    hint.classList.remove("is-error");
+    hint.textContent = placarState.live
+      ? `Ao vivo ${placarState.us}–${placarState.them}. O público vê na home.`
+      : placarState.done
+        ? `Série encerrada em ${placarState.us}–${placarState.them}.`
+        : "Ainda sem placar no ar. Toca em Ao vivo quando o MD5 começar.";
+  }
+};
+
+const pullPlacar = async () => {
+  try {
+    const res = await fetch("/api/placar", { cache: "no-store" });
+    if (!res.ok) return;
+    applyPlacarData(await res.json());
+    paintCompetition();
+    paintAdmPlacar();
+  } catch {
+    /* mantém o último placar */
+  }
+};
+
+pullPlacar();
+window.setInterval(pullPlacar, 8_000);
+
 const feedCode = (href) => {
   const match = String(href || "").match(/\/(?:p|reel|tv)\/([^/?#]+)/i);
   return match ? match[1] : "";
@@ -657,64 +782,6 @@ const pullInstaFeed = async () => {
 
 pullInstaFeed();
 window.setInterval(pullInstaFeed, 3 * 60_000);
-
-
-const paintAdmFeed = (status) => {
-  const chip = document.getElementById("adm-feed-chip");
-  const hint = document.getElementById("adm-feed-hint");
-  const field = document.getElementById("adm-feed-key");
-  if (!chip) return;
-  const live = Boolean(status?.live);
-  chip.textContent = live ? "Ao vivo" : "Fotos de piso";
-  chip.className = `mvp-admin-chip${live ? " is-open" : ""}`;
-  if (hint) {
-    hint.classList.remove("is-error");
-    if (status?.erro) {
-      hint.textContent = status.erro;
-      hint.classList.add("is-error");
-    } else if (live && status.origem === "painel") {
-      hint.textContent = `Ligado pelo painel (${status.mascara}). O público vê os posts reais${
-        status.fonte === "instagram" || status.fonte === "instagram+feedframer"
-          ? ", inclusive os que o Feedframer ainda não puxou."
-          : "."
-      }`;
-    } else if (live && status.origem === "vercel") {
-      hint.textContent =
-        status.fonte === "instagram" || status.fonte === "instagram+feedframer"
-          ? "Ligado pela Vercel. Posts novos entram pelo Instagram, sem esperar o ciclo diário do Feedframer."
-          : "Ligado pela variável da Vercel. O painel só troca se você colar outra chave.";
-    } else if (live) {
-      hint.textContent = "Feed ao vivo pelo Instagram. O público vê os posts novos sem esperar o Feedframer.";
-    } else if (status?.stored) {
-      hint.textContent = "Chave salva, mas o Feedframer não respondeu. As fotos de piso continuam no ar.";
-    } else {
-      hint.textContent = "Sem chave do Feedframer: o Feed ainda puxa o Instagram direto. Cola a chave só pra estabilizar as fotos no CDN.";
-    }
-  }
-  if (field && status?.stored) field.placeholder = "chave já salva — cola outra pra trocar";
-};
-
-const postFeedAdmin = async (action, key) => {
-  const res = await fetch("/api/feed", {
-    method: "POST",
-    credentials: "same-origin",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action, pin: mvpAdminPin, key }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (res.status === 403) throw new Error("pin");
-  if (!res.ok) throw new Error(data.erro || data.error || "feed");
-  paintAdmFeed(data);
-  await pullInstaFeed();
-  return data;
-};
-
-const refreshAdmFeed = () => {
-  if (!mvpAdminPin) return;
-  postFeedAdmin("status").catch((err) => {
-    paintAdmFeed({ live: false, erro: err.message === "pin" ? "Código admin errado." : "Não deu pra ler o Feed agora." });
-  });
-};
 
 document.getElementById("squad").innerHTML = club.squad
   .map(
@@ -1244,7 +1311,7 @@ const showMvpAdminOps = () => {
   const login = document.getElementById("mvp-admin-login");
   if (login) login.hidden = true;
   if (mvpAdminOps) mvpAdminOps.hidden = false;
-  refreshAdmFeed();
+  paintAdmPlacar();
 };
 
 if (mvpAdminPin) showMvpAdminOps();
@@ -1329,45 +1396,66 @@ document.getElementById("mvp-played-none")?.addEventListener("click", () => {
   postMvpAdmin("out", { all: true, on: true }).catch(() => {});
 });
 
-document.getElementById("adm-feed-form")?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const field = document.getElementById("adm-feed-key");
-  const hint = document.getElementById("adm-feed-hint");
+const postPlacarAdmin = async (action, extra = {}) => {
+  let res;
+  let data;
   try {
-    await postFeedAdmin("save", field?.value || "");
-    if (field) field.value = "";
-  } catch (err) {
+    res = await fetch("/api/placar", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, pin: mvpAdminPin, us: placarState.us, them: placarState.them, ...extra }),
+    });
+    data = await res.json().catch(() => ({}));
+  } catch {
+    const hint = document.getElementById("adm-placar-hint");
     if (hint) {
       hint.classList.add("is-error");
-      hint.textContent =
-        err.message === "pin"
-          ? "Código admin errado."
-          : err.message === "key" || err.message === "chave curta"
-            ? "Essa chave está curta demais."
-            : "O Feedframer recusou a chave. Confere se copiou inteira.";
+      hint.textContent = "Sem conexão com o placar. Tenta de novo.";
     }
+    throw new Error("network");
   }
-});
-
-document.getElementById("adm-feed-refresh")?.addEventListener("click", () => {
-  const hint = document.getElementById("adm-feed-hint");
-  postFeedAdmin("refresh").catch((err) => {
+  if (res.status === 403) {
+    setMvpAdminError("Código admin errado.");
+    throw new Error("pin");
+  }
+  if (res.status === 503) {
+    const hint = document.getElementById("adm-placar-hint");
     if (hint) {
       hint.classList.add("is-error");
-      hint.textContent = err.message === "pin" ? "Código admin errado." : "Não deu pra atualizar o Feed agora.";
+      hint.textContent = "O banco não respondeu. O placar não mudou.";
     }
-  });
+    throw new Error("storage");
+  }
+  if (res.ok) {
+    applyPlacarData(data);
+    if (!placarState.live && !placarState.done) pullCopaLive();
+    else paintCompetition();
+    paintAdmPlacar();
+  }
+  return res;
+};
+
+document.getElementById("adm-placar")?.addEventListener("click", (event) => {
+  const btn = event.target.closest("[data-placar]");
+  if (!btn || !mvpAdminPin) return;
+  const key = btn.getAttribute("data-placar");
+  const dir = Number(btn.getAttribute("data-dir")) || 0;
+  const next = Math.max(0, Math.min(20, (Number(placarState[key]) || 0) + dir));
+  postPlacarAdmin("set", { [key]: next }).catch(() => {});
 });
 
-document.getElementById("adm-feed-clear")?.addEventListener("click", () => {
-  if (!window.confirm("Tirar a chave do Feedframer? O Feed continua puxando o Instagram direto.")) return;
-  postFeedAdmin("clear").catch((err) => {
-    const hint = document.getElementById("adm-feed-hint");
-    if (hint) {
-      hint.classList.add("is-error");
-      hint.textContent = err.message === "pin" ? "Código admin errado." : "Não deu pra desligar agora.";
-    }
-  });
+document.getElementById("adm-placar-live")?.addEventListener("click", () => {
+  postPlacarAdmin("live").catch(() => {});
+});
+
+document.getElementById("adm-placar-end")?.addEventListener("click", () => {
+  postPlacarAdmin("end").catch(() => {});
+});
+
+document.getElementById("adm-placar-clear")?.addEventListener("click", () => {
+  if (!window.confirm("Limpar o placar da home? O público volta a ver VS, sem número.")) return;
+  postPlacarAdmin("clear").catch(() => {});
 });
 
 document.getElementById("mvp-grid")?.addEventListener("click", async (event) => {

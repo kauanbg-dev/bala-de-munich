@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=110" />
+  <link rel="stylesheet" href="styles.css?v=111" />
   <style>
     html.intro-pending, html.intro-pending body { overflow: hidden; height: 100%; }
     .final-intro { position: fixed; inset: 0; z-index: 9999; background: #07070a; }
@@ -122,13 +122,18 @@
     </section>
 
     <section class="final-day" id="final-day">
-      <p class="final-day-kicker">Hoje · 16/09</p>
+      <p class="final-day-kicker" id="final-day-kicker">Hoje · 16/09</p>
       <div class="final-day-clash">
         <div class="final-day-side">
           <img src="assets/crest.png" alt="" width="120" height="120" />
           <b>Bala de Munich</b>
         </div>
-        <span class="final-day-vs" aria-hidden="true">VS</span>
+        <div class="final-day-mid">
+          <span class="final-day-vs" id="final-day-vs">VS</span>
+          <p class="final-day-board" id="final-day-board" hidden>
+            <b id="final-day-us">0</b><i>–</i><b id="final-day-them">0</b>
+          </p>
+        </div>
         <div class="final-day-side">
           <img src="assets/clubs/botafofo.png" alt="" width="120" height="120" />
           <b>Botafofo</b>
@@ -187,6 +192,35 @@
           </div>
         </form>
         <div class="mvp-admin-ops" id="mvp-admin-ops" hidden>
+          <section class="adm-placar" id="adm-placar">
+            <p class="adm-split">Placar da final</p>
+            <p class="adm-feed-copy">Quando o MD5 começar, marca <b>Ao vivo</b> e soma o placar. O público vê na faixa da home e na chave.</p>
+            <div class="adm-placar-board">
+              <div class="adm-placar-side">
+                <span>Bala</span>
+                <div class="adm-placar-step">
+                  <button type="button" data-placar="us" data-dir="-1" aria-label="Menos gol Bala">−</button>
+                  <strong id="adm-placar-us">0</strong>
+                  <button type="button" data-placar="us" data-dir="1" aria-label="Mais gol Bala">+</button>
+                </div>
+              </div>
+              <span class="adm-placar-vs">vs</span>
+              <div class="adm-placar-side">
+                <span>Botafofo</span>
+                <div class="adm-placar-step">
+                  <button type="button" data-placar="them" data-dir="-1" aria-label="Menos gol Botafofo">−</button>
+                  <strong id="adm-placar-them">0</strong>
+                  <button type="button" data-placar="them" data-dir="1" aria-label="Mais gol Botafofo">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="adm-placar-actions">
+              <button type="button" class="btn btn-gold" id="adm-placar-live">Ao vivo</button>
+              <button type="button" class="btn btn-close" id="adm-placar-end">Encerrar</button>
+              <button type="button" class="btn btn-reset" id="adm-placar-clear">Limpar</button>
+            </div>
+            <p class="mvp-admin-hint" id="adm-placar-hint"></p>
+          </section>
           <section class="mvp-out" id="mvp-out">
             <p class="adm-split">Quem jogou</p>
             <p class="adm-feed-copy">Liga quem entrou em campo. Só esses nomes entram na urna. O resto aparece pro público como “Jogador não jogou”.</p>
@@ -208,25 +242,6 @@
             <button type="button" class="btn btn-reset" id="mvp-reset">Recomeçar do 0</button>
             <small>Apaga todos os votos.</small>
           </div>
-          <section class="adm-feed" id="adm-feed">
-            <header class="adm-feed-head">
-              <span>Instagram · Feed</span>
-              <span class="mvp-admin-chip" id="adm-feed-chip">Fotos de piso</span>
-            </header>
-            <p class="adm-feed-copy">Isso aqui é o Feed, não a urna. O site puxa o @balademunich direto. A chave do Feedframer continua útil pro CDN das fotos antigas. Sem nada, o público vê as artes locais.</p>
-            <form class="adm-feed-form" id="adm-feed-form">
-              <label for="adm-feed-key">Chave do Feedframer</label>
-              <div>
-                <input id="adm-feed-key" type="password" name="key" placeholder="64 caracteres" autocomplete="off" />
-                <button class="btn btn-gold" type="submit">Ligar</button>
-              </div>
-            </form>
-            <div class="adm-feed-actions">
-              <button class="btn btn-gold" type="button" id="adm-feed-refresh">Atualizar agora</button>
-              <button class="btn btn-close" type="button" id="adm-feed-clear">Tirar o Feedframer</button>
-            </div>
-            <p class="mvp-admin-hint" id="adm-feed-hint"></p>
-          </section>
         </div>
         <p class="mvp-admin-hint" id="mvp-admin-hint"></p>
       </aside>
@@ -375,7 +390,7 @@
 
   <script src="intro.js?v=4"></script>
   <script src="data.js?v=114"></script>
-  <script src="app.js?v=108"></script>
+  <script src="app.js?v=109"></script>
   <script src="lives.js?v=96"></script>
 </body>
 </html>
