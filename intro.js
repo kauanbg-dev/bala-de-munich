@@ -2,7 +2,7 @@
   const overlay = document.getElementById("final-intro");
   if (!overlay) return;
 
-  const KEY = "bala_confronto_intro";
+  const KEY = "bala_hoje_final_intro";
   const force = new URLSearchParams(location.search).get("intro") === "1";
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let seen = false;

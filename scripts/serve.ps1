@@ -5,7 +5,7 @@ $allow = @(
   "pedrosemfreio", "Pedro Sem Freio", "luccaf14", "Gordin", "Baraka", "wVini7", "Vini Show",
   "Jmdeck", "Beliene", "2Tclipes"
 )
-$pollId = "semifinal-e2"
+$pollId = "final-e2"
 $durationHours = 2
 $startPin = "tteuw"
 

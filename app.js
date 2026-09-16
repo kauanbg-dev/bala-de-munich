@@ -34,10 +34,22 @@ const paintCompetition = () => {
   `;
 
   document.getElementById("next-match").innerHTML = `
-    <span>Próximo jogo · ${club.nextMatch.venue}</span>
+    <span>${/hoje/i.test(club.nextMatch.date) || /16\/09/.test(club.nextMatch.date) ? "Hoje" : "Próximo jogo"} · ${club.nextMatch.venue}</span>
     <strong>vs ${teamMark(club.nextMatch.opponent)}</strong>
     <p>${club.nextMatch.competition} · ${club.nextMatch.date}</p>
   `;
+  const finalDay = document.getElementById("final-day");
+  if (finalDay) {
+    const finalRound = (club.bracket || []).find((round) => /grande final/i.test(round.round));
+    const finalTie = finalRound?.ties?.find((tie) => tie.us) || finalRound?.ties?.[0];
+    const done = finalTie && !finalTie.live && finalTie.hs != null && finalTie.as != null;
+    finalDay.hidden = Boolean(done);
+    const when = document.getElementById("final-day-when");
+    if (when && club.nextMatch?.date) {
+      const raw = String(club.nextMatch.date);
+      when.textContent = raw.includes("·") ? raw.split("·").pop().trim() : raw;
+    }
+  }
   paintMvpCopy();
 
   const chaveSide = (name, score, win, played) => {

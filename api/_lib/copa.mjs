@@ -525,6 +525,9 @@ function balaSeries(bracket) {
       motto = "Estamos na final.";
     } else if (tbd) {
       motto = `Na ${open.round.toLowerCase()}. Adversário a definir.`;
+    } else if (/final/i.test(open.round) && (isUs(open.home) || isUs(open.away))) {
+      const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+      motto = today === "2026-09-16" ? `Hoje é final contra o ${rival}.` : `${open.round} contra ${rival}.`;
     } else {
       motto = `${open.round} contra ${rival}.`;
     }

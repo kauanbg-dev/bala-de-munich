@@ -28,7 +28,7 @@ export const allow = [
   "Dimicontro",
   "Blaade",
 ];
-export const pollId = process.env.MVP_POLL_ID || "semifinal-e2";
+export const pollId = process.env.MVP_POLL_ID || "final-e2";
 export const durationHours = 2;
 const startPin = process.env.MVP_ADMIN_PIN || "866283";
 

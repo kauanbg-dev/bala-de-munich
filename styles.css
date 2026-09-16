@@ -423,6 +423,93 @@ h1 {
   padding: 0 28px 24px;
 }
 
+.final-day {
+  position: relative;
+  max-width: 1120px;
+  margin: 8px auto 28px;
+  padding: 36px 28px 32px;
+  text-align: center;
+  overflow: hidden;
+  border: 1px solid rgba(212, 177, 90, 0.35);
+  background:
+    radial-gradient(90% 80% at 12% 50%, rgba(211, 18, 42, 0.22), transparent 58%),
+    radial-gradient(90% 80% at 88% 50%, rgba(212, 177, 90, 0.14), transparent 58%),
+    linear-gradient(180deg, rgba(28, 18, 20, 0.96), rgba(10, 8, 12, 0.98));
+}
+
+.final-day[hidden] { display: none; }
+
+.final-day-kicker {
+  margin: 0 0 18px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.final-day-clash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 4vw, 36px);
+}
+
+.final-day-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.final-day-side img {
+  width: min(28vw, 118px);
+  height: min(28vw, 118px);
+  object-fit: contain;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.55));
+}
+
+.final-day-side b {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 3vw, 1.55rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.final-day-vs {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 4vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--red);
+  text-shadow: 0 0 18px rgba(211, 18, 42, 0.55);
+}
+
+.final-day h2 {
+  margin: 22px 0 8px;
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.final-day-meta {
+  margin: 0;
+  color: var(--mute);
+  font-size: 0.92rem;
+}
+
+.final-day-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
 .match-card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -3245,6 +3332,7 @@ footer p {
 }
 
 @media (max-width: 800px) {
+  .final-day { margin: 4px 16px 20px; padding: 28px 16px 24px; }
   .hero-copy,
   .hero-grid .crest-wrap,
   .live-band {
