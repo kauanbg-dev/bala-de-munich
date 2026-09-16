@@ -21,6 +21,10 @@ const FETCH_MS = 12_000;
 // Enquanto `quando` vier vazio, o site usa hoje 14/09 às 18h (Brasília).
 // Quando a API preencher a data, ela manda.
 const SF_BALA_KICKOFF = process.env.COPA_SF_KICKOFF || "2026-09-14T21:00:00.000Z";
+// Grande final hoje, 16/09, a partir das 18h em Brasília. Se a Copa publicar
+// outro horário, ele manda. Enquanto vier vazio ou 00:00, o site usa este.
+const FF_BALA_KICKOFF = process.env.COPA_FF_KICKOFF || "2026-09-16T21:00:00.000Z";
+const FF_BALA_KICKOFF_LABEL = "hoje · 16/09 · a partir das 18h";
 // A Copa ainda não fechou as semis (S1 2–1 ao vivo, S2 vazia) nem montou a
 // final. O site usa o resultado real até o feed oficial atualizar.
 const MANUAL_SF = [
@@ -460,7 +464,7 @@ function parseBracket(lines) {
         round: "Grande final",
         n: "03",
         key: "ff",
-        ties: (ff.length ? ff : [{ home: "A definir", away: "A definir", hs: null, as: null, date: "qua., 16/09 · horário a definir", homeOwner: "–", awayOwner: "–" }]).map(
+        ties: (ff.length ? ff : [{ home: "A definir", away: "A definir", hs: null, as: null, date: FF_BALA_KICKOFF_LABEL, homeOwner: "–", awayOwner: "–" }]).map(
           (t, i) => toCard(t, `ff-${i}`, { final: true })
         ),
       },
@@ -614,6 +618,7 @@ function computeGroupC(partidas) {
 
 function fillKnownKickoff(tie) {
   if (!tie || tie.quando || tie.status === "final") return tie;
+  if (tie.fase === "final") return { ...tie, quando: FF_BALA_KICKOFF };
   if (tie.fase !== "semifinal") return tie;
   const home = nameOf(tie.lado_a);
   const away = nameOf(tie.lado_b);
@@ -621,6 +626,24 @@ function fillKnownKickoff(tie) {
   const vsX = home === "Equipe X" || away === "Equipe X";
   if (!ours || !vsX) return tie;
   return { ...tie, quando: SF_BALA_KICKOFF };
+}
+
+function stampFinalKickoff(tie) {
+  if (!tie) return;
+  const done = !tie.live && tie.hs != null && tie.as != null;
+  if (done) return;
+  const date = String(tie.date || "");
+  if (!date || date === "A agendar" || /horário a definir|00:00$/.test(date) || (/16\/09/.test(date) && /18:00$/.test(date))) {
+    tie.date = FF_BALA_KICKOFF_LABEL;
+    let hour = "";
+    if (tie.iso) {
+      const d = new Date(tie.iso);
+      if (!Number.isNaN(d.getTime())) {
+        hour = d.toLocaleString("en-GB", { timeZone: "America/Sao_Paulo", hour: "2-digit", hour12: false });
+      }
+    }
+    if (!tie.iso || hour === "00" || hour === "18") tie.iso = FF_BALA_KICKOFF;
+  }
 }
 
 function applyManualResult(parsed) {
@@ -647,9 +670,7 @@ function applyManualResult(parsed) {
           tie.away = MANUAL_FINAL.away;
           tie.us = isUs(tie.home) || isUs(tie.away);
         }
-        if (tie.date && /00:00$/.test(String(tie.date))) {
-          tie.date = String(tie.date).replace(/\s*·\s*00:00$/, " · horário a definir");
-        }
+        stampFinalKickoff(tie);
       }
     }
   }
@@ -660,7 +681,7 @@ function bracketFromConfrontos(confrontos) {
   const list = [...(confrontos || [])].sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
   const qf = list.filter((c) => c.fase === "quartas");
   const sf = list.filter((c) => c.fase === "semifinal").map(fillKnownKickoff);
-  const ff = list.filter((c) => c.fase === "final");
+  const ff = list.filter((c) => c.fase === "final").map(fillKnownKickoff);
   if (qf.length < 2) return null;
 
   const toCard = (tie, id, extra = {}) => {
@@ -710,7 +731,7 @@ function bracketFromConfrontos(confrontos) {
         round: "Grande final",
         n: "03",
         key: "ff",
-        ties: (ff.length ? ff : [{ ...placeholder, quando: "2026-09-16T03:00:00+00:00" }]).map((t, i) =>
+        ties: (ff.length ? ff : [{ ...placeholder, quando: FF_BALA_KICKOFF }]).map((t, i) =>
           toCard(t, `ff-${i}`, { final: true })
         ),
       },

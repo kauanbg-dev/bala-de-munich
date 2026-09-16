@@ -72,7 +72,7 @@ const paintFinalDay = () => {
   el.classList.toggle("is-live", live);
   el.classList.toggle("is-done", done && hasScore);
   const kicker = document.getElementById("final-day-kicker");
-  if (kicker) kicker.textContent = live ? "Ao vivo" : done && hasScore ? "Série encerrada" : "Hoje · 16/09";
+  if (kicker) kicker.textContent = live ? "Ao vivo" : done && hasScore ? "Série encerrada" : "Hoje · 16/09 · 18h";
   const vs = document.getElementById("final-day-vs");
   const board = document.getElementById("final-day-board");
   const usEl = document.getElementById("final-day-us");
@@ -902,7 +902,7 @@ pullStreamers();
 window.setInterval(pullStreamers, 45_000);
 
 const squadGrid = document.getElementById("squad");
-const squadCards = [...squadGrid.querySelectorAll(".player")];
+const squadCards = squadGrid ? [...squadGrid.querySelectorAll(".player")] : [];
 const setSquadNear = (card, value) => card.style.setProperty("--near", value);
 const resetSquadNear = () => squadCards.forEach((card) => setSquadNear(card, "0"));
 if (squadGrid && squadCards.length && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {

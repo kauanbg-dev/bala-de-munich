@@ -36,7 +36,7 @@ window.CLUB = {
   nextMatch: {
     opponent: "Botafofo",
     competition: "Grande final · MD5",
-    date: "hoje · 16/09 · horário a definir",
+    date: "hoje · 16/09 · a partir das 18h",
     venue: "Mata-mata",
   },
   lastMatch: {
@@ -226,7 +226,7 @@ window.CLUB = {
       n: "03",
       key: "ff",
       ties: [
-        { id: "ff-0", home: "Bala de Munich", away: "Botafofo", hs: null, as: null, date: "hoje · 16/09 · horário a definir", us: true, final: true },
+        { id: "ff-0", home: "Bala de Munich", away: "Botafofo", hs: null, as: null, date: "hoje · 16/09 · a partir das 18h", us: true, final: true, iso: "2026-09-16T21:00:00.000Z" },
       ],
     },
   ],
