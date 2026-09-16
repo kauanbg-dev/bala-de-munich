@@ -2189,11 +2189,16 @@ h2 {
 
 .section-pitch { padding-top: 12px; }
 
+.pitch-wrap {
+  position: relative;
+  width: min(100%, 560px);
+  margin: 0 auto;
+}
+
 .pitch {
   position: relative;
   aspect-ratio: 3 / 4;
-  max-width: 560px;
-  margin: 0 auto;
+  width: 100%;
   border: 1px solid rgba(244, 234, 214, 0.22);
   border-radius: 14px;
   overflow: hidden;
@@ -3561,12 +3566,17 @@ footer p {
   h2 { font-size: 1.85rem; }
   .section-head p { font-size: 0.82rem; }
   .pitch {
-    width: min(100%, 340px, calc(58vh * 0.75));
+    width: 100%;
     max-width: 100%;
-    max-height: 58vh;
+    max-height: none;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+    background: #16361c;
   }
   .slot { width: 72px; }
-  .slot span { padding: 1px 5px 2px; }
+  .slot span {
+    padding: 1px 5px 2px;
+    backdrop-filter: none;
+  }
   .slot b { font-size: 0.58rem; }
   .mvp-stage { margin: 0 auto 16px; padding: 14px 12px 16px; border-radius: 14px; }
   .table-wrap { font-size: 0.78rem; }
@@ -3693,13 +3703,20 @@ footer p {
   .site-creator strong { font-size: 0.72rem; }
   .site-creator small { font-size: 0.58rem; }
   .pitch-bench {
-    right: 6px;
-    bottom: 6px;
-    width: 104px;
-    padding: 6px 7px 7px;
+    position: static;
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px 12px 12px;
+    backdrop-filter: none;
+    background: var(--card);
   }
-  .pitch-bench img { width: 22px; height: 22px; }
-  .pitch-bench b { font-size: 0.58rem; }
+  .pitch-bench ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 10px;
+  }
+  .pitch-bench img { width: 28px; height: 28px; }
+  .pitch-bench b { font-size: 0.72rem; white-space: normal; }
   .dot { width: 28px; height: 28px; margin-bottom: 4px; }
   .dot i { font-size: 0.55rem; min-width: 16px; right: -4px; bottom: -4px; }
   .slot.coach .dot { width: 24px; height: 24px; }

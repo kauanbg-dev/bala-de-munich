@@ -996,7 +996,14 @@ const pitchBench = benchPlayers.length
   : "";
 
 const pitchEl = document.getElementById("pitch");
-if (pitchEl) pitchEl.innerHTML = pitchMarkings + pitchSlots + pitchBench;
+if (pitchEl) {
+  const wrap = document.createElement("div");
+  wrap.className = "pitch-wrap";
+  pitchEl.replaceWith(wrap);
+  wrap.appendChild(pitchEl);
+  pitchEl.innerHTML = pitchMarkings + pitchSlots;
+  if (pitchBench) wrap.insertAdjacentHTML("beforeend", pitchBench);
+}
 
 const mvpPoll = club.mvp;
 const mvpKey = `mvp-vote:${mvpPoll.id}`;
