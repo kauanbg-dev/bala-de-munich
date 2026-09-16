@@ -3561,7 +3561,8 @@ footer p {
   h2 { font-size: 1.85rem; }
   .section-head p { font-size: 0.82rem; }
   .pitch {
-    max-width: min(100%, 340px);
+    width: min(100%, 340px, calc(58vh * 0.75));
+    max-width: 100%;
     max-height: 58vh;
   }
   .slot { width: 72px; }
