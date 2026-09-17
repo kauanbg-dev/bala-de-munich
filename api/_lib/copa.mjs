@@ -31,6 +31,7 @@ const MANUAL_SF = [
   { home: "Bala de Munich", away: "Equipe X", hs: 3, as: 1 },
   { home: "Narizes FC", away: "Botafofo", hs: 2, as: 3 },
 ];
+const SEASON_OVER = true;
 const MANUAL_FINAL = {
   home: "Bala de Munich",
   away: "Botafofo",
@@ -517,6 +518,20 @@ function balaSeries(bracket) {
         venue: "Mata-mata",
       };
   let motto = "Na copa. Bala de Munich.";
+  if (SEASON_OVER) {
+    motto = "Campeonato encerrado. Obrigado por vir com o Bala.";
+    return {
+      lastMatch,
+      nextMatch: {
+        opponent: "",
+        competition: "Super Copa dos Streamers",
+        date: "campeonato encerrado",
+        venue: "Edição 2",
+      },
+      results,
+      motto,
+    };
+  }
   if (open?.live) {
     const us = isUs(open.home) ? open.hs : open.as;
     const them = isUs(open.home) ? open.as : open.hs;
@@ -671,6 +686,10 @@ function applyManualResult(parsed) {
           tie.us = isUs(tie.home) || isUs(tie.away);
         }
         stampFinalKickoff(tie);
+        if (SEASON_OVER) {
+          tie.live = false;
+          tie.date = "Encerrada";
+        }
       }
     }
   }

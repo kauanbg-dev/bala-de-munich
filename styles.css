@@ -605,6 +605,75 @@ h1 {
   margin-top: 22px;
 }
 
+.season-close {
+  position: relative;
+  max-width: 720px;
+  margin: 18px auto 8px;
+  padding: 36px 28px 32px;
+  text-align: center;
+  overflow: hidden;
+  border: 1px solid rgba(212, 177, 90, 0.35);
+  background:
+    radial-gradient(90% 80% at 50% 0%, rgba(211, 18, 42, 0.18), transparent 58%),
+    linear-gradient(180deg, rgba(28, 18, 20, 0.96), rgba(10, 8, 12, 0.98));
+}
+
+.season-close-kicker {
+  margin: 0 0 16px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.season-close-crest {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.55));
+}
+
+.season-close h2 {
+  margin: 16px 0 10px;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.season-close-lead {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.season-close-copy,
+.season-close-bye {
+  margin: 0 auto 10px;
+  max-width: 42ch;
+  color: var(--mute);
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+
+.season-close-bye {
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.season-close-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
 .match-card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -3549,6 +3618,13 @@ footer p {
   .stat-strip dt { font-size: 0.58rem; }
   .stat-strip dd { font-size: 1.25rem; }
   .final-day { margin: 8px 12px 8px; padding: 16px 12px 14px; }
+  .season-close { margin: 8px 12px 8px; padding: 22px 16px 20px; }
+  .season-close-crest { width: 64px; height: 64px; }
+  .season-close h2 { margin: 10px 0 6px; }
+  .season-close-lead { font-size: 1.25rem; }
+  .season-close-copy,
+  .season-close-bye { font-size: 0.92rem; }
+  .season-close-actions { margin-top: 14px; gap: 8px; }
   .final-day-kicker { margin-bottom: 10px; font-size: 0.62rem; }
   .final-day-side { gap: 4px; }
   .final-day-side img { width: 52px; height: 52px; }

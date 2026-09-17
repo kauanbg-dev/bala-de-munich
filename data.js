@@ -1,7 +1,7 @@
 window.CLUB = {
   name: "Bala de Munich",
   short: "BDM",
-  motto: "Hoje é final contra o Botafofo.",
+  motto: "Campeonato encerrado. Obrigado por vir com o Bala.",
   knockout: "https://copastreamers.com.br/mata-mata",
   founded: "2026",
   platform: "EA FC 26 · Pro Clubs",
@@ -34,10 +34,10 @@ window.CLUB = {
     record: "9-2-5",
   },
   nextMatch: {
-    opponent: "Botafofo",
-    competition: "Grande final · MD5",
-    date: "hoje · 16/09 · a partir das 18h",
-    venue: "Mata-mata",
+    opponent: "",
+    competition: "Super Copa dos Streamers",
+    date: "campeonato encerrado",
+    venue: "Edição 2",
   },
   lastMatch: {
     opponent: "Equipe X",
@@ -232,7 +232,7 @@ window.CLUB = {
       n: "03",
       key: "ff",
       ties: [
-        { id: "ff-0", home: "Bala de Munich", away: "Botafofo", hs: null, as: null, date: "hoje · 16/09 · a partir das 18h", us: true, final: true, iso: "2026-09-16T21:00:00.000Z" },
+        { id: "ff-0", home: "Bala de Munich", away: "Botafofo", hs: null, as: null, date: "Encerrada", us: true, final: true },
       ],
     },
   ],

@@ -1,63 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="intro-pending">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Hoje é final — Bala de Munich vs Botafofo</title>
-  <meta name="description" content="Grande final da Super Copa dos Streamers. Bala de Munich vs Botafofo, hoje 16/09 a partir das 18h." />
+  <title>Bala de Munich — Super Copa dos Streamers</title>
+  <meta name="description" content="Obrigado. A Super Copa dos Streamers acabou. Talvez a gente se veja de novo em breve." />
   <link rel="icon" href="assets/crest.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=116" />
-  <style>
-    html.intro-pending, html.intro-pending body { overflow: hidden; height: 100%; }
-    .final-intro { position: fixed; inset: 0; z-index: 9999; background: #07070a; }
-    html:not(.intro-pending) .final-intro { display: none; }
-  </style>
-  <script>
-    (function () {
-      try {
-        var q = new URLSearchParams(location.search);
-        if (q.get("intro") === "1") return;
-        if (sessionStorage.getItem("bala_hoje_final_intro") === "1") {
-          document.documentElement.classList.remove("intro-pending");
-        }
-      } catch (e) {}
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        var q2 = new URLSearchParams(location.search);
-        if (q2.get("intro") !== "1") document.documentElement.classList.remove("intro-pending");
-      }
-    })();
-  </script>
+  <link rel="stylesheet" href="/styles.css?v=117" />
 </head>
 <body data-page="inicio">
-  <div id="final-intro" class="final-intro" role="dialog" aria-modal="true" aria-labelledby="final-intro-title">
-    <canvas class="final-intro-fx" aria-hidden="true"></canvas>
-    <div class="final-intro-vignette" aria-hidden="true"></div>
-    <div class="final-intro-stage">
-      <p class="final-intro-kicker">Super Copa dos Streamers</p>
-      <h1 id="final-intro-title">Hoje é<br />final</h1>
-      <div class="final-intro-clash">
-        <div class="final-intro-side is-home">
-          <span class="final-intro-glow" aria-hidden="true"></span>
-          <img src="assets/crest.png" alt="Escudo Bala de Munich" width="200" height="200" />
-          <b>Bala de Munich</b>
-        </div>
-        <div class="final-intro-vs" aria-hidden="true">
-          <i></i>
-          <span>VS</span>
-        </div>
-        <div class="final-intro-side is-away">
-          <span class="final-intro-glow is-away" aria-hidden="true"></span>
-          <img src="assets/clubs/botafofo.png" alt="Escudo Botafofo" width="200" height="200" />
-          <b>Botafofo</b>
-        </div>
-      </div>
-      <p class="final-intro-sub">MD5 · 16/09 · a partir das 18h</p>
-    </div>
-    <button type="button" class="final-intro-skip">Pular intro</button>
-  </div>
   <header class="topbar">
     <div class="topbar-bar">
       <a class="brand" href="/">
@@ -88,36 +42,23 @@
   </header>
 
   <main id="topo">
-    <section class="final-day" id="final-day">
-      <p class="final-day-kicker" id="final-day-kicker">Hoje · 16/09 · 18h</p>
-      <div class="final-day-clash">
-        <div class="final-day-side">
-          <img src="assets/crest.png" alt="" width="120" height="120" />
-          <b>Bala de Munich</b>
-        </div>
-        <div class="final-day-mid">
-          <span class="final-day-vs" id="final-day-vs">VS</span>
-          <p class="final-day-board" id="final-day-board" hidden>
-            <b id="final-day-us">0</b><i>–</i><b id="final-day-them">0</b>
-          </p>
-        </div>
-        <div class="final-day-side">
-          <img src="assets/clubs/botafofo.png" alt="" width="120" height="120" />
-          <b>Botafofo</b>
-        </div>
-      </div>
-      <h2>Grande final</h2>
-      <p class="final-day-meta">MD5 · Super Copa dos Streamers · <span id="final-day-when">a partir das 18h</span></p>
-      <div class="final-day-actions">
-        <a class="btn btn-red" href="/confrontos">Ver a chave</a>
-        <a class="btn btn-ghost" href="/lives">Acompanhar lives</a>
+    <section class="season-close" id="season-close">
+      <p class="season-close-kicker">Super Copa dos Streamers · Edição 2</p>
+      <img class="season-close-crest" src="assets/crest.png" alt="" width="96" height="96" />
+      <h2>Obrigado</h2>
+      <p class="season-close-lead">O campeonato acabou.</p>
+      <p class="season-close-copy">Valeu por vir com o Bala até a final. A campanha fica, a torcida fica, e o time também.</p>
+      <p class="season-close-bye">Talvez a gente se veja de novo em breve.</p>
+      <div class="season-close-actions">
+        <a class="btn btn-red" href="/elenco">Ver o elenco</a>
+        <a class="btn btn-ghost" href="/confrontos">Ver a chave</a>
       </div>
     </section>
 
     <section class="hero">
       <div class="hero-grid">
         <div class="hero-copy">
-          <p class="gothic">Hoje · Super Copa dos Streamers</p>
+          <p class="gothic">Super Copa dos Streamers · Edição 2</p>
           <h1>Bala de<br />Munich</h1>
           <p class="motto" id="motto"></p>
           <div class="hero-actions">
@@ -172,9 +113,8 @@
   </a>
 
   <script src="/site.js?v=2"></script>
-  <script src="/intro.js?v=4"></script>
-  <script src="/data.js?v=116"></script>
-  <script src="/app.js?v=112"></script>
+  <script src="/data.js?v=117"></script>
+  <script src="/app.js?v=113"></script>
   <script src="/lives.js?v=98"></script>
 </body>
 </html>

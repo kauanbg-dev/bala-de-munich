@@ -59,13 +59,13 @@ O script usa a primeira porta livre entre 8765 e 8769. Abre o endereço que apar
 
 Pra tabela ao vivo + votação juntas: `npm start` (precisa do Node).
 
-Na primeira visita da sessão, a home abre com o confronto definido: Bala de Munich vs Botafofo. Dá pra pular. Recarregar a aba não mostra de novo; pra ver outra vez, abre `/?intro=1`. Quem pede menos movimento no sistema pula a intro. `/lives` entra direto.
+Na primeira visita a home abre direto, sem intro. `/lives` também.
 
 ## Sync ao vivo (Copa Streamers)
 
 Tabela, chave, última/próxima série, artilharia e assistências vêm do [copastreamers.com.br](https://copastreamers.com.br). O site consulta `/api/copa` a cada 60s. Elenco, fotos, Instagram, MVP e Sociais continuam em `data.js`.
 
-A Copa ainda não fechou as semis nem montou a final. O site entra na mão com **Bala 3–1 Equipe X**, **Botafofo 3–2 Narizes** e a grande final **Bala × Botafofo no dia 16/09**. Quando o feed oficial atualizar, ele manda.
+A Super Copa dos Streamers (Edição 2) acabou. O site guarda a campanha do Bala até a final contra o Botafofo.
 
 Os amistosos saem da página `/partidas` da Copa, que não tem API: o parser lê o payload do Next embutido no HTML e fica só com os jogos do Bala.
 

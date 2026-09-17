@@ -17,6 +17,7 @@ const finalTieOf = () => {
 };
 
 const applyPlacarToClub = () => {
+  if (document.querySelector(".season-close")) return;
   if (!placarState.live && !placarState.done) return;
   const tie = overlayFinalTie(finalTieOf());
   if (!tie) return;
@@ -131,11 +132,19 @@ const paintCompetition = () => {
 
   const next = document.getElementById("next-match");
   if (next) {
-    next.innerHTML = `
+    if (!club.nextMatch?.opponent || /encerrado/i.test(club.nextMatch.date)) {
+      next.innerHTML = `
+    <span>Campeonato · ${club.nextMatch.venue || "Edição 2"}</span>
+    <strong>Encerrado</strong>
+    <p>${club.nextMatch.competition || "Super Copa dos Streamers"}</p>
+  `;
+    } else {
+      next.innerHTML = `
     <span>${/hoje|ao vivo/i.test(club.nextMatch.date) || /16\/09/.test(club.nextMatch.date) ? (placarState.live ? "Ao vivo" : "Hoje") : "Próximo jogo"} · ${club.nextMatch.venue}</span>
     <strong>vs ${teamMark(club.nextMatch.opponent)}</strong>
     <p>${club.nextMatch.competition} · ${club.nextMatch.date}</p>
   `;
+    }
   }
   paintFinalDay();
   paintMvpCopy();
