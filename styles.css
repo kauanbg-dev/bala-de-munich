@@ -704,6 +704,75 @@ h1 {
   margin-top: 22px;
 }
 
+.season-path {
+  max-width: 1120px;
+  margin: 8px auto 4px;
+  padding: 8px 28px 18px;
+}
+
+.season-path-kicker {
+  margin: 0 0 14px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.season-path-steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.season-path-steps li a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 100%;
+  padding: 16px 12px 14px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  text-align: center;
+}
+
+.season-path-steps li.is-final a {
+  border-color: rgba(212, 177, 90, 0.45);
+  background:
+    radial-gradient(80% 80% at 50% 0%, rgba(211, 18, 42, 0.16), transparent 62%),
+    var(--card);
+}
+
+.season-path-round {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.season-path-crest {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  margin: 4px 0 2px;
+}
+
+.season-path-steps strong {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.season-path-steps p {
+  color: var(--mute);
+  font-size: 0.82rem;
+}
+
 .match-card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -3657,6 +3726,13 @@ footer p {
   .season-close-bye { padding-top: 14px; }
   .season-close-sign { margin-top: 16px; font-size: 0.6rem; }
   .season-close-actions { margin-top: 14px; gap: 8px; }
+  .season-path { padding: 4px 12px 12px; }
+  .season-path-kicker { margin-bottom: 10px; font-size: 0.62rem; }
+  .season-path-steps { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .season-path-steps li a { padding: 12px 8px 10px; }
+  .season-path-crest { width: 36px; height: 36px; }
+  .season-path-steps strong { font-size: 1.35rem; }
+  .season-path-steps p { font-size: 0.74rem; }
   .final-day-kicker { margin-bottom: 10px; font-size: 0.62rem; }
   .final-day-side { gap: 4px; }
   .final-day-side img { width: 52px; height: 52px; }
