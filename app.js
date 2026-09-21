@@ -1041,8 +1041,11 @@ function mvpMatchup() {
 }
 
 function mvpMatchLine() {
-  const { opponent, round } = mvpMatchup();
   const hours = club.mvp?.durationHours || 2;
+  if (club.mvp?.closed) {
+    return club.mvp.match || "Campeonato encerrado. Sem votação por agora.";
+  }
+  const { opponent, round } = mvpMatchup();
   if (!opponent) {
     return club.mvp?.match
       ? `${club.mvp.match}. Duração da votação: ${hours} horas.`
@@ -1085,7 +1088,19 @@ let mvpState = {
 const mvpAdmin = document.getElementById("mvp-admin");
 const mvpAdminOps = document.getElementById("mvp-admin-ops");
 const isMvpAdminPage = new URLSearchParams(window.location.search).has("admin");
+const mvpSeasonClosed = Boolean(club.mvp?.closed);
+const mvpClosedEl = document.getElementById("mvp-closed");
+const mvpPollSection = document.getElementById("mvp");
 if (mvpAdmin && isMvpAdminPage) mvpAdmin.hidden = false;
+if (mvpClosedEl && mvpPollSection) {
+  if (mvpSeasonClosed) {
+    mvpClosedEl.hidden = false;
+    mvpPollSection.hidden = !isMvpAdminPage;
+  } else {
+    mvpClosedEl.hidden = true;
+    mvpPollSection.hidden = false;
+  }
+}
 let mvpAdminPin = isMvpAdminPage ? sessionStorage.getItem("mvp-admin-pin") || "" : "";
 let mvpTimer = null;
 
@@ -1193,10 +1208,14 @@ const renderMvp = () => {
   const votingOver = mvpState.started && !mvpState.open && !mvpState.paused;
   const plural = mvpState.total === 1 ? "voto" : "votos";
   if (!mvpState.started) {
-    const { opponent } = mvpMatchup();
-    status.textContent = opponent
-      ? `Aguardando o Bala abrir a urna de MVP do jogo contra o ${opponent}.`
-      : `Aguardando o Bala abrir a urna. Duração da votação: ${mvpPoll.durationHours} horas.`;
+    if (club.mvp?.closed) {
+      status.textContent = "Campeonato encerrado. Sem votação por agora.";
+    } else {
+      const { opponent } = mvpMatchup();
+      status.textContent = opponent
+        ? `Aguardando o Bala abrir a urna de MVP do jogo contra o ${opponent}.`
+        : `Aguardando o Bala abrir a urna. Duração da votação: ${mvpPoll.durationHours} horas.`;
+    }
   } else if (mvpState.paused) {
     status.textContent = showCounts
       ? `Votação pausada. ${mvpState.total} ${plural} até agora.`
@@ -1544,8 +1563,12 @@ document.getElementById("mvp-grid")?.addEventListener("click", async (event) => 
   renderMvp();
 });
 
-refreshMvp();
-mvpTimer = window.setInterval(tickMvp, 1000);
+if (mvpSeasonClosed && !isMvpAdminPage && mvpClosedEl) {
+  /* urna pública fechada: não puxa voto nem relógio */
+} else {
+  refreshMvp();
+  mvpTimer = window.setInterval(tickMvp, 1000);
+}
 
 const creatorBtn = document.querySelector(".site-creator");
 const siteFooter = document.querySelector("footer");

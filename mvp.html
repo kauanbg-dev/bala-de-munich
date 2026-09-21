@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Votação MVP — Bala de Munich</title>
-  <meta name="description" content="Vote no MVP do Bala de Munich na grande final contra o Botafofo." />
+  <title>MVP — Bala de Munich</title>
+  <meta name="description" content="A Super Copa dos Streamers acabou. A urna de MVP do Bala está fechada. Sem votação por agora." />
   <link rel="icon" href="assets/crest.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=118" />
+  <link rel="stylesheet" href="/styles.css?v=121" />
   
 </head>
 <body class="page-inner" data-page="mvp">
@@ -21,7 +21,7 @@
       </a>
       <div class="topbar-actions">
         <a class="btn btn-ghost btn-lives" href="/lives">Lives</a>
-        <a class="btn btn-gold" href="/mvp">Votar MVP</a>
+        <a class="btn btn-gold" href="/elenco">Elenco</a>
       </div>
       <button class="nav-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-nav">
         <span></span><span></span><span></span>
@@ -42,10 +42,42 @@
     </nav>
   </header>
   <main id="topo">
-<section id="mvp" class="section">
+    <section class="mvp-closed" id="mvp-closed">
+      <p class="mvp-closed-kicker">Super Copa dos Streamers · Edição 2</p>
+      <img class="mvp-closed-crest" src="assets/crest.png" alt="" width="96" height="96" />
+      <h2>A urna fechou</h2>
+      <p class="mvp-closed-lead">Campeonato encerrado. Sem votação por agora.</p>
+      <ul class="mvp-closed-notes">
+        <li>
+          <span>A copa</span>
+          <strong>Acabou</strong>
+          <p>Edição 2 fechada. Chegamos até a grande final.</p>
+        </li>
+        <li>
+          <span>A urna</span>
+          <strong>Fechada</strong>
+          <p>Não tem MD5 pra votar. Ninguém entra na cédula agora.</p>
+        </li>
+        <li>
+          <span>Depois</span>
+          <strong>Quando tiver bola</strong>
+          <p>Se o Bala voltar a jogar, a urna abre de novo.</p>
+        </li>
+      </ul>
+      <div class="mvp-closed-body">
+        <p>Essa página era a votação de MVP de cada série. A Super Copa dos Streamers chegou ao fim, então a urna não fica aberta no vazio. Sem jogo, sem cédula. O elenco, a chave e os números continuam no site pra quem quiser reler a campanha.</p>
+        <p class="mvp-closed-bye">Por agora não tem voto. Valeu por ter vindo com o Bala até aqui.</p>
+      </div>
+      <div class="mvp-closed-actions">
+        <a class="btn btn-red" href="/elenco">Ver o elenco</a>
+        <a class="btn btn-ghost" href="/confrontos">Ver a chave</a>
+        <a class="btn btn-ghost" href="/">Início</a>
+      </div>
+    </section>
+<section id="mvp" class="section" hidden>
       <header class="section-head">
         <h2>Votação · MVP</h2>
-        <p id="mvp-copy">Grande final · Votação de MVP do jogo contra o Botafofo. Duração da votação: 2 horas.</p>
+        <p id="mvp-copy">Campeonato encerrado. Sem votação por agora.</p>
       </header>
       <div class="mvp-stage" id="mvp-stage">
         <span class="mvp-live" id="mvp-live"><i aria-hidden="true"></i>Urna fechada</span>
@@ -141,8 +173,8 @@
   </a>
 
   <script src="/site.js?v=2"></script>
-  <script src="/data.js?v=117"></script>
-  <script src="/app.js?v=113"></script>
+  <script src="/data.js?v=118"></script>
+  <script src="/app.js?v=114"></script>
 
 </body>
 </html>

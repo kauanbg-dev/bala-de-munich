@@ -238,8 +238,9 @@ window.CLUB = {
   ],
   mvp: {
     id: "final-e2",
-    title: "MVP da partida",
-    match: "MVP da grande final contra o Botafofo",
+    closed: true,
+    title: "Urna encerrada",
+    match: "Campeonato encerrado. Sem votação por agora.",
     durationHours: 2,
   },
 };
