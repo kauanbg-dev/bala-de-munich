@@ -35,9 +35,9 @@ powershell -ExecutionPolicy Bypass -File scripts\serve.ps1
 
 1. Importa o repo na Vercel (Framework: **Other**, sem build)
 2. Variáveis úteis:
-   - `MVP_ADMIN_PIN` — PIN do painel admin da urna
-   - Redis/KV (`KV_REST_API_*` ou `UPSTASH_REDIS_REST_*`) — votos persistentes
-   - `FEEDFRAMER_KEY` / `IG_TOKEN` — opcionais, para o feed do Instagram
+   - `MVP_ADMIN_PIN`: PIN do painel admin da urna
+   - Redis/KV (`KV_REST_API_*` ou `UPSTASH_REDIS_REST_*`): votos persistentes
+   - `FEEDFRAMER_KEY` / `IG_TOKEN`: opcionais, para o feed do Instagram
 
 Sem Redis, os votos da urna não persistem entre cold starts.
 
